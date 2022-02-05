@@ -8,7 +8,7 @@ import  (
 
 
 func createServices(){
-	names := {"yourmom", "grap", "amogus", "sus", "virus", "redteam", "the-matrix", "uno-reverse-card", "yellowteam", "bingus", "dokidoki", "based", "not-ransomware", "bepis", "roblox", "freevbucks", "notavirus", "heckerman", "benignfile", "yolo", "pickle", "grubhub", "hehe", "amogOS", "society", "yeet", "doge", "mac", "hungy", "youllneverfindme", "red-herring"}
+	names := {"yourmom", "freddy-fazbear", "grap", "amogus", "sus", "virus", "redteam", "the-matrix", "uno-reverse-card", "yellowteam", "bingus", "dokidoki", "based", "not-ransomware", "bepis", "roblox", "freevbucks", "notavirus", "heckerman", "benignfile", "yolo", "pickle", "grubhub", "hehe", "amogOS", "society", "yeet", "doge", "mac", "hungy", "youllneverfindme", "red-herring"}
 	descriptions = {
 		"An absolutely vital service for Linux. Do not delete under any circumstances. -redteam",
 		"kinda sus bro",
@@ -26,7 +26,7 @@ func createServices(){
 		"It's free real estate",
 		"Hot singles in your area"
 	}
-	
+	//hello
 
 }
 
