@@ -1,17 +1,27 @@
 //Michael Burke, mdb5315@rit.edu
 package main
 
-import  (
-	"io/ioutil"
+import (
 	"fmt"
-	)
+	"io/ioutil"
+)
 
-var names, descriptions, user, payloads, paths, filenames
+type service struct {
+	name        string
+	description string
+	path        string
+	filename    string
+	payload     string
+	user        string
+}
 
-func buildDB(){
+var user string
+var names, descriptions, paths, filenames, payloads []string
+
+func buildDB() {
 	user = "root"
-	names = {"yourmom", "freddy-fazbear", "grap", "amogus", "sus", "virus", "redteam", "the-matrix", "uno-reverse-card", "yellowteam", "bingus", "dokidoki", "based", "not-ransomware", "bepis", "roblox", "freevbucks", "notavirus", "heckerman", "benignfile", "yolo", "pickle", "grubhub", "hehe", "amogOS", "society", "yeet", "doge", "mac", "hungy", "youllneverfindme", "red-herring"}
-	descriptions = {
+	names = []string{"yourmom", "freddy-fazbear", "grap", "amogus", "sus", "virus", "redteam", "the-matrix", "uno-reverse-card", "yellowteam", "bingus", "dokidoki", "based", "not-ransomware", "bepis", "roblox", "freevbucks", "notavirus", "heckerman", "benignfile", "yolo", "pickle", "grubhub", "hehe", "amogOS", "society", "yeet", "doge", "mac", "hungy", "youllneverfindme", "red-herring"}
+	descriptions = []string{
 		"An absolutely vital service for Linux. Do not delete under any circumstances. -redteam",
 		"kinda sus bro",
 		"Very benign. Much trust.",
@@ -27,18 +37,18 @@ func buildDB(){
 		"If you or a love one has been diagnosed with mesothelioma, you may be entitled to a cash reward",
 		"It's free real estate",
 		"Hot singles in your area",
-		"Meesa jar jar binks"
+		"Meesa jar jar binks",
 	}
-	paths = {
+	paths = []string{
 		"/var/run/",
 		"/var/",
 		"/etc/",
 		"/home/",
 		"/usr/lib/",
 		"/usr/local/",
-		"/root/"
+		"/root/",
 	}
-	filenames = {
+	filenames = []string{
 		"randomservice",
 		"inconspicuous_file",
 		"deleteme",
@@ -56,38 +66,18 @@ func buildDB(){
 		"issaservice",
 		"himom",
 		"jeffUwU",
-		"youfoundme"
+		"youfoundme",
 	}
-	payloads = {
-		{
-			"name":"Random Messenger",
-			"payload":"random-messenger"
-		},
-		{
-			"name":"Reverse Shell",
-			"payload":"reverse-shell",
-		},
-		{
-			"name":"Downloader",
-			"payload":"downloader"
-		},
-		{
-			"name":"File Creator",
-			"payload":"file-creator"
-		},
-		{
-			"name":"User Creator",
-			"payload":"user-creator"
-		}
-		
-	}
+	payloads = []string{"random-messenger", "reverse-shell", "downloader", "file-creator", "user-creator"}
+}
+
+func buildServices(num int) {
 
 }
 
-
-func main(){
+func main() {
 	buildDB()
 	dat, _ := ioutil.ReadFile("template.service")
 	file := string(dat)
-	fmt.Printf(file)
+	fmt.Println(file)
 }
