@@ -16,8 +16,8 @@ func main() {
 
 func do() {
 	rand.Seed(time.Now().UnixNano())
-	delay := (random(20) + 1) * 60
-	fmt.Printf("Sleeping for %d Seconds\n", delay)
+	delay := (random(19) + 1) * 60
+	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
 	time.Sleep(time.Duration(delay) * time.Second)
 	fmt.Printf("Sending Message\n")
 	index := random(len(messages) - 1)
@@ -45,5 +45,7 @@ func buildMessages() {
 		"Git gud",
 		"Pitiful",
 		"You're getting warmer... jk",
+		"yous been haxed",
+		"I'm over here! No wait, I'm over here!",
 	}
 }
