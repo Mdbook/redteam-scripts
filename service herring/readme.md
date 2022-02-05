@@ -81,7 +81,7 @@ These files may be placed into any of the following  paths:
 /usr/local/
 /root/
 ```
-List of possible services names:
+List of possible service names:
 ```
 yourmom
 freddy-fazbear
