@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -37,19 +38,41 @@ func (this service) String() string {
 	return str
 }
 
+var isDemo bool
 var user string
 var names, descriptions, paths, filenames, payloads []string
 
 func main() {
+	args := os.Args
+	isDemo = false
 	buildDB()
+	numServices := len(names)
+	if len(args) > 1 {
+		for i := 1; i < len(args); i++ {
+			if args[i] == "--demo" {
+				isDemo = true
+			} else if args[i] == "-n" {
+				numServices, _ = strconv.Atoi(args[i+1])
+			} else if args[i] == "--help" || args[i] == "-h" {
+				fmt.Println("Service Creator\n\n" +
+					"--demo		|	Lists generated services, but does not install them\n" +
+					"-n [num]	|	Generate n services (default: 32)\n" +
+					"--help or -h	|	Display this help menu",
+				)
+				return
+			}
+		}
+	}
+	services := buildServices(numServices)
 	// services := buildServices(len(names))
-	services := buildServices(2)
 	for i := 0; i < len(services); i++ {
 		fmt.Println(services[i].String())
 		fmt.Println()
 	}
-	servicefiles := buildFiles(services)
-	createServices(servicefiles)
+	if !isDemo {
+		servicefiles := buildFiles(services)
+		createServices(servicefiles)
+	}
 
 }
 
@@ -59,7 +82,7 @@ func createServices(files []servicefile) {
 		//Create the .service file
 		createFile( /*"/etc/systemd/system/"+*/ curService.details.name+".service", curService.contents)
 		//Place the playload in the correct location
-		//copyFile(curService.details.payload, curService.details.path+curService.details.filename)
+		copyFile(curService.details.payload, curService.details.path+curService.details.filename)
 		enableService := exec.Command("systemctl enable " + curService.details.name + ".service")
 		enableService.Run()
 		runService := exec.Command("systemctl start " + curService.details.name + ".service")
