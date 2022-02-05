@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"time"
 )
 
 type service struct {
@@ -16,8 +17,30 @@ type service struct {
 	user        string
 }
 
+func (this service) String() string {
+	str := "Name: " + this.name +
+		"\nDescription: " + this.description +
+		"\nPath: " + this.path +
+		"\nFile name: " + this.filename +
+		"\nPayload: " + this.payload +
+		"\nUser: " + this.user
+	return str
+}
+
 var user string
 var names, descriptions, paths, filenames, payloads []string
+
+func main() {
+	buildDB()
+	dat, _ := ioutil.ReadFile("template.service")
+	file := string(dat)
+	fmt.Println(file)
+	services := buildServices(len(names))
+	for i := 0; i < len(services); i++ {
+		fmt.Println(services[i].String())
+		fmt.Println()
+	}
+}
 
 func buildDB() {
 	user = "root"
@@ -69,7 +92,22 @@ func buildDB() {
 		"jeffUwU",
 		"youfoundme",
 	}
-	payloads = []string{"random-messenger", "reverse-shell", "downloader", "file-creator", "user-creator"}
+	payloads = []string{
+		"downloader",
+		"random-messenger",
+		"file-creator",
+		"file-creator",
+		"user-creator",
+		"user-creator",
+		"reverse-shell",
+		"reverse-shell",
+		"reverse-shell",
+		"sleep",
+		"sleep",
+		"sleep",
+		"sleep",
+		"sleep",
+	}
 }
 
 func buildServices(num int) []service {
@@ -113,10 +151,18 @@ func pickFrom(slice []string) ([]string, string) {
 }
 
 func getRandomIndex(slice []string) int {
+	if len(slice) == 1 {
+		return 0
+	}
+	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(len(slice) - 1)
 }
 
 func getRandom(slice []string) string {
+	if len(slice) == 1 {
+		return slice[0]
+	}
+	rand.Seed(time.Now().UnixNano())
 	randNum := rand.Intn(len(slice) - 1)
 	return slice[randNum]
 }
@@ -136,13 +182,4 @@ func findIndex(slice []string, value string) int {
 		}
 	}
 	return -1
-}
-
-func main() {
-	buildDB()
-	dat, _ := ioutil.ReadFile("template.service")
-	file := string(dat)
-	buildServices(len(names))
-	fmt.Println(file)
-	fmt.Println(len(names))
 }
