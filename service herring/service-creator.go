@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 )
 
 type service struct {
@@ -71,13 +72,77 @@ func buildDB() {
 	payloads = []string{"random-messenger", "reverse-shell", "downloader", "file-creator", "user-creator"}
 }
 
-func buildServices(num int) {
+func buildServices(num int) []service {
+	validNames := names
+	var services []service
+	for i := 0; i < num; i++ {
+		var serviceName, serviceDesc, servicePath, serviceFilename, servicePayload string
+		validNames, serviceName = pickFrom(validNames)
+		serviceDesc = getRandom(descriptions)
+		servicePath = getRandom(paths)
+		serviceFilename = getRandom(filenames)
+		servicePayload = getRandom(payloads)
+		for {
+			if hasCollision(services, servicePath, serviceFilename) {
+				servicePath = getRandom(paths)
+				serviceFilename = getRandom(filenames)
+			} else {
+				break
+			}
+		}
+		newService := service{serviceName, serviceDesc, servicePath, serviceFilename, servicePayload, user}
+		services = append(services, newService)
+	}
+	return services
+}
 
+func hasCollision(services []service, servicePath string, serviceFilename string) bool {
+	for i := 0; i < len(services); i++ {
+		curService := services[i]
+		if curService.path == servicePath && curService.filename == serviceFilename {
+			return true
+		}
+	}
+	return false
+}
+
+func pickFrom(slice []string) ([]string, string) {
+	var val string
+	slice, val = remove(slice, getRandomIndex(slice))
+	return slice, val
+}
+
+func getRandomIndex(slice []string) int {
+	return rand.Intn(len(slice) - 1)
+}
+
+func getRandom(slice []string) string {
+	randNum := rand.Intn(len(slice) - 1)
+	return slice[randNum]
+}
+
+func remove(slice []string, i int) ([]string, string) {
+	name := slice[i]
+	slice[i] = slice[len(slice)-1]
+	slice = slice[:len(slice)-1]
+	return slice, name
+
+}
+
+func findIndex(slice []string, value string) int {
+	for i := range slice {
+		if slice[i] == value {
+			return i
+		}
+	}
+	return -1
 }
 
 func main() {
 	buildDB()
 	dat, _ := ioutil.ReadFile("template.service")
 	file := string(dat)
+	buildServices(len(names))
 	fmt.Println(file)
+	fmt.Println(len(names))
 }
