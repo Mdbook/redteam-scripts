@@ -47,3 +47,72 @@ sudo ./setup.sh
 ./service-creator -h
 ```
 
+
+## Documentation/Files modified
+
+This script generates the following possible filenames:
+```
+randomservice.service
+inconspicuous_file.service
+deleteme.service
+dontdeleteme.service
+heh.service
+b1ngus.service
+file12345.service
+homework.service
+top-secret.service
+temporary-file.service
+lilboi.service
+geck.service
+flappy-bird-game.service
+borger.service
+issaservice.service
+himom.service
+jeffUwU.service
+youfoundme.service
+```
+These files may be placed into any of the following  paths:
+```
+/var/run/
+/var/
+/etc/
+/home/
+/usr/lib/
+/usr/local/
+/root/
+```
+List of possible services names:
+```
+yourmom
+freddy-fazbear
+grap
+amogus
+sus
+virus
+redteam
+the-matrix
+uno-reverse-card
+yellowteam
+bingus
+dokidoki
+based
+not-ransomware
+bepis
+roblox
+freevbucks
+notavirus
+heckerman
+benignfile
+yolo
+pickle
+grubhub
+hehe
+amogOS
+society
+yeet
+doge
+mac
+hungy
+youllneverfindme
+red-herring
+```
