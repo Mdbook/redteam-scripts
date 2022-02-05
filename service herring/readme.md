@@ -52,24 +52,24 @@ sudo ./setup.sh
 
 This script generates the following possible filenames:
 ```
-b1ngus.service
-borger.service
-deleteme.service
-dontdeleteme.service
-file12345.service
-flappy-bird-game.service
-geck.service
-heh.service
-himom.service
-homework.service
-inconspicuous_file.service
-issaservice.service
-jeffUwU.service
-lilboi.service
-randomservice.service
-temporary-file.service
-top-secret.service
-youfoundme.service
+b1ngus
+borger
+deleteme
+dontdeleteme
+file12345
+flappy-bird-game
+geck
+heh
+himom
+homework
+inconspicuous_file
+issaservice
+jeffUwU
+lilboi
+randomservice
+temporary-file
+top-secret
+youfoundme
 ```
 These files may be placed into any of the following  paths:
 ```
