@@ -26,7 +26,7 @@ func createServices(){
 		"It's free real estate",
 		"Hot singles in your area"
 	}
-	//hello
+	
 
 }
 
