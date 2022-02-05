@@ -83,7 +83,7 @@ func checkServices(services []service) []service {
 		"random-messenger",
 		"file-creator",
 		"user-creator",
-		"reverse-shell",
+		"shell",
 	}
 
 	for i := 0; i < len(services); i++ {
@@ -222,9 +222,9 @@ func buildDB() {
 		"file-creator",
 		"user-creator",
 		"user-creator",
-		"reverse-shell",
-		"reverse-shell",
-		"reverse-shell",
+		"shell",
+		"shell",
+		"shell",
 		"sleep",
 		"sleep",
 		"sleep",
