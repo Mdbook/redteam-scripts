@@ -1,7 +1,6 @@
 //Michael Burke, mdb5315@rit.edu
 package main
 
-//TODO: ensure there is at least one of each payload
 import (
 	"fmt"
 	"io"
@@ -64,7 +63,7 @@ func main() {
 		}
 	}
 	services := buildServices(numServices)
-	// services := buildServices(len(names))
+	services = checkServices(services)
 	for i := 0; i < len(services); i++ {
 		fmt.Println(services[i].String())
 		fmt.Println()
@@ -73,12 +72,11 @@ func main() {
 		servicefiles := buildFiles(services)
 		createServices(servicefiles)
 	}
-
 }
 
-func checkServices(files []servicefile) []servicefile {
-	if len(files) != len(names) {
-		return files
+func checkServices(services []service) []service {
+	if len(services) != len(names) {
+		return services
 	}
 	types := []string{
 		"downloader",
@@ -88,28 +86,30 @@ func checkServices(files []servicefile) []servicefile {
 		"reverse-shell",
 	}
 
-	for i := 0; i < len(files); i++ {
-		curService := files[i]
-		index := findIndex(types, curService.details.payload)
+	for i := 0; i < len(services); i++ {
+		curService := services[i]
+		index := findIndex(types, curService.payload)
 		if index != -1 {
+			fmt.Println(curService.payload + " is fine")
 			types, _ = remove(types, index)
 		}
 	}
 	if len(types) != 0 {
 		for i := 0; i < len(types); i++ {
-			oldServiceIndex := -1
-			for e := 0; e < len(files); e++ {
-				if files[e].details.payload == "sleep" {
-					oldServiceIndex = e
+			fmt.Println("Caught " + types[i])
+			serviceIndex := -1
+			for e := 0; e < len(services); e++ {
+				if services[e].payload == "sleep" {
+					serviceIndex = e
 				}
 			}
-			if oldServiceIndex == -1 {
-				return files
+			if serviceIndex == -1 {
+				return services
 			}
-			files[oldServiceIndex].details.payload = types[i]
+			services[serviceIndex].payload = types[i]
 		}
 	}
-	return files
+	return services
 
 }
 
