@@ -12,7 +12,7 @@ Ubuntu/Debian
 ```bash
 apt-get install golang-go
 ```
-CentOS/RedHat
+CentOS/RHEL
 ```bash
 yum install golang
 ```
