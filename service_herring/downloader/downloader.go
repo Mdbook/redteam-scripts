@@ -18,7 +18,6 @@ func main() {
 }
 
 func do() {
-	fmt.Println("hi")
 	fmt.Println(getHTTP(host))
 	//repeat()
 }
