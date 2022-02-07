@@ -20,5 +20,15 @@ cd ..
 go build service-creator.go
 echo "Built service-creator"
 
-echo "Built go files"
+echo "Built all go files"
 
+# if [ $# -eq 0 ]; then
+#     echo "No arguments supplied; assuming first time"
+# 	mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
+# else
+# 	if [ $1 != "--reinstall" ]; then
+# 		mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
+# 	fi
+# fi
+
+echo $@
