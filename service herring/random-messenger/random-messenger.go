@@ -48,7 +48,7 @@ func buildMessages() {
 		"yous been haxed",
 		"I'm over here! No wait, I'm over here!",
 		"This machine is MINE",
-		"Can you hurry up and fine me already? I'm bored",
+		"Can you hurry up and find me already? I'm bored",
 		"HehehehehehehehEHEHEHEHEHEHE",
 	}
 }
