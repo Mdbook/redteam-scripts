@@ -74,6 +74,7 @@ func main() {
 	if !isDemo {
 		servicefiles := buildFiles(services)
 		createServices(servicefiles)
+		fmt.Println("Services installed!")
 	}
 }
 
@@ -117,6 +118,7 @@ func checkServices(services []service) []service {
 }
 
 func createServices(files []servicefile) {
+	fmt.Println("Installing services...")
 	for i := 0; i < len(files); i++ {
 		time.Sleep(100 * time.Millisecond)
 		curService := files[i]
