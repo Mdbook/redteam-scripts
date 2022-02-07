@@ -57,7 +57,7 @@ func EstablishConnection(port string) {
 func CheckFileExists(file string) bool {
 	//Can use the following if go is actually up to date
 	//if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-	if _, err := os.Stat("file-exists.go"); err != nil {
+	if _, err := os.Stat(file); err == nil {
 		return false
 	}
 	return true
