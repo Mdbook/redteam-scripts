@@ -15,7 +15,6 @@ func main() {
 }
 
 func do() {
-	rand.Seed(time.Now().UnixNano())
 	delay := (random(19) + 1) * 60
 	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
 	time.Sleep(time.Duration(delay) * time.Second)
