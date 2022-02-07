@@ -3,6 +3,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -56,8 +57,8 @@ func EstablishConnection(port string) {
 
 func CheckFileExists(file string) bool {
 	//Can use the following if go is actually up to date
-	//if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-	if _, err := os.Stat(file); err == nil {
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		//if _, err := os.Stat(file); err == nil {
 		return false
 	}
 	return true
