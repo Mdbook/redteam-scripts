@@ -151,6 +151,7 @@ func copyFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
+	time.Sleep(1 * time.Second)
 	defer out.Close()
 	_, err = io.Copy(out, in)
 	if err != nil {
