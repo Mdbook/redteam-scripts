@@ -50,6 +50,8 @@ func do() {
 			moveFile(commands[i+1], commands[i+2])
 		case "COPY":
 			copyFile(commands[i+1], commands[i+2])
+		case "SLEEP":
+
 		}
 
 	}
@@ -57,11 +59,8 @@ func do() {
 }
 
 func copyFile(src, dest string) {
-	sourceFileStat, err := os.Stat(src)
+	_, err := os.Stat(src)
 	if err != nil {
-		return
-	}
-	if !sourceFileStat.Mode().IsRegular() {
 		return
 	}
 	source, err := os.Open(src)
@@ -72,6 +71,7 @@ func copyFile(src, dest string) {
 		return
 	}
 	defer destination.Close()
+	io.Copy(destination, source)
 }
 
 func moveFile(src, dest string) {
