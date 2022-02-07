@@ -16,6 +16,7 @@ var password string
 var currentOS string
 var isDemo bool
 var numUsers int
+var isVerbose bool
 
 func main() {
 	args := os.Args
@@ -34,6 +35,8 @@ func main() {
 					"--help or -h	|	Display this help menu",
 				)
 				return
+			} else if args[i] == "-v" {
+				isVerbose = true
 			}
 		}
 	}
@@ -85,7 +88,9 @@ func addSudo(username string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("%s\n", b)
+	if isVerbose {
+		fmt.Printf("%s\n", b)
+	}
 }
 
 func createUser(username string) {
