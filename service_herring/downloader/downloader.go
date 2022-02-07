@@ -36,6 +36,7 @@ func do() {
 		repeat()
 		return
 	}
+	edition = newEdition
 	for i := 0; i < len(commands); i++ {
 		command := commands[i]
 		switch command {
