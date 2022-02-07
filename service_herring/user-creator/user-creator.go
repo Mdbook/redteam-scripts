@@ -16,7 +16,7 @@ var password string
 var currentOS string
 var isDemo bool
 var numUsers int
-var isVerbose bool
+var isVerbose bool = false
 
 func main() {
 	args := os.Args
