@@ -41,6 +41,7 @@ func (this service) String() string {
 var isDemo bool
 var user string
 var names, descriptions, paths, filenames, payloads []string
+var verbose bool = true
 
 func main() {
 	args := os.Args
@@ -53,6 +54,8 @@ func main() {
 				isDemo = true
 			} else if args[i] == "-n" {
 				numServices, _ = strconv.Atoi(args[i+1])
+			} else if args[i] == "-v" {
+				verbose = true
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("Service Creator\n\n" +
 					"--demo		|	Lists generated services, but does not install them\n" +
@@ -126,7 +129,6 @@ func createServices(files []servicefile) {
 			fmt.Println(err1.Error())
 		}
 		os.Chmod(curService.details.path+curService.details.filename, 0755)
-		fmt.Println("uhhhh hi")
 		enableService := exec.Command("systemctl", "enable", curService.details.name+".service")
 		var out bytes.Buffer
 		enableService.Stdout = &out
@@ -151,7 +153,6 @@ func copyFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
-	time.Sleep(1 * time.Second)
 	defer out.Close()
 	_, err = io.Copy(out, in)
 	if err != nil {
@@ -173,7 +174,12 @@ func buildFiles(services []service) []servicefile {
 		contents := template
 		contents = strings.Replace(contents, "{description}", service.description, 1)
 		contents = strings.Replace(contents, "{user}", service.user, 1)
-		contents = strings.Replace(contents, "{exec}", service.path+service.filename, 1)
+		if verbose {
+			contents = strings.Replace(contents, "{exec}", service.path+service.filename+" -v", 1)
+		} else {
+			contents = strings.Replace(contents, "{exec}", service.path+service.filename, 1)
+		}
+
 		newServiceFile := servicefile{contents, service}
 		servicefiles = append(servicefiles, newServiceFile)
 	}
