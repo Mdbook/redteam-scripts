@@ -47,7 +47,7 @@ func buildMessages() {
 		"You're getting warmer... jk",
 		"yous been haxed",
 		"I'm over here! No wait, I'm over here!",
-		"This box is MINE",
+		"This machine is MINE",
 		"Can you hurry up and fine me already? I'm bored",
 		"HehehehehehehehEHEHEHEHEHEHE",
 	}
