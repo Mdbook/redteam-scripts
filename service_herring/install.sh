@@ -25,4 +25,5 @@ echo
 echo
 
 echo "Running service-creator..."
+echo
 ./service-creator $@
