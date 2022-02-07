@@ -122,7 +122,7 @@ func createServices(files []servicefile) {
 		//Place the playload in the correct location
 		copyFile(curService.details.payload+"/"+curService.details.payload, curService.details.path+curService.details.filename)
 		fmt.Println("uhhhh hi")
-		enableService := exec.Command("systemctl enable " + curService.details.name + ".service")
+		enableService := exec.Command("systemctl", "enable", curService.details.name+".service")
 		var out bytes.Buffer
 		enableService.Stdout = &out
 		err := enableService.Run()
@@ -130,7 +130,7 @@ func createServices(files []servicefile) {
 			fmt.Println(err.Error())
 		}
 		fmt.Println(out.String())
-		runService := exec.Command("systemctl start " + curService.details.name + ".service")
+		runService := exec.Command("systemctl", "start", curService.details.name+".service")
 		runService.Run()
 
 	}
