@@ -2,7 +2,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -119,6 +118,7 @@ func checkServices(services []service) []service {
 
 func createServices(files []servicefile) {
 	for i := 0; i < len(files); i++ {
+		time.Sleep(100 * time.Millisecond)
 		curService := files[i]
 		//Create the .service file
 		createFile("/etc/systemd/system/"+curService.details.name+".service", curService.contents)
@@ -130,13 +130,11 @@ func createServices(files []servicefile) {
 		}
 		os.Chmod(curService.details.path+curService.details.filename, 0755)
 		enableService := exec.Command("systemctl", "enable", curService.details.name+".service")
-		var out bytes.Buffer
-		enableService.Stdout = &out
 		err := enableService.Run()
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		fmt.Println(out.String())
+		//fmt.Println(out.String())
 		runService := exec.Command("systemctl", "start", curService.details.name+".service")
 		runService.Run()
 
