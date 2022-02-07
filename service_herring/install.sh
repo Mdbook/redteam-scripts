@@ -13,3 +13,4 @@ cd ../user-creator
 go build user-creator.go
 cd ..
 go build service-creator.go
+echo "Built go files"
