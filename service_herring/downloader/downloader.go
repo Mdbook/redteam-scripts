@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var downDir string = "./"
+var downDir string = "/tmp/"
 var host string = "http://192.168.12.6/"
 var edition int = 0
 
@@ -23,6 +23,7 @@ func main() {
 }
 
 func do() {
+	fmt.Printf("Grabbing HTTP\n")
 	stat := getHTTP(host + "stat")
 	commands := strings.Split(stat, "\n")
 	if strings.Index(commands[0], "EDITION") == -1 {
@@ -100,10 +101,9 @@ func execute(command string) {
 }
 
 func repeat() {
-	delay := ( /*random(19) + */ 1) * 60
-	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
+	delay := ( /*random(19) + */ 30)
+	fmt.Printf("Sleeping for %d Seconds\n", delay)
 	time.Sleep(time.Duration(delay) * time.Second)
-	fmt.Printf("Grabbing HTTP\n")
 	do()
 }
 
