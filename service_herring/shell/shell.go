@@ -15,6 +15,7 @@ var port string
 func main() {
 	port = "62" + getPort(0, "")
 	fmt.Println("Listening on port " + port)
+	shell()
 }
 
 func getPort(i int, p string) string {
@@ -41,6 +42,7 @@ func shell() {
 		cmd.Stdout = con
 		cmd.Stderr = con
 		cmd.Run()
+		return
 	}
 
 }
