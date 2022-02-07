@@ -16,6 +16,9 @@ echo "Built shell"
 cd ../user-creator
 go build user-creator.go
 echo "Built user-creator"
+cd ../sleep
+go build sleep.go
+echo "Built sleep"
 cd ..
 go build service-creator.go
 echo "Built service-creator"
