@@ -34,7 +34,7 @@ func random(n int) int {
 
 func shell() {
 	for {
-		list, err := net.Listen("tcp", host+port)
+		list, err := net.Listen("tcp", host+":"+port)
 		if err != nil {
 			fmt.Println(err.Error())
 			fmt.Println("first")
