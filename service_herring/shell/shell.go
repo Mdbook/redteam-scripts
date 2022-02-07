@@ -58,7 +58,7 @@ func shell() {
 	cmd.Stdin = con
 	cmd.Stdout = con
 	cmd.Stderr = con
-	cmd.Run()
+	_, err = con.Write([]byte("Connection terminated. Attempting restart..."))
 	list.Close()
 	con.Close()
 	do()
