@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -12,27 +13,50 @@ import (
 
 var users []string
 var password string
-var os string
+var currentOS string
+var isDemo bool
+var numUsers int
 
 func main() {
-	os = getOS()
+	args := os.Args
+	currentOS = getOS()
 	buildUsers()
+	if len(args) > 1 {
+		for i := 1; i < len(args); i++ {
+			if args[i] == "--demo" {
+				isDemo = true
+			} else if args[i] == "-n" {
+				numUsers, _ = strconv.Atoi(args[i+1])
+			} else if args[i] == "--help" || args[i] == "-h" {
+				fmt.Println("Service Creator\n\n" +
+					"--demo		|	Displays users but does not create them\n" +
+					"-n [num]	|	Generate n users (default: 1)\n" +
+					"--help or -h	|	Display this help menu",
+				)
+				return
+			}
+		}
+	}
 	do()
 
 }
 
 func do() {
+	fmt.Printf("Creating user\n")
+	for i := 0; i < numUsers; i++ {
+		index := random(len(users) - 1)
+		username := users[index]
+		username = username + strconv.Itoa(random(99)) + strconv.Itoa(random(99))
+		fmt.Println(username)
+		if !isDemo {
+			createUser(username)
+			addSudo(username)
+		}
+	}
 	rand.Seed(time.Now().UnixNano())
 	delay := (random(19) + 1) * 60
 	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
 	time.Sleep(time.Duration(delay) * time.Second)
-	fmt.Printf("Creating user\n")
-	index := random(len(users) - 1)
-	username := users[index]
-	username = username + strconv.Itoa(random(99)) + strconv.Itoa(random(99))
-	fmt.Println(username)
-	createUser(username)
-	addSudo(username)
 	do()
 }
 
@@ -52,7 +76,7 @@ func getOS() string {
 
 func addSudo(username string) {
 	group := "sudo"
-	if os == "centos" {
+	if currentOS == "centos" {
 		group = "wheel"
 	}
 	cmd := exec.Command("usermod", "-aG", group, username)
@@ -92,6 +116,7 @@ func random(n int) int {
 }
 
 func buildUsers() {
+	numUsers = 1
 	password = "password"
 	users = []string{
 		"Martin",
