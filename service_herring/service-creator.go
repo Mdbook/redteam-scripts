@@ -208,12 +208,10 @@ func buildDB() {
 		"Meesa jar jar binks",
 	}
 	paths = []string{
-		//"/var/run/",
 		"/var/",
 		"/etc/",
 		"/home/",
 		"/usr/lib/",
-		//"/usr/local/",
 		"/root/",
 	}
 	filenames = []string{
