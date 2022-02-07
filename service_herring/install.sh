@@ -21,5 +21,7 @@ go build service-creator.go
 echo "Built service-creator"
 
 echo "Built all go files"
+echo
+echo
 
 ./service-creator $@
