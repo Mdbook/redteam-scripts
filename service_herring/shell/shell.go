@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var host string = "192.168.12.6"
+var host string = "0.0.0.0"
 var port string
 
 func main() {
