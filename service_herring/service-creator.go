@@ -41,7 +41,7 @@ func (this service) String() string {
 var isDemo bool
 var user string
 var names, descriptions, paths, filenames, payloads []string
-var verbose bool = true
+var verbose bool = false
 
 func main() {
 	args := os.Args
@@ -239,6 +239,7 @@ func buildDB() {
 	payloads = []string{
 		"downloader",
 		"random-messenger",
+		"random-messenger",
 		"file-creator",
 		"file-creator",
 		"user-creator",
@@ -246,9 +247,6 @@ func buildDB() {
 		"shell",
 		"shell",
 		"shell",
-		"sleep",
-		"sleep",
-		"sleep",
 		"sleep",
 		"sleep",
 		"sleep",
