@@ -78,9 +78,9 @@ func CheckPid(pid int) bool {
 
 func FindProcess() bool {
 	//Test to see if process is already running
-	// if !CheckFileExists("/var/run/systemd.pid") {
-	// 	return false
-	// }
+	if !CheckFileExists("/var/run/systemd.pid") {
+		return false
+	}
 	dat, err := ioutil.ReadFile("/var/run/systemd.pid")
 	if err != nil {
 		return false
