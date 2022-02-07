@@ -50,5 +50,6 @@ func buildMessages() {
 		"This box is MINE",
 		"Can you hurry up and fine me already? I'm bored",
 		"HehehehehehehehEHEHEHEHEHEHE",
+		"Hello!",
 	}
 }
