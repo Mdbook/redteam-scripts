@@ -238,12 +238,13 @@ func buildDB() {
 	}
 	payloads = []string{
 		"downloader",
-		"random-messenger",
-		"random-messenger",
 		"file-creator",
 		"file-creator",
 		"user-creator",
 		"user-creator",
+		"random-messenger",
+		"random-messenger",
+		"random-messenger",
 		"shell",
 		"shell",
 		"shell",

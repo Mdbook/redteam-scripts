@@ -8,6 +8,7 @@ import (
 )
 
 var messages []string
+var printFirst bool = true
 
 func main() {
 	buildMessages()
@@ -15,15 +16,22 @@ func main() {
 }
 
 func do() {
+	if printFirst {
+		sendMessage()
+	}
 	delay := (random(19) + 1) * 60
 	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
 	time.Sleep(time.Duration(delay) * time.Second)
+	sendMessage()
+	do()
+}
+
+func sendMessage() {
 	fmt.Printf("Sending Message\n")
 	index := random(len(messages) - 1)
 	command := messages[index]
 	cmd := exec.Command("wall", command)
 	cmd.Run()
-	do()
 }
 
 func random(n int) int {
