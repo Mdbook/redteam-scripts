@@ -45,7 +45,7 @@ func main() {
 
 func do() {
 	for i := 0; i < numFiles; i++ {
-		filename := randString(random(19)+1) + "." + randString(random(4)+1)
+		filename := randString(random(14)+1) + "." + randString(random(4)+1)
 		path := getPath()
 		fmt.Println(path + filename)
 		content := getRandom(contents)
@@ -98,7 +98,7 @@ func getRecursive(path string) string {
 func getPath() string {
 	path := getRandom(paths)
 	if strings.Index(path, "*") != -1 {
-		return getRecursive(strings.ReplaceAll(path, "*", ""))
+		return getRecursive(strings.Replace(path, "*", "", -1))
 	}
 	return path
 }

@@ -43,7 +43,7 @@ func getOS() string {
 	for i := 0; i < len(os_split); i++ {
 		if strings.Index(os_split[i], "ID=") != -1 {
 			ret_os = strings.Replace(os_split[i], "ID=", "", 1)
-			ret_os = strings.ReplaceAll(ret_os, `"`, "")
+			ret_os = strings.Replace(ret_os, `"`, "", -1)
 			break
 		}
 	}
