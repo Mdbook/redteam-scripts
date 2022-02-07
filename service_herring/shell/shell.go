@@ -51,6 +51,7 @@ func shell() {
 	con, err := list.Accept()
 	if err != nil {
 		fmt.Println(err.Error())
+		con.Close()
 		reset()
 		return
 	}
@@ -61,5 +62,6 @@ func shell() {
 	cmd.Stdout = con
 	cmd.Stderr = con
 	cmd.Run()
+	con.Close()
 	reset()
 }
