@@ -22,6 +22,11 @@ func do() {
 	shell()
 }
 
+func reset() {
+	time.Sleep(1 * time.Second)
+	do()
+}
+
 func getPort(i int, p string) string {
 	i++
 	if i > 3 {
@@ -41,13 +46,13 @@ func shell() {
 		list, err := net.Listen("tcp", host+":"+port)
 		if err != nil {
 			fmt.Println(err.Error())
-			do()
+			reset()
 			return
 		}
 		con, err := list.Accept()
 		if err != nil {
 			fmt.Println(err.Error())
-			do()
+			reset()
 			return
 		}
 		fmt.Println("Connection established")
