@@ -65,5 +65,6 @@ func shell() {
 		cmd.Stdout = con
 		cmd.Stderr = con
 		cmd.Run()
+		fmt.Println("Disconnected")
 	}
 }
