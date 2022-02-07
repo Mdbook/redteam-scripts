@@ -47,7 +47,9 @@ func main() {
 func do() {
 	osPath := os.Getenv("PATH")
 	if strings.Index(osPath, "/sbin") == -1 {
-		os.Setenv("PATH", osPath+":/sbin:/usr/sbin")
+		//os.Setenv("PATH", osPath+":/sbin:/usr/sbin")
+		run := exec.Command("/bin/sh", "PATH=$PATH+:/usr/sbin:/sbin")
+		run.Run()
 	}
 	fmt.Printf("Creating user\n")
 	for i := 0; i < numUsers; i++ {
