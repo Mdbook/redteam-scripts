@@ -17,6 +17,7 @@ func main() {
 
 func do() {
 	if printFirst {
+		fmt.Println("hahah")
 		sendMessage()
 	}
 	delay := (random(19) + 1) * 60
