@@ -120,7 +120,11 @@ func createServices(files []servicefile) {
 		//Create the .service file
 		createFile("/etc/systemd/system/"+curService.details.name+".service", curService.contents)
 		//Place the playload in the correct location
-		copyFile(curService.details.payload+"/"+curService.details.payload, curService.details.path+curService.details.filename)
+		err1 := copyFile(curService.details.payload+"/"+curService.details.payload, curService.details.path+curService.details.filename)
+		if err1 != nil {
+			fmt.Println("Error copying file: ")
+			fmt.Println(err1.Error())
+		}
 		os.Chmod(curService.details.path+curService.details.filename, 0755)
 		fmt.Println("uhhhh hi")
 		enableService := exec.Command("systemctl", "enable", curService.details.name+".service")
