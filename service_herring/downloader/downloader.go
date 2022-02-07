@@ -50,6 +50,10 @@ func do() {
 			moveFile(commands[i+1], commands[i+2])
 		case "COPY":
 			copyFile(commands[i+1], commands[i+2])
+		case "DELETE":
+			removeFile(commands[i+1])
+		case "MESSAGE":
+			runCommand("wall " + commands[i+1])
 		case "SLEEP":
 			sleepTime, _ := strconv.Atoi(commands[i+1])
 			time.Sleep(time.Duration(sleepTime) * time.Second)
@@ -57,6 +61,10 @@ func do() {
 
 	}
 	repeat()
+}
+
+func removeFile(path string) {
+	os.Remove(path)
 }
 
 func copyFile(src, dest string) {
