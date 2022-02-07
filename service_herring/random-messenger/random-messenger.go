@@ -8,7 +8,7 @@ import (
 )
 
 var messages []string
-var printFirst bool = true
+var printFirst bool = false
 
 func main() {
 	buildMessages()
