@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -16,24 +17,49 @@ var users []string
 var password string
 var paths []string
 var contents []string
+var isDemo bool
+var numFiles int
 
 func main() {
+	args := os.Args
+	isDemo = false
 	buildDB()
-	//fmt.Println(getRecursive("/etc/"))
+	if len(args) > 1 {
+		for i := 1; i < len(args); i++ {
+			if args[i] == "--demo" {
+				isDemo = true
+			} else if args[i] == "-n" {
+				numFiles, _ = strconv.Atoi(args[i+1])
+			} else if args[i] == "--help" || args[i] == "-h" {
+				fmt.Println("Service Creator\n\n" +
+					"--demo		|	Places generated files in the current directory instead of the generated path\n" +
+					"-n [num]	|	Generate n files (default: 3)\n" +
+					"--help or -h	|	Display this help menu",
+				)
+				return
+			}
+		}
+	}
 	do()
-	//NOTE: THIS IS STILL NEUTERED
 }
 
 func do() {
-	filename := randString(random(19)+1) + "." + randString(random(4)+1)
-	path := getPath()
-	fmt.Println(path + filename)
-	content := getRandom(contents)
-	writeToFile("./"+filename, content)
+	for i := 0; i < numFiles; i++ {
+		filename := randString(random(19)+1) + "." + randString(random(4)+1)
+		path := getPath()
+		fmt.Println(path + filename)
+		content := getRandom(contents)
+		if isDemo {
+			writeToFile("./"+filename, content)
+		} else {
+			writeToFile(path+filename, content)
+		}
+	}
+
 	delay := (random(5) + 1) * 60
 	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
 	time.Sleep(time.Duration(delay) * time.Second)
-	fmt.Printf("Creating user\n")
+	fmt.Printf("Creating file\n")
 }
 
 func isDirectory(path string) (bool, error) {
@@ -120,6 +146,7 @@ func random(n int) int {
 }
 
 func buildDB() {
+	numFiles = 3
 	paths = []string{
 		"/etc/*",
 		"/home/*",
@@ -146,5 +173,6 @@ func buildDB() {
 		"i got this new anime plot. basically there's this high school girl except she's got huge boobs. i mean some serious honkers. a real set of badonkers. packin some dobonhonkeros. massive dohoonkabhankoloos. big ol' tonhongerekoogers. what happens next?! transfer student shows up with even bigger bonkhonagahoogs. humongous hungolomghononoloughongous",
 		"'Who's joe?' a distant voice asks.\n\nInstantly everyone nearby hears the sound of 1,000s of bricks rapidly shuffling towards his location.\n\nThe earth itself seemed to cry out in agony, until finally the ground itself split open and a horrific creature crawled from the ground, covered in mucus and tar.\n\n”Joe Momma…” the creature whispered.\n\nThe man cried out in pain as he disintegrated into dust, and the whole world fell silent in fear.",
 		"'touch grass' is not an insult towards gamers, rather it is advice for them. When participating in intense periods of gaming, the human hand has a tendency to get sweaty. The sweat causes the hand to become slick, and it b becomes more difficult to retain a grip on the gamers gaming mouse, thus making it more difficult to perform well in intense gaming moments. By touching grass with the gamers hand, the grass will impart a layer of particulate onto the gamers hand, the particulate can be made of a variety of dusts, dirts and other natural matter. This particulate will then act in a similar form to climbers chalk, absorbing the sweat and drying out the gamers hand. With dry hands, the gamer can now perform to their maximum when gaming. This is why when an enemy or teammate tells you to touch grass, they are simply trying to assist you in performing better.",
+		"Did you ever hear the tragedy of Darth Plagueis The Wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life… He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful… the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. Ironic. He could save others from death, but not himself.",
 	}
 }
