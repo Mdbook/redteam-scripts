@@ -51,7 +51,8 @@ func do() {
 		case "COPY":
 			copyFile(commands[i+1], commands[i+2])
 		case "SLEEP":
-
+			sleepTime, _ := strconv.Atoi(commands[i+1])
+			time.Sleep(time.Duration(sleepTime) * time.Second)
 		}
 
 	}
