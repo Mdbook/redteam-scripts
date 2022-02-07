@@ -125,7 +125,10 @@ func createServices(files []servicefile) {
 		enableService := exec.Command("systemctl enable " + curService.details.name + ".service")
 		var out bytes.Buffer
 		enableService.Stdout = &out
-		enableService.Run()
+		err := enableService.Run()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		fmt.Println(out.String())
 		runService := exec.Command("systemctl start " + curService.details.name + ".service")
 		runService.Run()
