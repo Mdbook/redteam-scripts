@@ -27,8 +27,8 @@ func do() {
 		command := commands[i]
 		switch command {
 		case "DOWNLOAD":
-			fmt.Println("Downloading!")
-			downloadFile(downDir, host+commands[i+1])
+			fmt.Println("Downloading " + commands[i+1])
+			downloadFile(downDir+commands[i+1], host+commands[i+1])
 		}
 
 	}
