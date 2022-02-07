@@ -3,32 +3,49 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"os/exec"
 	"time"
 )
 
 var messages []string
 var printFirst bool = false
+var isVerbose bool = false
 
 func main() {
 	buildMessages()
+	args := os.Args
+	if len(args) > 1 {
+		for i := 1; i < len(args); i++ {
+			switch args[i] {
+			case "-v":
+				isVerbose = true
+			}
+		}
+	}
 	do()
 }
 
 func do() {
 	if printFirst {
-		fmt.Println("hahah")
+		if isVerbose {
+			fmt.Println("hahah")
+		}
 		sendMessage()
 	}
 	delay := (random(19) + 1) * 60
-	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
+	if isVerbose {
+		fmt.Printf("Sleeping for %d Minutes\n", delay/60)
+	}
 	time.Sleep(time.Duration(delay) * time.Second)
 	sendMessage()
 	do()
 }
 
 func sendMessage() {
-	fmt.Printf("Sending Message\n")
+	if isVerbose {
+		fmt.Printf("Sending Message\n")
+	}
 	index := random(len(messages) - 1)
 	command := messages[index]
 	cmd := exec.Command("wall", command)

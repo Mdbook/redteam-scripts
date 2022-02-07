@@ -19,6 +19,7 @@ var paths []string
 var contents []string
 var isDemo bool
 var numFiles int
+var isVerbose bool = false
 
 func main() {
 	args := os.Args
@@ -26,11 +27,14 @@ func main() {
 	buildDB()
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
-			if args[i] == "--demo" {
+			switch args[i] {
+			case "--demo":
 				isDemo = true
-			} else if args[i] == "-n" {
+			case "-n":
 				numFiles, _ = strconv.Atoi(args[i+1])
-			} else if args[i] == "--help" || args[i] == "-h" {
+			case "-v":
+				isVerbose = true
+			case "--help", "-h":
 				fmt.Println("Service Creator\n\n" +
 					"--demo		|	Places generated files in the current directory instead of the generated path\n" +
 					"-n [num]	|	Generate n files (default: 3)\n" +
@@ -47,7 +51,9 @@ func do() {
 	for i := 0; i < numFiles; i++ {
 		filename := randString(random(14)+1) + "." + randString(random(4)+1)
 		path := getPath()
-		fmt.Println(path + filename)
+		if isVerbose {
+			fmt.Println(path + filename)
+		}
 		content := getRandom(contents)
 		if isDemo {
 			writeToFile("./"+filename, content)
@@ -57,9 +63,13 @@ func do() {
 	}
 
 	delay := (random(5) + 1) * 60
-	fmt.Printf("Sleeping for %d Minutes\n", delay/60)
+	if isVerbose {
+		fmt.Printf("Sleeping for %d Minutes\n", delay/60)
+	}
 	time.Sleep(time.Duration(delay) * time.Second)
-	fmt.Printf("Creating file\n")
+	if isVerbose {
+		fmt.Printf("Creating file\n")
+	}
 }
 
 func isDirectory(path string) (bool, error) {
@@ -115,19 +125,25 @@ func getRandom(slice []string) string {
 func writeToFile(path string, content string) {
 	f, err := os.Create(path)
 	if err != nil {
-		fmt.Println(err)
+		if isVerbose {
+			fmt.Println(err)
+		}
 		return
 	}
 	_, err = f.WriteString(content)
 	if err != nil {
-		fmt.Println(err)
+		if isVerbose {
+			fmt.Println(err)
+		}
 		f.Close()
 		return
 	}
 	//fmt.Println(l, "bytes written successfully")
 	err = f.Close()
 	if err != nil {
-		fmt.Println(err)
+		if isVerbose {
+			fmt.Println(err)
+		}
 		return
 	}
 }

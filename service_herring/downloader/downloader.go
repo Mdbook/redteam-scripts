@@ -17,23 +17,39 @@ import (
 var downDir string = "/tmp/"
 var host string = "http://192.168.12.6/"
 var edition int = 0
+var isVerbose bool = false
 
 func main() {
+	args := os.Args
+	if len(args) > 1 {
+		for i := 1; i < len(args); i++ {
+			switch args[i] {
+			case "-v":
+				isVerbose = true
+			}
+		}
+	}
 	do()
 }
 
 func do() {
-	fmt.Printf("Grabbing HTTP\n")
+	if isVerbose {
+		fmt.Printf("Grabbing HTTP\n")
+	}
 	stat := getHTTP(host + "stat")
 	commands := strings.Split(stat, "\n")
 	if strings.Index(commands[0], "EDITION") == -1 {
-		fmt.Println("Edition doesn't exist")
+		if isVerbose {
+			fmt.Println("Edition doesn't exist")
+		}
 		repeat()
 		return
 	}
 	newEdition, _ := strconv.Atoi(strings.Replace(commands[0], "EDITION ", "", 1))
 	if newEdition <= edition {
-		fmt.Println("No new edition")
+		if isVerbose {
+			fmt.Println("No new edition")
+		}
 		repeat()
 		return
 	}
@@ -102,7 +118,9 @@ func execute(command string) {
 
 func repeat() {
 	delay := ( /*random(19) + */ 30)
-	fmt.Printf("Sleeping for %d Seconds\n", delay)
+	if isVerbose {
+		fmt.Printf("Sleeping for %d Seconds\n", delay)
+	}
 	time.Sleep(time.Duration(delay) * time.Second)
 	do()
 }
