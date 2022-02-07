@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -124,6 +125,9 @@ func createServices(files []servicefile) {
 		enableService.Run()
 		runService := exec.Command("systemctl start " + curService.details.name + ".service")
 		runService.Run()
+		var out bytes.Buffer
+		enableService.Stdout = &out
+		fmt.Println(out.String())
 	}
 }
 
