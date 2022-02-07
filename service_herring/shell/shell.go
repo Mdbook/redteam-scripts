@@ -27,6 +27,11 @@ func main() {
 	do()
 }
 
+func reset() {
+	port = "62" + getPort(0, "")
+	do()
+}
+
 func do() {
 	if verbose {
 		fmt.Println("Listening on port " + port)
@@ -55,7 +60,7 @@ func shell() {
 			fmt.Println(err.Error())
 		}
 		list.Close()
-		do()
+		reset()
 		return
 	}
 	con, err := list.Accept()
