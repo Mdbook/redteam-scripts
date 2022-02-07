@@ -23,6 +23,7 @@ func do() {
 	stat := getHTTP(host + "stat")
 	commands := strings.Split(stat, "\n")
 	for i := 0; i < len(commands); i++ {
+		fmt.Println("Checking " + commands[i])
 		command := commands[i]
 		switch command {
 		case "DOWNLOAD":
