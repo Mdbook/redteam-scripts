@@ -32,7 +32,7 @@ func main() {
 			case "--help", "-h":
 				fmt.Println("User Creator\n\n" +
 					"--demo		|	Displays users but does not create them\n" +
-					"-n [num]	|	Generate n users (default: 1)\n" +
+					"-n [num]	|	Generate n users (default: 2)\n" +
 					"--help or -h	|	Display this help menu",
 				)
 				return
@@ -135,7 +135,7 @@ func random(n int) int {
 }
 
 func buildUsers() {
-	numUsers = 1
+	numUsers = 2
 	password = "password"
 	users = []string{
 		"Martin",
