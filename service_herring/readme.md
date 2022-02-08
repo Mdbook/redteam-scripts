@@ -24,13 +24,22 @@ pacman -S go
 
 ## Installation
 
-Build using the bash script provided
+Build using the bash script provided. This will build and automatically deploy service-creator; any parameters will be passed to the service-creator executable
 
 ```bash
-sudo ./setup.sh
+#Default installation
+sudo ./install.sh
+
+#Build executables but don't deploy
+sudo ./install.sh --demo
+
+#Install and enable output for all payloads
+sudo ./install.sh -v
+
 ```
     
 ## Usage/Examples
+Any of these parameters may be used when running install.sh as well; they will be passed to service-creator when it is run by the script.
 
 ```bash
 #Default run; create services and install them
@@ -41,6 +50,9 @@ sudo ./setup.sh
 
 #Generate services but do not install them
 ./service-creator --demo
+
+#Enable verbose output for services
+./service-creator -v
 
 #Display help
 ./service-creator --help
