@@ -1,7 +1,12 @@
 
 # Service Herring
 
-A brief description of what this project does and who it's for
+Installs a bunch of random services with random names, paths, and payloads.
+To deploy this script, run the `install.sh` file. If you want to run the script
+multiple times, you may run `./install.sh --demo` first and then run `./service-creator`
+as many times as you'd like; however, this is not recommended. The `install.sh` file
+automatically builds all payloads and the service-creator file, and then runs
+service-creator, passing along any parameters.
 
 
 ## Dependencies
