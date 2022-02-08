@@ -1,12 +1,15 @@
 
 # Service Herring
 
-Installs a bunch of random services with random names, paths, and payloads.
+Installs up to 32 random services with random names, paths, and payloads.
 To deploy this script, run the `install.sh` file. If you want to run the script
 multiple times, you may run `./install.sh --demo` first and then run `./service-creator`
 as many times as you'd like; however, this is not recommended. The `install.sh` file
 automatically builds all payloads and the service-creator file, and then runs
 service-creator, passing along any parameters.
+
+Note: If run with the default number of services (32), there will always be
+at least one of each payload, with the exception of the `sleep` payload.
 
 
 ## Dependencies
