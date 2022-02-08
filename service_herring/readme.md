@@ -11,6 +11,8 @@ service-creator, passing along any parameters.
 Note: When deployed with the number of services set to the default amount (32), there will always be
 at least one of each payload, with the exception of the `sleep` payload.
 
+To view information about a specific payload, view the readme in its directory.
+
 
 ## Dependencies
 
