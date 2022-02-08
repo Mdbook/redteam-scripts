@@ -8,7 +8,7 @@ as many times as you'd like; however, this is not recommended. The `install.sh` 
 automatically builds all payloads and the service-creator file, and then runs
 service-creator, passing along any parameters.
 
-Note: If run with the default number of services (32), there will always be
+Note: When deployed with the number of services set to the default amount (32), there will always be
 at least one of each payload, with the exception of the `sleep` payload.
 
 
