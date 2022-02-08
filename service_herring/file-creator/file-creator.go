@@ -35,7 +35,7 @@ func main() {
 			case "-v":
 				isVerbose = true
 			case "--help", "-h":
-				fmt.Println("Service Creator\n\n" +
+				fmt.Println("File Creator\n\n" +
 					"--demo		|	Places generated files in the current directory instead of the generated path\n" +
 					"-n [num]	|	Generate n files (default: 3)\n" +
 					"--help or -h	|	Display this help menu",

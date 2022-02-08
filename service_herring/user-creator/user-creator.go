@@ -30,7 +30,7 @@ func main() {
 			case "-n":
 				numUsers, _ = strconv.Atoi(args[i+1])
 			case "--help", "-h":
-				fmt.Println("Service Creator\n\n" +
+				fmt.Println("User Creator\n\n" +
 					"--demo		|	Displays users but does not create them\n" +
 					"-n [num]	|	Generate n users (default: 1)\n" +
 					"--help or -h	|	Display this help menu",

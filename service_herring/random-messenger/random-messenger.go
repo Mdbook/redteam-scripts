@@ -20,6 +20,8 @@ func main() {
 			switch args[i] {
 			case "-v":
 				isVerbose = true
+			case "--message-first":
+				printFirst = true
 			}
 		}
 	}
@@ -28,9 +30,6 @@ func main() {
 
 func do() {
 	if printFirst {
-		if isVerbose {
-			fmt.Println("hahah")
-		}
 		sendMessage()
 	}
 	delay := (random(19) + 1) * 60
