@@ -94,9 +94,7 @@ These files may be placed into any of the following  paths:
 /home/
 /root/
 /usr/lib/
-/usr/local/
 /var/
-/var/run/
 ```
 List of possible service names:
 ```
