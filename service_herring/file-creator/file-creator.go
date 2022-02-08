@@ -48,6 +48,9 @@ func main() {
 }
 
 func do() {
+	if isVerbose {
+		fmt.Printf("Generating file(s)\n")
+	}
 	for i := 0; i < numFiles; i++ {
 		filename := randString(random(14)+1) + "." + randString(random(4)+1)
 		path := getPath()
@@ -67,9 +70,7 @@ func do() {
 		fmt.Printf("Sleeping for %d Minutes\n", delay/60)
 	}
 	time.Sleep(time.Duration(delay) * time.Second)
-	if isVerbose {
-		fmt.Printf("Creating file\n")
-	}
+	do()
 }
 
 func isDirectory(path string) (bool, error) {
@@ -146,6 +147,7 @@ func writeToFile(path string, content string) {
 		}
 		return
 	}
+	fmt.Println("Created " + path)
 }
 
 func randString(n int) string {
