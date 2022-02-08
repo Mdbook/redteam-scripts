@@ -33,9 +33,7 @@ func reset() {
 }
 
 func do() {
-	if verbose {
-		fmt.Println("Listening on port " + port)
-	}
+	fmt.Println("Listening on port " + port)
 	shell()
 }
 
