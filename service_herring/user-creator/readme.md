@@ -5,7 +5,7 @@ The users have a randomly selected name + a random number between 1-9999.
 
 `-v`: enable output
 
-`n [num]`: Specify the number of users to create each loop
+`-n [num]`: Specify the number of users to create each loop (default: 2)
 
 `--demo`: Display the generated usernames but don't create them
 
