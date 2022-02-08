@@ -49,6 +49,7 @@ func sendMessage() {
 	command := messages[index]
 	cmd := exec.Command("wall", command)
 	cmd.Run()
+	fmt.Println("Message sent")
 }
 
 func random(n int) int {
