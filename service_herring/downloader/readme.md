@@ -101,7 +101,7 @@ SLEEP
 
 ## Parameters
 
-`-v`: enable output
+`-v`: enable verbose
 
 Example:
 ```

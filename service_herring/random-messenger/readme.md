@@ -5,7 +5,7 @@ and then send a message to all users using the `wall` command.
 The message is randomly picked from a set list.
 ## Parameters
 
-`-v`: enable output
+`-v`: enable verbose
 
 `--message-first`: Send a message before delaying the first time
 

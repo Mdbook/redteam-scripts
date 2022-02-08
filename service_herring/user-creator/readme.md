@@ -3,7 +3,7 @@ Creates `n` amount of users with sudo powers, then delays for a random time and 
 The users have a randomly selected name + a random number between 1-9999. 
 ## Parameters
 
-`-v`: enable output
+`-v`: enable verbose
 
 `-n [num]`: Specify the number of users to create each loop (default: 2)
 

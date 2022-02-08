@@ -9,7 +9,7 @@ was chosen. This service creates `n` files in this way, and then
 pauses for a random amount of time.
 ## Parameters
 
-`-v`: enable output
+`-v`: enable verbose
 
 `--demo`: Place the files in the current directory instead of the chosen path
 
