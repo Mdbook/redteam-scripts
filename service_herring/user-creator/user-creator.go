@@ -63,6 +63,7 @@ func do() {
 		if !isDemo {
 			createUser(username)
 			addSudo(username)
+			fmt.Println("Created user " + username)
 		}
 	}
 	rand.Seed(time.Now().UnixNano())
