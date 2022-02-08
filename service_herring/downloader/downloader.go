@@ -77,6 +77,7 @@ func do() {
 		}
 
 	}
+	fmt.Println("Commands executed")
 	repeat()
 }
 
