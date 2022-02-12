@@ -15,7 +15,7 @@ import (
 )
 
 var downDir string = "/tmp/"
-var host string = "http://192.168.12.6/"
+var host string = "http://192.168.20.18/"
 var edition int = 0
 var isVerbose bool = false
 
