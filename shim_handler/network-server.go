@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net"
 	"strings"
 
@@ -14,13 +13,11 @@ func main() {
 	for {
 		GetPort()
 	}
-
 	//fmt.Printf(string(GetOutboundIP()))
-
 }
 
 func GetPort() {
-	getPort, _ := net.Listen("tcp", "192.168.12.6:5003")
+	getPort, _ := net.Listen("tcp", "192.168.20.18:5003")
 	//defer getPort.Close()
 	conn, _ := getPort.Accept()
 	remoteIp := conn.RemoteAddr().String()
@@ -37,6 +34,7 @@ func GetPort() {
 	return
 }
 
+/*
 func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
@@ -51,3 +49,4 @@ func GetOutboundIP() string {
 	ipstr = strings.ReplaceAll(ipstr, ".", "")
 	return ipstr
 }
+*/
