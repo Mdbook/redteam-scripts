@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-var HOST_CONNECT string = "192.168.12.6:"
+var HOST_CONNECT string = "192.168.20.18:"
 
 func main() {
 	//See if there is already an instance of the process running
