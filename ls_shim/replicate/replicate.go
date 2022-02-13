@@ -39,6 +39,8 @@ func transferFiles(ips []string) {
 	for i := 0; i < len(ips); i++ {
 		for u := 0; u < len(usernames); u++ {
 			for p := 0; p < len(passwords); p++ {
+				command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ips[i] + ":/tmp/"}
+				fmt.Println(command)
 				cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ips[i]+":/tmp/")
 				err := cmd.Run()
 				fmt.Println(err)
