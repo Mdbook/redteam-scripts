@@ -12,6 +12,7 @@ var systemOS string = getOS()
 
 func main() {
 	fmt.Println(systemOS)
+	//if systemOS == "centos"
 }
 
 func getOS() string {
@@ -19,7 +20,7 @@ func getOS() string {
 	os_str := readFile("/etc/os-release")
 	os_split := strings.Split(os_str, "\n")
 	for i := 0; i < len(os_split); i++ {
-		if strings.Index(os_split[i], "ID=") != -1 {
+		if strings.Index(os_split[i], "ID_LIKE=") != -1 {
 			ret_os = strings.Replace(os_split[i], "ID=", "", 1)
 			ret_os = strings.Replace(ret_os, `"`, "", -1)
 			break
