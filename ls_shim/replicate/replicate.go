@@ -59,16 +59,11 @@ func runRemote(username, password, ip string) {
 		"echo " + password + " | sudo -S ./install.sh\n" +
 		"echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n",
 	))
-	fmt.Println("here")
 	cmd.Stdin = &buffer
 	if isVerbose {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-	} else {
-		cmd.Stdout = nil
-		cmd.Stdin = nil
 	}
-	fmt.Println("no here")
 
 	err := cmd.Run()
 	// err := login.Run()
