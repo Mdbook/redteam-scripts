@@ -39,10 +39,11 @@ func findIPs() []string {
 	}
 	ipRange := getPrefix(localIp) + ".0/24"
 	fmt.Println(ipRange)
-	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".~ipscan_lsshim")
+	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".ipscan_lsshim")
 	cmd.Run()
-	ipFile, _ := os.ReadFile(".~ipscan_lsshim")
+	ipFile, _ := os.ReadFile(".ipscan_lsshim")
 	ipStr := string(ipFile)
+	fmt.Println(ipStr)
 	ipArr := strings.Split(ipStr, "\n")
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
