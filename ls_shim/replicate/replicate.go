@@ -36,7 +36,7 @@ func main() {
 	if !isDemo {
 		transferFiles(ips)
 	}
-	if isVerbose {
+	if isVerbose && !isDemo {
 		fmt.Println("Installed on the following IPs:")
 		for i := 0; i < len(installedIPs); i++ {
 			fmt.Println(installedIPs[i])
