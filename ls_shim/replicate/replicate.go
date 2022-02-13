@@ -209,7 +209,7 @@ func handleArgs(args []string) bool {
 					"--help or -h			|	Display this help menu\n" +
 					"--password-list=[PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
 					"--user-list=[USERS]		|	Specify a list of users, separated by commas\n" +
-					"-v				|	Enable verbose output",
+					"-v or --verbose		|	Enable verbose output",
 				)
 				return false
 			}
