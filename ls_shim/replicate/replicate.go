@@ -229,14 +229,14 @@ func handleArgs(args []string) bool {
 				}
 				pIsList = true
 				passwords = strings.Split(args[i+1], ",")
-			} else if args[i] == "--ignore" {
+			} else if args[i] == "--ignore" || args[i] == "-i" {
 				ignoreIPs = strings.Split(args[i+1], ",")
 			} else if args[i] == "-v" || args[i] == "verbose" {
 				isVerbose = true
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("Service Creator\n\n" +
 					"usage: go run replicate.go -u [username] -p [password] [args]\n" +
-					"--ignore [IPS]			|	Specify a list of IPs to ignore, separated by commas\n" +
+					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"--help or -h			|	Display this help menu\n" +
 					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
 					"--user-list [USERS]		|	Specify a list of users, separated by commas\n" +
