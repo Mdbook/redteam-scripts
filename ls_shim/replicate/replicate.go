@@ -17,10 +17,21 @@ func main() {
 	}
 
 	fmt.Println(systemOS)
-	if strings.Index(systemOS, "debian") != -1 {
-		fmt.Println("hi")
+	if systemOS == "debian" {
 		cmd := exec.Command("apt-get", "install", "sshpass", "-y")
 		cmd.Run()
+	} else if systemOS == "arch" {
+		cmd := exec.Command("pacman", "-S", "sshpass", "-y")
+		cmd.Run()
+	} else if strings.Index(systemOS, "rhel") != -1 {
+		cmd := exec.Command("curl", "http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm", "-o", "sshpass.rpm")
+		cmd.Run()
+		cmd = exec.Command("yum", "localinstall", "sshpass.rpm", "-y")
+		cmd.Run()
+		cmd = exec.Command("rm -f", "sshpass.rpm")
+		cmd.Run()
+	} else if systemOS == "" {
+
 	}
 }
 
