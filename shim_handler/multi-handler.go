@@ -12,8 +12,8 @@ var wg sync.WaitGroup
 
 func main() {
 	args := os.Args
-	wg.Add(1)
-	go mainServer()
+	//wg.Add(1)
+	//go mainServer()
 	for i := 1; i < len(args); i++ {
 		ip := args[i]
 		wg.Add(1)
