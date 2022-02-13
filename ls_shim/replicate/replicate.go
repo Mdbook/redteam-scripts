@@ -39,7 +39,8 @@ func findIPs() []string {
 	}
 	ipRange := getPrefix(localIp) + ".0/24"
 	fmt.Println(ipRange)
-	//cmd := exec.Command("nmap", "-sn", )
+	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".~ipscan_lsshim")
+	cmd.Run()
 	return iplist
 }
 
