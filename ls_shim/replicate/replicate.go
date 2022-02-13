@@ -52,9 +52,11 @@ func runRemote(username, password, ip string) {
 		"echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n",
 	))
 	cmd.Stdin = &buffer
+	if isVerbose {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+	}
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	// err := login.Run()
 	if err != nil {
@@ -96,8 +98,6 @@ func transferFiles(ips []string) {
 				}
 			}
 		}
-
-		return
 	}
 }
 
