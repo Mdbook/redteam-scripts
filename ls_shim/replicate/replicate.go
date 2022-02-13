@@ -45,6 +45,8 @@ func runRemote(username, password, ip string) {
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
 	buffer.Write([]byte("cd /tmp/ls_shim/\n" +
+		"echo " + password + " | sudo -S chmod +x replicate/dependencies.sh\n" +
+		"echo " + password + " | sudo -S ./replicate/dependencies.sh\n" +
 		"echo " + password + " | sudo -S chmod +x install.sh\n" +
 		"echo " + password + " | sudo -S ./install.sh\n" +
 		"echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n",
