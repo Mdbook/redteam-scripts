@@ -250,14 +250,14 @@ func handleArgs(args []string) bool {
 					isVerbose = true
 				} else {
 					fmt.Println("Error: verbose is not compatible with multithreading")
-					return false
+					//return false
 				}
 			} else if args[i] == "-m" || args[i] == "--multi" {
 				if !isVerbose {
 					isThreaded = true
 				} else {
 					fmt.Println("Error: verbose is not compatible with multithreading")
-					return false
+					//return false
 				}
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("ls_shim deploy\n\n" +
