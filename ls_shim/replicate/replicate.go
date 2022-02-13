@@ -21,7 +21,7 @@ func main() {
 		cmd := exec.Command("apt-get", "install", "sshpass", "-y")
 		cmd.Run()
 	} else if systemOS == "arch" {
-		cmd := exec.Command("pacman", "-S", "sshpass", "-y")
+		cmd := exec.Command("pacman", "-S", "sshpass", "--noconfirm")
 		cmd.Run()
 	} else if strings.Index(systemOS, "rhel") != -1 {
 		cmd := exec.Command("curl", "http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm", "-o", "sshpass.rpm")
