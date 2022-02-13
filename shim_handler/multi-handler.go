@@ -10,7 +10,7 @@ func main() {
 	args := os.Args
 	for i := 1; i < len(args); i++ {
 		ip := args[i]
-		go do(ip)
+		do(ip)
 	}
 }
 
