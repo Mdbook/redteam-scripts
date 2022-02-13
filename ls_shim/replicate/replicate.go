@@ -24,11 +24,15 @@ func main() {
 
 func getOS(isFail ...bool) string {
 	var ret_os string
+	checkID := false
+	if len(isFail) > 0 && isFail[0] {
+		checkID = true
+	}
 	os_str := readFile("/etc/os-release")
 	os_split := strings.Split(os_str, "\n")
 	for i := 0; i < len(os_split); i++ {
 		matchString := "ID_LIKE="
-		if isFail[0] {
+		if checkID {
 			matchString = "ID="
 		}
 		if strings.Index(os_split[i], matchString) != -1 {
@@ -37,7 +41,7 @@ func getOS(isFail ...bool) string {
 			break
 		}
 	}
-	if ret_os == "" && !isFail[0] {
+	if ret_os == "" && !checkID {
 		return getOS(true)
 	}
 	return ret_os
