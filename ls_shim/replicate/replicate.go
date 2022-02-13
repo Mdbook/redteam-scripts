@@ -42,6 +42,8 @@ func main() {
 		for i := 0; i < len(installedIPs); i++ {
 			fmt.Println(installedIPs[i])
 		}
+	} else if !isVerbose {
+		fmt.Println("Installations finished.")
 	}
 
 }
