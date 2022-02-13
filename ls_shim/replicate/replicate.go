@@ -249,11 +249,12 @@ func handleArgs(args []string) bool {
 			}
 		}
 	}
-	if isDemo {
+	if isDemo || ((pIsList || pIsSingle) && (uIsList || uIsSingle)) {
 		return true
 	}
 	if !(uIsList || uIsSingle) {
 		fmt.Println("Error: must supply at least one username")
+		return false
 	}
 	if !(pIsList || pIsSingle) {
 		fmt.Println("Error: must supply at least one password")
