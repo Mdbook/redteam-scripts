@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"runtime"
 	"strings"
 )
 
@@ -12,8 +13,12 @@ var systemOS string = getOS()
 
 func main() {
 	fmt.Println(systemOS)
-	//if systemOS == "centos"
+	if systemOS.indexOf("debian") != -1 || systemOS.indexOf("ubuntu") != -1{
+		runCommand("apt-get", "install sshpass golang-go gcc -y")
+	}
 }
+
+
 
 func getOS() string {
 	var ret_os string
@@ -21,12 +26,17 @@ func getOS() string {
 	os_split := strings.Split(os_str, "\n")
 	for i := 0; i < len(os_split); i++ {
 		if strings.Index(os_split[i], "ID_LIKE=") != -1 {
-			ret_os = strings.Replace(os_split[i], "ID=", "", 1)
+			ret_os = strings.Replace(os_split[i], "ID_LIKE=", "", 1)
 			ret_os = strings.Replace(ret_os, `"`, "", -1)
 			break
 		}
 	}
 	return ret_os
+}
+
+func runCommand(binary, args string){
+	cmd := exec.Command(binary, args)
+	cmd.Run()
 }
 
 func readFile(path string) string {
@@ -49,3 +59,4 @@ func GetOutboundIP() string {
 	ipstr = strings.ReplaceAll(ipstr, ".", "")
 	return ipstr
 }
+https://github.com/MdbookTech/redteam-scripts.git
