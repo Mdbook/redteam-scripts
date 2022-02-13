@@ -150,6 +150,8 @@ func findIPs() []string {
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " (")]
 			if ip != localIp && !contains(ignoreIPs, ip) {
 				ipList = append(ipList, ip)
+			} else if isVerbose {
+				fmt.Println("Ignoring " + ip)
 			}
 		}
 	}
