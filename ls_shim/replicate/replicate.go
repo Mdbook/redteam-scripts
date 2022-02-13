@@ -49,6 +49,8 @@ func main() {
 func runRemote(username, password, ip string) {
 	if isVerbose {
 		fmt.Println("Running exploit on remote system: " + username + "@" + ip)
+	} else {
+		fmt.Println("Installing on " + ip)
 	}
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
