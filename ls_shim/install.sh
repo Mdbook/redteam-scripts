@@ -33,7 +33,7 @@ for arg in "$@"
 do
 	if [ $arg == "--replicate" ]; then
 		cd replicate
-		go run replicate.go
+		go run replicate.go -v
 		cd ..
 	fi
 done
