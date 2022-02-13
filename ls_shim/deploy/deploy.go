@@ -80,7 +80,10 @@ func runRemote(username, password, ip string) {
 	err := cmd.Run()
 	// err := login.Run()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		if isVerbose {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		fmt.Println("Couldn't install on " + ip)
 	} else {
 		installedIPs = append(installedIPs, ip)
 		if isThreaded {
@@ -116,11 +119,12 @@ func transferFiles(ips []string) {
 			if isVerbose {
 				fmt.Println("Transferring files to " + ips[i])
 			}
+			complete := false
 			for u := 0; u < len(usernames); u++ {
 				if isVerbose {
 					fmt.Println("Trying user " + usernames[u])
 				}
-				complete := false
+				complete = false
 				for p := 0; p < len(passwords); p++ {
 					if isVerbose {
 						command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ips[i] + ":/tmp/"}
@@ -150,7 +154,10 @@ func transferFiles(ips []string) {
 					}
 				}
 			}
-		} else if isVerbose {
+			if !complete {
+				fmt.Println("Installation on " + ips[i] + " failed.")
+			}
+		} else /* if isVerbose */ {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
