@@ -46,7 +46,8 @@ func runRemote(username, password, ip string) {
 	buffer := bytes.Buffer{}
 	buffer.Write([]byte("cd /tmp/ls_shim/\n" +
 		"echo " + password + " | sudo -S chmod +x install.sh\n" +
-		"echo " + password + " | sudo -S ./install.sh\n",
+		"echo " + password + " | sudo -S ./install.sh\n" +
+		"echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n",
 	))
 	cmd.Stdin = &buffer
 
@@ -114,7 +115,9 @@ func findIPs() []string {
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " ()")]
-			ipList = append(ipList, ip)
+			if ip != localIp {
+				ipList = append(ipList, ip)
+			}
 		}
 	}
 	return ipList
