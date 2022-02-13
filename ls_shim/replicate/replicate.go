@@ -54,6 +54,6 @@ func GetOutboundIP() string {
 
 	ip := localAddr.IP
 	ipstr := ip.String()
-	ipstr = strings.ReplaceAll(ipstr, ".", "")
+	ipstr = strings.Replace(ipstr, ".", "", -1)
 	return ipstr
 }
