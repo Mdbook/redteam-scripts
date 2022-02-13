@@ -35,6 +35,10 @@ func findIPs() []string {
 	var iplist []string
 	localIp := GetOutboundIP()
 	fmt.Println(localIp)
+	newStr := strings.Replace(localIp, ".", "!", 3)
+	index := strings.Index(newStr, "!")
+	prefix := newStr[index+1:]
+	fmt.Println(prefix)
 	return iplist
 }
 
@@ -129,11 +133,8 @@ func GetOutboundIP() string {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
 	ip := localAddr.IP
 	ipstr := ip.String()
-	ipstr = strings.Replace(ipstr, ".", "", -1)
 	return ipstr
 }
