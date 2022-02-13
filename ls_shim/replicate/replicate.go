@@ -16,6 +16,7 @@ var isVerbose bool = false
 var isDemo bool = false
 var usernames []string
 var passwords []string
+var installedIPs []string
 
 func main() {
 	if isVerbose {
@@ -34,6 +35,12 @@ func main() {
 	fmt.Println(ips)
 	if !isDemo {
 		transferFiles(ips)
+	}
+	if isVerbose {
+		fmt.Println("Installed on the following IPs:")
+		for i := 0; i < len(installedIPs); i++ {
+			fmt.Println(installedIPs[i])
+		}
 	}
 
 }
@@ -61,6 +68,7 @@ func runRemote(username, password, ip string) {
 	// err := login.Run()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		installedIPs = append(installedIPs, ip)
 	}
 }
 
