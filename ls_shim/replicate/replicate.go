@@ -34,12 +34,27 @@ func main() {
 func findIPs() []string {
 	var iplist []string
 	localIp := GetOutboundIP()
-	fmt.Println(localIp)
-	newStr := strings.Replace(localIp, ".", "!", 2)
-	index := strings.Index(newStr, ".")
-	prefix := newStr[index+1:]
-	fmt.Println(prefix)
+	if isVerbose {
+		fmt.Println("Local IP is " + localIp)
+	}
+	ipRange := getPrefix(localIp) + ".0/24"
+	fmt.Println(ipRange)
+	//cmd := exec.Command("nmap", "-sn", )
 	return iplist
+}
+
+func getSuffix(ip string) string {
+	newStr := strings.Replace(ip, ".", "!", 2)
+	index := strings.Index(newStr, ".")
+	suffix := newStr[index+1:]
+	suffix = suffix + "/24"
+	return suffix
+}
+func getPrefix(ip string) string {
+	newStr := strings.Replace(ip, ".", "!", 2)
+	index := strings.Index(newStr, ".")
+	prefix := strings.Replace(newStr[:index], "!", ".", 2)
+	return prefix
 }
 
 func getOS(isFail ...bool) string {
