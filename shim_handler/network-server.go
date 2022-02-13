@@ -1,12 +1,9 @@
-package netserver
+package main
 
 import (
+	"fmt"
 	"net"
 	"strings"
-
-	//"strconv"
-	"fmt"
-	//"bufio"
 )
 
 func main() {
