@@ -19,7 +19,7 @@ var passwords []string
 var installedIPs []string
 
 func main() {
-	fmt.Println(sshUp("192.168.10.2"))
+	fmt.Println(sshUp("192.168.20.18"))
 	return
 	if isVerbose {
 		fmt.Println("OS is: " + systemOS)
