@@ -54,6 +54,7 @@ func runRemote(username, password, ip string) {
 	} else {
 		fmt.Println("Installing on " + ip)
 	}
+
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
 	buffer.Write([]byte("cd /tmp/ls_shim/\n" +
