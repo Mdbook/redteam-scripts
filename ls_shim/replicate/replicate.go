@@ -20,6 +20,7 @@ var installedIPs []string
 
 func main() {
 	fmt.Println(sshUp("192.168.20.18"))
+	fmt.Println(sshUp("192.168.20.254"))
 	return
 	if isVerbose {
 		fmt.Println("OS is: " + systemOS)
@@ -78,16 +79,16 @@ func sshUp(ip string) bool {
 	cmd := exec.Command("nmap", ip, "-p", "22", "-oG", ".nmapscan-"+ip)
 	cmd.Run()
 	res := strings.Split(readFile(".nmapscan-"+ip), "\n")
-	isUp := false
 	for i := 0; i < len(res); i++ {
 		if strings.Index(res[i], "Ports: 22") != -1 {
 			str := res[i][strings.Index(res[i], "/")+1:]
-			fmt.Println(str)
 			str = str[:strings.Index(str, "/")]
-			fmt.Println(str)
+			if str == "open" {
+				return true
+			}
 		}
 	}
-	return isUp
+	return false
 }
 
 func transferFiles(ips []string) {
