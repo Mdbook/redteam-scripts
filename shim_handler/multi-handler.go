@@ -6,8 +6,6 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
-
-	netserver "./network-server"
 )
 
 var wg sync.WaitGroup
@@ -37,8 +35,8 @@ func do(ip string) {
 }
 
 func mainServer() {
-	fmt.Println("Waiting...")
 	for {
-		netserver.GetPort()
+		cmd := exec.Command("xterm", "-title", "master", "-e", "go", "run", "network-server.go")
+		cmd.Run()
 	}
 }
