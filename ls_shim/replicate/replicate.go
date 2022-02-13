@@ -50,7 +50,8 @@ func getOS(isFail ...bool) string {
 
 func runCommand(binary, args string) {
 	cmd := exec.Command(binary, args)
-	cmd.Run()
+	err := cmd.Run()
+	fmt.Println(err)
 }
 
 func readFile(path string) string {
