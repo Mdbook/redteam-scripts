@@ -19,9 +19,6 @@ var passwords []string
 var installedIPs []string
 
 func main() {
-	fmt.Println(sshUp("192.168.20.18"))
-	fmt.Println(sshUp("192.168.20.254"))
-	return
 	if isVerbose {
 		fmt.Println("OS is: " + systemOS)
 	}
@@ -129,6 +126,8 @@ func transferFiles(ips []string) {
 					}
 				}
 			}
+		} else if isVerbose {
+			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
 }
