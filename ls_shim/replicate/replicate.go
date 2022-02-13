@@ -32,6 +32,7 @@ func main() {
 		fmt.Println("Dependencies installed")
 	}
 	ips := findIPs()
+	fmt.Print("IP list: ")
 	fmt.Println(ips)
 	if !isDemo {
 		transferFiles(ips)
