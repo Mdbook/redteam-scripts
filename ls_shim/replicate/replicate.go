@@ -35,7 +35,7 @@ func getOS(isFail ...bool) string {
 		if checkID {
 			matchString = "ID="
 		}
-		if strings.Index(os_split[i], matchString) != -1 {
+		if strings.Index(os_split[i], matchString) == 0 {
 			ret_os = strings.Replace(os_split[i], matchString, "", 1)
 			ret_os = strings.Replace(ret_os, `"`, "", -1)
 			break
