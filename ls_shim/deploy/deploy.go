@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 )
 
 var systemOS string = getOS()
@@ -19,6 +20,7 @@ var usernames []string
 var passwords []string
 var installedIPs []string
 var ignoreIPs []string
+var wg sync.WaitGroup
 
 func main() {
 	args := os.Args
@@ -81,7 +83,10 @@ func runRemote(username, password, ip string) {
 		fmt.Fprintln(os.Stderr, err)
 	} else {
 		installedIPs = append(installedIPs, ip)
-		fmt.Println("Finished installing on " + ip)
+		if isThreaded {
+			fmt.Println("Finished installing on " + ip)
+			wg.Done()
+		}
 	}
 }
 
@@ -128,6 +133,7 @@ func transferFiles(ips []string) {
 							fmt.Println("Files sent")
 						}
 						if isThreaded {
+							wg.Add(1)
 							go runRemote(usernames[u], passwords[p], ips[i])
 						} else {
 							runRemote(usernames[u], passwords[p], ips[i])
@@ -148,6 +154,10 @@ func transferFiles(ips []string) {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
+	if isThreaded {
+		wg.Wait()
+	}
+
 }
 
 func findIPs() []string {
