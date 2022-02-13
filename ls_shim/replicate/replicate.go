@@ -253,6 +253,9 @@ func handleArgs(args []string) bool {
 			return false
 		}
 	}
+	if isDemo {
+		return true
+	}
 	fmt.Println("Error: not enough arguments supplied. Exiting...")
 	return false
 }
