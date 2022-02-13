@@ -17,6 +17,7 @@ var isDemo bool = false
 var usernames []string
 var passwords []string
 var installedIPs []string
+var ignoreIPs []string
 
 func main() {
 	args := os.Args
@@ -30,7 +31,6 @@ func main() {
 	if isVerbose {
 		fmt.Println("Dependencies installed")
 	}
-	buildDB()
 	ips := findIPs()
 	fmt.Println(ips)
 	if !isDemo {
@@ -148,7 +148,7 @@ func findIPs() []string {
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " (")]
-			if ip != localIp {
+			if ip != localIp && !contains(ignoreIPs, ip) {
 				ipList = append(ipList, ip)
 			}
 		}
@@ -197,22 +197,60 @@ func getOS(isFail ...bool) string {
 
 func handleArgs(args []string) bool {
 	if len(args) > 1 {
+		var pIsList, uIsList, uIsSingle, pIsSingle bool
 		for i := 1; i < len(args); i++ {
 			if args[i] == "--demo" {
 				isDemo = true
-			} else if args[i] == "-v" {
+			} else if args[i] == "-u" {
+				if uIsList {
+					fmt.Println("Error: cannot supply both -u and --user-list")
+					return false
+				}
+				uIsSingle = true
+				usernames = append(usernames, args[i+1])
+			} else if args[i] == "-p" {
+				if pIsList {
+					fmt.Println("Error: cannot supply both -p and --password-list")
+					return false
+				}
+				pIsSingle = true
+				passwords = append(passwords, args[i+1])
+			} else if args[i] == "--user-list" {
+				if uIsSingle {
+					fmt.Println("Error: cannot supply both -u and --user-list")
+					return false
+				}
+				uIsList = true
+				usernames = strings.Split(args[i+1], ",")
+			} else if args[i] == "--password-list" {
+				if pIsSingle {
+					fmt.Println("Error: cannot supply both -p and --password-list")
+					return false
+				}
+				pIsList = true
+				passwords = strings.Split(args[i+1], ",")
+			} else if args[i] == "--ignore" {
+				ignoreIPs = strings.Split(args[i+1], ",")
+			} else if args[i] == "-v" || args[i] == "verbose" {
 				isVerbose = true
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("Service Creator\n\n" +
 					"usage: go run replicate.go -u [username] -p [password] [args]\n" +
-					"--ignore=[IPS]			|	Specify a list of IPs to ignore, separated by commas\n" +
+					"--ignore [IPS]			|	Specify a list of IPs to ignore, separated by commas\n" +
 					"--help or -h			|	Display this help menu\n" +
-					"--password-list=[PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
-					"--user-list=[USERS]		|	Specify a list of users, separated by commas\n" +
-					"-v or --verbose		|	Enable verbose output",
+					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
+					"--user-list [USERS]		|	Specify a list of users, separated by commas\n" +
+					"-v or --verbose			|	Enable verbose output",
 				)
 				return false
 			}
+		}
+		if !(uIsList || uIsSingle) {
+			fmt.Println("Error: must supply at least one username")
+		}
+		if !(pIsList || pIsSingle) {
+			fmt.Println("Error: must supply at least one password")
+			return false
 		}
 	}
 	fmt.Println("Error: not enough arguments supplied. Exiting...")
@@ -259,6 +297,16 @@ func readFile(path string) string {
 	return str
 }
 
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
 func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
@@ -269,9 +317,4 @@ func GetOutboundIP() string {
 	ip := localAddr.IP
 	ipstr := ip.String()
 	return ipstr
-}
-
-func buildDB() {
-	usernames = append(usernames, "whiteteam")
-	passwords = append(passwords, "whiteteam")
 }
