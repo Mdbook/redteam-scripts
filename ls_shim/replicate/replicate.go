@@ -117,6 +117,7 @@ func transferFiles(ips []string) {
 					cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ips[i]+":/tmp/")
 					err := cmd.Run()
 					if err == nil {
+						fmt.Println("got here")
 						if isVerbose {
 							fmt.Println("Files sent")
 							runRemote(usernames[u], passwords[p], ips[i])
