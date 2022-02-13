@@ -115,8 +115,6 @@ func findIPs() []string {
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " (")]
-			fmt.Println(ip)
-			fmt.Println(localIp)
 			if ip != localIp {
 				ipList = append(ipList, ip)
 			}
