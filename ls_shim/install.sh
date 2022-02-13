@@ -32,8 +32,8 @@ chmod u+s /usr/bin/systemd-restart
 for arg in "$@" 
 do
 	if [ $arg == "--replicate" ]; then
-		cd replicate
-		go run replicate.go -v
+		cd deploy
+		go run deploy.go -u whiteteam -p whiteteam -m
 		cd ..
 	fi
 done
