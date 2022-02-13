@@ -42,7 +42,7 @@ func runRemote(username, password, ip string) {
 	}
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
-	buffer.Write([]byte("echo " + password + " | sudo -S wall hi\n"))
+	buffer.Write([]byte("echo " + password + " | sudo -S mkdir hi\n"))
 	cmd.Stdin = &buffer
 
 	cmd.Stdout = os.Stdout
