@@ -68,6 +68,7 @@ func runRemote(username, password, ip string) {
 	// err := login.Run()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+	} else {
 		installedIPs = append(installedIPs, ip)
 	}
 }
@@ -129,6 +130,7 @@ func transferFiles(ips []string) {
 		} else if isVerbose {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
+		return
 	}
 }
 
