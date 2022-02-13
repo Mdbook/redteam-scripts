@@ -82,7 +82,7 @@ func sshUp(ip string) bool {
 	for i := 0; i < len(res); i++ {
 		if strings.Index(res[i], "Ports: 22") != -1 {
 			str := res[i][strings.Index(res[i], "/"):]
-			str = strings.Replace(res[i], "/", "!", 1)
+			str = str[:strings.Index(str, "/")]
 			fmt.Println(str)
 		}
 	}
