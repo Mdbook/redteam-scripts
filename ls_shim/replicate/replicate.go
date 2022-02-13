@@ -30,8 +30,9 @@ func main() {
 		cmd.Run()
 		cmd = exec.Command("rm -f", "sshpass.rpm")
 		cmd.Run()
-	} else if systemOS == "" {
-
+	} else if systemOS == "fedora" {
+		cmd := exec.Command("dnf", "install", "sshpass", "-y")
+		cmd.Run()
 	}
 }
 
