@@ -236,11 +236,11 @@ func handleArgs(args []string) bool {
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("Service Creator\n\n" +
 					"usage: go run replicate.go -u [username] -p [password] [args]\n" +
+					"-v or --verbose			|	Enable verbose output\n" +
 					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"--help or -h			|	Display this help menu\n" +
 					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
-					"--user-list [USERS]		|	Specify a list of users, separated by commas\n" +
-					"-v or --verbose			|	Enable verbose output",
+					"--user-list [USERS]		|	Specify a list of users, separated by commas",
 				)
 				return false
 			}
