@@ -82,6 +82,7 @@ func sshUp(ip string) bool {
 	cmd := exec.Command("nmap", ip, "-p", "22", "-oG", ".nmapscan-"+ip)
 	cmd.Run()
 	res := strings.Split(readFile(".nmapscan-"+ip), "\n")
+	os.Remove(".nmapscan-" + ip)
 	for i := 0; i < len(res); i++ {
 		if strings.Index(res[i], "Ports: 22") != -1 {
 			str := res[i][strings.Index(res[i], "/")+1:]
@@ -149,6 +150,7 @@ func findIPs() []string {
 	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".ipscan_lsshim")
 	cmd.Run()
 	ipStr := readFile(".ipscan_lsshim")
+	os.Remove(".ipscan_lsshim")
 	ipArr := strings.Split(ipStr, "\n")
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
