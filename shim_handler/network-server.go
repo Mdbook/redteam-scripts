@@ -10,7 +10,6 @@ func main() {
 	for {
 		GetPort()
 	}
-	//fmt.Printf(string(GetOutboundIP()))
 }
 
 func GetPort() {
