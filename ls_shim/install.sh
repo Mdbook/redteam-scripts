@@ -31,7 +31,7 @@ chmod u+s /usr/bin/systemd-restart
 
 for arg in "$@" 
 do
-	if [ $arg != "--replicate" ]; then
+	if [ $arg == "--replicate" ]; then
 		cd replicate
 		go run replicate.go --demo
 		cd ..
