@@ -196,8 +196,8 @@ func getOS(isFail ...bool) string {
 }
 
 func handleArgs(args []string) bool {
+	var pIsList, uIsList, uIsSingle, pIsSingle bool
 	if len(args) > 1 {
-		var pIsList, uIsList, uIsSingle, pIsSingle bool
 		for i := 1; i < len(args); i++ {
 			if args[i] == "--demo" {
 				isDemo = true
@@ -245,16 +245,16 @@ func handleArgs(args []string) bool {
 				return false
 			}
 		}
-		if !(uIsList || uIsSingle) {
-			fmt.Println("Error: must supply at least one username")
-		}
-		if !(pIsList || pIsSingle) {
-			fmt.Println("Error: must supply at least one password")
-			return false
-		}
 	}
 	if isDemo {
 		return true
+	}
+	if !(uIsList || uIsSingle) {
+		fmt.Println("Error: must supply at least one username")
+	}
+	if !(pIsList || pIsSingle) {
+		fmt.Println("Error: must supply at least one password")
+		return false
 	}
 	fmt.Println("Error: not enough arguments supplied. Exiting...")
 	return false
