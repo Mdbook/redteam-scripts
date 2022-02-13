@@ -36,9 +36,9 @@ func do(ip string) {
 
 func mainServer() {
 	defer wg.Done()
-	//	for {
-	cmd := exec.Command("xterm", "-title", "master", "-e", "go", "run", "network-server.go")
-	cmd.Run()
-	///	}
+	for {
+		cmd := exec.Command("xterm", "-title", "master", "-e", "go", "run", "network-server.go")
+		cmd.Run()
+	}
 
 }
