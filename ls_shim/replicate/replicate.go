@@ -130,7 +130,6 @@ func transferFiles(ips []string) {
 		} else if isVerbose {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
-		return
 	}
 }
 
