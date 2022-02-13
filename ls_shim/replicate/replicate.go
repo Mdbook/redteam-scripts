@@ -14,7 +14,7 @@ var systemOS string = getOS()
 func main() {
 	fmt.Println(systemOS)
 	if strings.Index(systemOS, "debian") != -1 || strings.Index(systemOS, "ubuntu") != -1 {
-		runCommand("apt-get", "install sshpass golang-go gcc -y")
+		runCommand("apt-get", "install sshpass -y")
 	}
 }
 
