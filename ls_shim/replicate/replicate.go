@@ -12,22 +12,33 @@ import (
 var systemOS string = getOS()
 
 func main() {
+	if systemOS == "" {
+
+	}
+
 	fmt.Println(systemOS)
 	if strings.Index(systemOS, "debian") != -1 || strings.Index(systemOS, "ubuntu") != -1 {
 		runCommand("apt-get", "install sshpass -y")
 	}
 }
 
-func getOS() string {
+func getOS(isFail ...bool) string {
 	var ret_os string
 	os_str := readFile("/etc/os-release")
 	os_split := strings.Split(os_str, "\n")
 	for i := 0; i < len(os_split); i++ {
-		if strings.Index(os_split[i], "ID_LIKE=") != -1 {
-			ret_os = strings.Replace(os_split[i], "ID_LIKE=", "", 1)
+		matchString := "ID_LIKE="
+		if isFail[0] {
+			matchString = "ID="
+		}
+		if strings.Index(os_split[i], matchString) != -1 {
+			ret_os = strings.Replace(os_split[i], matchString, "", 1)
 			ret_os = strings.Replace(ret_os, `"`, "", -1)
 			break
 		}
+	}
+	if ret_os == "" && !isFail[0] {
+		return getOS(true)
 	}
 	return ret_os
 }
