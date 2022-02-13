@@ -19,12 +19,12 @@ var passwords []string
 var installedIPs []string
 
 func main() {
-	if isVerbose {
-		fmt.Println("OS is: " + systemOS)
-	}
 	args := os.Args
 	if !handleArgs(args) {
 		return
+	}
+	if isVerbose {
+		fmt.Println("OS is: " + systemOS)
 	}
 	installDependencies()
 	if isVerbose {
@@ -204,15 +204,19 @@ func handleArgs(args []string) bool {
 				isVerbose = true
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("Service Creator\n\n" +
-					"--demo		|	Lists generated services, but does not install them\n" +
-					"-n [num]	|	Generate n services (default: 32)\n" +
+					"usage: go run replicate.go -u [username] -p [password] [args]\n" +
+					"--user-list=[USERS]		|	Specify a list of users, separated by commas\n" +
+					"--password-list=[PASSWORDS]		|	Specify a list of passwords, separated by commas\n" +
+					"-v		|	Enable verbose output\n" +
+					"--ignore=[IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"--help or -h	|	Display this help menu",
 				)
 				return false
 			}
 		}
 	}
-	return true
+	fmt.Println("Error: not enough arguments supplied. Exiting...")
+	return false
 }
 
 func installDependencies() {
