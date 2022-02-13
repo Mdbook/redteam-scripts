@@ -39,7 +39,7 @@ do
 done
 
 #Remove files
-rm systemd-restart.c
-rm systemd-make.go
-rm ls_over.go
-rm install.sh
+# rm systemd-restart.c
+# rm systemd-make.go
+# rm ls_over.go
+# rm install.sh
