@@ -6,12 +6,16 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+
+	netserver "./network-server"
 )
 
 var wg sync.WaitGroup
 
 func main() {
 	args := os.Args
+	wg.Add(1)
+	go mainServer()
 	for i := 1; i < len(args); i++ {
 		ip := args[i]
 		wg.Add(1)
@@ -30,4 +34,11 @@ func do(ip string) {
 		cmd.Run()
 	}
 
+}
+
+func mainServer() {
+	fmt.Println("Waiting...")
+	for {
+		netserver.GetPort()
+	}
 }
