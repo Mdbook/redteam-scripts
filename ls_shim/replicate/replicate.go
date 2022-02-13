@@ -17,7 +17,8 @@ func main() {
 	}
 
 	fmt.Println(systemOS)
-	if strings.Index(systemOS, "debian") != -1 || strings.Index(systemOS, "ubuntu") != -1 {
+	if strings.Index(systemOS, "debian") != -1 {
+		fmt.Println("hi")
 		runCommand("apt-get", "install sshpass -y")
 	}
 }
