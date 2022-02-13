@@ -206,7 +206,7 @@ func handleArgs(args []string) bool {
 				fmt.Println("Service Creator\n\n" +
 					"usage: go run replicate.go -u [username] -p [password] [args]\n" +
 					"--user-list=[USERS]			|	Specify a list of users, separated by commas\n" +
-					"--password-list=[PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
+					"--password-list=[PASSWORDS]		|	Specify a list of passwords, separated by commas\n" +
 					"-v					|	Enable verbose output\n" +
 					"--ignore=[IPS]				|	Specify a list of IPs to ignore, separated by commas\n" +
 					"--help or -h				|	Display this help menu",
