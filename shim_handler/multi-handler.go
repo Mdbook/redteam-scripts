@@ -40,5 +40,4 @@ func mainServer() {
 		cmd := exec.Command("xterm", "-title", "master", "-e", "go", "run", "network-server.go")
 		cmd.Run()
 	}
-
 }
