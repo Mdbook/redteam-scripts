@@ -12,13 +12,13 @@ var wg sync.WaitGroup
 
 func main() {
 	args := os.Args
-	//wg.Add(1)
-	//go mainServer()
 	for i := 1; i < len(args); i++ {
 		ip := args[i]
 		wg.Add(1)
 		go do(ip)
 	}
+	wg.Add(1)
+	go mainServer()
 	wg.Wait()
 	fmt.Println("Finished!")
 }
@@ -35,8 +35,10 @@ func do(ip string) {
 }
 
 func mainServer() {
+	defer wg.Done()
 	for {
 		cmd := exec.Command("xterm", "-title", "master", "-e", "go", "run", "network-server.go")
 		cmd.Run()
 	}
+
 }
