@@ -251,6 +251,7 @@ func handleArgs(args []string) bool {
 				} else {
 					fmt.Println("Error: verbose is not compatible with multithreading")
 					//return false
+					isVerbose = true
 				}
 			} else if args[i] == "-m" || args[i] == "--multi" {
 				if !isVerbose {
