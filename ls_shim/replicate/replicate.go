@@ -47,8 +47,8 @@ func findIPs() []string {
 	ipArr := strings.Split(ipStr, "\n")
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
-			fmt.Println(ipArr[i])
-			fmt.Println(ipArr[i][strings.Index(ipArr[i], "Host: ")+6:])
+			//fmt.Println(ipArr[i])
+			fmt.Println(ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], "()")])
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " () ")]
 			fmt.Println(ip)
 		}
