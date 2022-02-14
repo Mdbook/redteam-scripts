@@ -98,7 +98,6 @@ func runRemote(username, password, ip string) {
 		installedIPs = append(installedIPs, ip)
 		if isThreaded {
 			fmt.Println("Finished installing on " + ip)
-			//wg.Done()
 		}
 	}
 }
@@ -134,7 +133,7 @@ func transferFilesRunner(ips []string) {
 				transferFiles(ips[i])
 			}
 
-		} else /* if isVerbose */ {
+		} else {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
@@ -165,12 +164,7 @@ func transferFiles(ip string) {
 				if isVerbose {
 					fmt.Println("Files sent")
 				}
-				if /*isThreaded*/ false {
-					//wg.Add(1)
-					//go runRemote(usernames[u], passwords[p], ip)
-				} else {
-					runRemote(usernames[u], passwords[p], ip)
-				}
+				runRemote(usernames[u], passwords[p], ip)
 				complete = true
 				break
 			}
