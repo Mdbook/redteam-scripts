@@ -13,6 +13,9 @@ at least one of each payload, with the exception of the `sleep` payload.
 
 To view information about a specific payload, view the readme in its directory.
 
+To deploy this project to an entire network of devices at the same time,
+please view the readme in the `deploy` subfolder.
+
 
 ## Dependencies
 
