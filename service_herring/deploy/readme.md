@@ -34,5 +34,8 @@ usage: go run deploy.go -u [username] -p [password] [args]
 --help or -h                    |       Display this help menu
 --password-list [PASSWORDS]     |       Specify a list of passwords, separated by commas
 --user-list [USERS]             |       Specify a list of users, separated by commas
-
 ```
+## Using Target
+
+Using the `-t` or `--target` option, you can specify this script to first install on a specified target,
+and have that target deploy service_herring to every device on its subnet. Please use with caution!
