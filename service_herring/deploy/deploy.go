@@ -98,7 +98,7 @@ func runRemote(username, password, ip string) {
 		installedIPs = append(installedIPs, ip)
 		if isThreaded {
 			fmt.Println("Finished installing on " + ip)
-			wg.Done()
+			//wg.Done()
 		}
 	}
 }
@@ -127,6 +127,7 @@ func transferFilesRunner(ips []string) {
 		}
 		if sshUp(ips[i]) {
 			if isThreaded {
+				fmt.Println("Checking users on " + ips[i] + " (DETACHED)")
 				wg.Add(1)
 				go transferFiles(ips[i])
 			} else {
@@ -165,8 +166,8 @@ func transferFiles(ip string) {
 					fmt.Println("Files sent")
 				}
 				if /*isThreaded*/ false {
-					wg.Add(1)
-					go runRemote(usernames[u], passwords[p], ip)
+					//wg.Add(1)
+					//go runRemote(usernames[u], passwords[p], ip)
 				} else {
 					runRemote(usernames[u], passwords[p], ip)
 				}
