@@ -7,7 +7,6 @@ elif [ `which pacman` ]; then
    pacman -S go --noconfirm
 elif [ `which dnf` ]; then
    dnf install golang -y
-   dnf install openssl -y
 else
    echo "Unknown OS"
 fi
