@@ -310,7 +310,7 @@ func handleArgs(args []string) bool {
 					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"-m or --multi			|	Run in multithreaded mode. Not compatible with verbose.\n" +
 					"-t [IP] or --target [IP]	|	Install on a remote machine & deploy from it\n" +
-					"							|	instead of the host machine. Not compatible with -i\n" +
+					"			|	instead of the host machine. Not compatible with -i\n" +
 					"--help or -h			|	Display this help menu\n" +
 					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
 					"--user-list [USERS]		|	Specify a list of users, separated by commas",
