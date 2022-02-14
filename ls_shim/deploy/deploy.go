@@ -284,7 +284,7 @@ func handleArgs(args []string) bool {
 				}
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("ls_shim deploy\n\n" +
-					"usage: go run replicate.go -u [username] -p [password] [args]\n" +
+					"usage: go run deploy.go -u [username] -p [password] [args]\n" +
 					"-v or --verbose			|	Enable verbose output\n" +
 					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"-m or --multi			|	Run in multithreaded mode. Not compatible with verbose.\n" +
