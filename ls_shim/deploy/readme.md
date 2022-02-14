@@ -26,11 +26,13 @@ pacman -S go
 
 ```
 usage: go run deploy.go -u [username] -p [password] [args]
-
 -v or --verbose                 |       Enable verbose output
 -i [IPs] or --ignore [IPS]      |       Specify a list of IPs to ignore, separated by commas
 -m or --multi                   |       Run in multithreaded mode. Not compatible with verbose.
+-t [IP] or --target [IP]        |       Install on a remote machine & deploy from it
+                                |       instead of the host machine. Not compatible with -i
 --help or -h                    |       Display this help menu
 --password-list [PASSWORDS]     |       Specify a list of passwords, separated by commas
 --user-list [USERS]             |       Specify a list of users, separated by commas
+
 ```
