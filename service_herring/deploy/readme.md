@@ -8,7 +8,7 @@ specified by command line arguments.
 
 To run this project, you will need to have `golang` installed.
 You can run `dependencies.sh` to install this automatically, or
-run the commands below based on your operating system:
+run the commands below based on your distro:
 
 Ubuntu/Debian
 ```bash
