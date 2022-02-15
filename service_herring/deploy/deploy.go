@@ -258,6 +258,7 @@ func getPrefix(ip string) string {
 func getOS(isFail ...bool) string {
 	var ret_os string
 	checkID := false
+	//Nifty little code to let us call getOS with or without a parameter
 	if len(isFail) > 0 && isFail[0] {
 		checkID = true
 	}
