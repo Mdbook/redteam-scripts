@@ -1,5 +1,5 @@
 //Michael Burke
-//Simple tcp bind shell pauload
+//Simple tcp bind shell payload
 package main
 
 import (
