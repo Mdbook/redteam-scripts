@@ -28,6 +28,7 @@ type servicefile struct {
 }
 
 func (this service) String() string {
+	//Tostring function for service
 	str := "Name: " + this.name +
 		"\nDescription: " + this.description +
 		"\nPath: " + this.path +
@@ -45,8 +46,11 @@ var verbose bool = false
 func main() {
 	args := os.Args
 	isDemo = false
+	//Build global variables
 	buildDB()
+	//Set numServices default value
 	numServices := len(names)
+	//Check args
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
 			if args[i] == "--demo" {
@@ -65,13 +69,16 @@ func main() {
 			}
 		}
 	}
+	//Generate services
 	services := buildServices(numServices)
+	//Check to make sure there's at least one of each service
 	services = checkServices(services)
 	for i := 0; i < len(services); i++ {
 		fmt.Println(services[i].String())
 		fmt.Println()
 	}
 	if !isDemo {
+		//Build service files & install them
 		servicefiles := buildFiles(services)
 		createServices(servicefiles)
 		fmt.Println("Services installed!")
@@ -89,7 +96,7 @@ func checkServices(services []service) []service {
 		"user-creator",
 		"shell",
 	}
-
+	//Iterate through all the services and note which payloads exist
 	for i := 0; i < len(services); i++ {
 		curService := services[i]
 		index := findIndex(types, curService.payload)
@@ -98,10 +105,13 @@ func checkServices(services []service) []service {
 			types, _ = remove(types, index)
 		}
 	}
+	//See if any payloads are missing
 	if len(types) != 0 {
 		for i := 0; i < len(types); i++ {
 			fmt.Println("Caught " + types[i])
 			serviceIndex := -1
+			//If there are payloads missing, replace one of the
+			//sleep payloads with the missing payload
 			for e := 0; e < len(services); e++ {
 				if services[e].payload == "sleep" {
 					serviceIndex = e
@@ -144,15 +154,18 @@ func createServices(files []servicefile) {
 }
 
 func copyFile(src, dst string) error {
+	//Open the file
 	in, err := os.Open(src)
 	if err != nil {
 		return err
 	}
 	defer in.Close()
+	//Create the new file
 	out, err := os.Create(dst)
 	if err != nil {
 		return err
 	}
+	//Close both files
 	defer out.Close()
 	_, err = io.Copy(out, in)
 	if err != nil {
@@ -166,6 +179,7 @@ func createFile(path, contents string) {
 }
 
 func buildFiles(services []service) []servicefile {
+	//TODO continue here
 	var servicefiles []servicefile
 	dat, _ := ioutil.ReadFile("template.service")
 	template := string(dat)
