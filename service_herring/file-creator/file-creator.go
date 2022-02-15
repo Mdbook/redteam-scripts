@@ -1,3 +1,5 @@
+//Michael Burke
+//Payload to randomly create files throughout the filesystem
 package main
 
 import (

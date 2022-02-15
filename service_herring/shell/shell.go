@@ -1,3 +1,5 @@
+//Michael Burke
+//Simple tcp bind shell pauload
 package main
 
 import (

@@ -1,5 +1,5 @@
 // Michael Burke
-
+//Payload to fetch and run commands
 package main
 
 import (

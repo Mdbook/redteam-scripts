@@ -1,3 +1,5 @@
+//Michael Burke
+//Payload to send random messages to the user at random intervals
 package main
 
 import (
