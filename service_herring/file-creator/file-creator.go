@@ -24,7 +24,7 @@ var isVerbose bool = false
 func main() {
 	args := os.Args
 	isDemo = false
-	//Build initial variables
+	//Build global variables
 	buildDB()
 	//Check args
 	if len(args) > 1 {
@@ -184,7 +184,7 @@ func random(n int) int {
 }
 
 func buildDB() {
-	//Build initial variables
+	//Build global variables
 	numFiles = 3
 	paths = []string{
 		"/etc/*",
