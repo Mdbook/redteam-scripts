@@ -13,7 +13,9 @@ var printFirst bool = false
 var isVerbose bool = false
 
 func main() {
+	//Build global variables
 	buildMessages()
+	//Check args
 	args := os.Args
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
@@ -32,12 +34,14 @@ func do() {
 	if printFirst {
 		sendMessage()
 	}
+	//Delay for a random amount of time, then send message
 	delay := (random(19) + 1) * 60
 	if isVerbose {
 		fmt.Printf("Sleeping for %d Minutes\n", delay/60)
 	}
 	time.Sleep(time.Duration(delay) * time.Second)
 	sendMessage()
+	//Repeat
 	do()
 }
 
@@ -45,8 +49,10 @@ func sendMessage() {
 	if isVerbose {
 		fmt.Printf("Sending Message\n")
 	}
+	//Pick random message
 	index := random(len(messages) - 1)
 	command := messages[index]
+	//Wall the message to send it to all users
 	cmd := exec.Command("wall", command)
 	cmd.Run()
 	fmt.Println("Message sent")
@@ -58,6 +64,7 @@ func random(n int) int {
 }
 
 func buildMessages() {
+	//Build global variables
 	messages = []string{
 		"I see you....",
 		"Whatcha doin there?",
