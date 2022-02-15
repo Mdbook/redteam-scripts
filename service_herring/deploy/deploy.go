@@ -210,19 +210,22 @@ func transferFiles(ip string) {
 
 func findIPs() []string {
 	//Find all valid IPs on the 0/24 subnet
-	//TODO continue here
 	var ipList []string
 	localIp := GetOutboundIP()
 	if isVerbose {
 		fmt.Println("Local IP is " + localIp)
 	}
+	//Get the 0/24 subnet
+	//TODO: add option to specify subnet?
 	ipRange := getPrefix(localIp) + ".0/24"
 	fmt.Println(ipRange)
+	//Ping scan every IP in the subnet and store which ones repond in greppable format
 	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".ipscan_serviceherring")
 	cmd.Run()
 	ipStr := readFile(".ipscan_serviceherring")
 	os.Remove(".ipscan_serviceherring")
 	ipArr := strings.Split(ipStr, "\n")
+	//Go through the file and store every valid target IP
 	for i := 0; i < len(ipArr); i++ {
 		if strings.Index(ipArr[i], "Host: ") != -1 {
 			ip := ipArr[i][strings.Index(ipArr[i], "Host: ")+6 : strings.Index(ipArr[i], " (")]
@@ -256,9 +259,11 @@ func getOS(isFail ...bool) string {
 	if len(isFail) > 0 && isFail[0] {
 		checkID = true
 	}
+	//Read /etc/os-release to find what distro the host is running on
 	os_str := readFile("/etc/os-release")
 	os_split := strings.Split(os_str, "\n")
 	for i := 0; i < len(os_split); i++ {
+		//Child distros will have ID_LIKE instead of ID. Check for both
 		matchString := "ID_LIKE="
 		if checkID {
 			matchString = "ID="
@@ -270,15 +275,18 @@ func getOS(isFail ...bool) string {
 		}
 	}
 	if ret_os == "" && !checkID {
+		// If ID_LIKE wasn't found, then seach for ID= instead
 		return getOS(true)
 	}
 	return ret_os
 }
 
 func handleArgs(args []string) bool {
+	//Variables for whether usernames & passwords are lists or not
 	var pIsList, uIsList, uIsSingle, pIsSingle bool
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
+			//TODO: Add checking for if args[i+1] exists
 			if args[i] == "--demo" {
 				isDemo = true
 			} else if args[i] == "-u" {
@@ -353,6 +361,8 @@ func handleArgs(args []string) bool {
 		}
 	}
 	if isDemo || ((pIsList || pIsSingle) && (uIsList || uIsSingle)) {
+		//If this is a demo OR if at least one password & username
+		//were provided, arguments are valid
 		return true
 	}
 	if !(uIsList || uIsSingle) {
@@ -368,6 +378,9 @@ func handleArgs(args []string) bool {
 }
 
 func installDependencies() {
+	//We need to install both sshpass and nmap,
+	//nmap for scanning ports and sshpass
+	//for using ssh with a plaintext password
 	if systemOS == "debian" {
 		cmd := exec.Command("apt-get", "install", "sshpass", "-y")
 		cmd.Run()
@@ -379,6 +392,8 @@ func installDependencies() {
 		cmd = exec.Command("pacman", "-S", "nmap", "--noconfirm")
 		cmd.Run()
 	} else if strings.Index(systemOS, "rhel") != -1 {
+		//sshpass doesn't have a repo on centOS as far as I can tell, so
+		//we need to install it from a rpm package instead
 		cmd := exec.Command("curl", "http://mirror.centos.org/centos/7/extras/x86_64/Packages/sshpass-1.06-2.el7.x86_64.rpm", "-o", "sshpass.rpm")
 		cmd.Run()
 		cmd = exec.Command("yum", "localinstall", "sshpass.rpm", "-y")
@@ -395,12 +410,6 @@ func installDependencies() {
 	}
 }
 
-func runCommand(binary, args string) {
-	cmd := exec.Command(binary, args)
-	err := cmd.Run()
-	fmt.Println(err)
-}
-
 func readFile(path string) string {
 	dat, _ := ioutil.ReadFile(path)
 	str := string(dat)
@@ -408,6 +417,7 @@ func readFile(path string) string {
 }
 
 func contains(s []string, str string) bool {
+	//Golang doesn't have a built-in function for contains
 	for _, v := range s {
 		if v == str {
 			return true
@@ -418,6 +428,9 @@ func contains(s []string, str string) bool {
 }
 
 func GetOutboundIP() string {
+	//Dial a connection to a WAN IP to get the box's correct IP address.
+	//Note that this doesn't actually establish a connection,
+	//but simply pretends to setup one. This is enough to get us the IP
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
 		log.Fatal(err)
