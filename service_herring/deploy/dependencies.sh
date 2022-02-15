@@ -1,4 +1,6 @@
 #!/bin/bash
+# Michael Burke
+# Install dependencies based on distro
 if [ `which yum` ]; then
    yum install golang -y
 elif [ `which apt` ]; then

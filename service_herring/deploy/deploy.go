@@ -1,3 +1,5 @@
+// Michael Burke
+
 package main
 
 import (
