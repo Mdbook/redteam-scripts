@@ -20,7 +20,6 @@ func main() {
 		} else {
 			fmt.Println("Stopped " + names[i] + ".service")
 		}
-
 	}
 	fmt.Println("All services stopped.")
 }
