@@ -1,3 +1,6 @@
+//Michael Burke
+//Payload to create random users at random intervals
+
 package main
 
 import (
