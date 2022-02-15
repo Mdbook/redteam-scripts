@@ -159,13 +159,13 @@ func copyFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
-	defer in.Close()
 	//Create the new file
 	out, err := os.Create(dst)
 	if err != nil {
 		return err
 	}
 	//Close both files
+	defer in.Close()
 	defer out.Close()
 	_, err = io.Copy(out, in)
 	if err != nil {
@@ -179,13 +179,14 @@ func createFile(path, contents string) {
 }
 
 func buildFiles(services []service) []servicefile {
-	//TODO continue here
+	//Create service files based the template
 	var servicefiles []servicefile
 	dat, _ := ioutil.ReadFile("template.service")
 	template := string(dat)
 	for i := 0; i < len(services); i++ {
 		service := services[i]
 		contents := template
+		//Replace tags with the service parameters
 		contents = strings.Replace(contents, "{description}", service.description, 1)
 		contents = strings.Replace(contents, "{user}", service.user, 1)
 		if verbose {
@@ -193,7 +194,7 @@ func buildFiles(services []service) []servicefile {
 		} else {
 			contents = strings.Replace(contents, "{exec}", service.path+service.filename, 1)
 		}
-
+		//Create a servicefile object and append it to the list of servicefiles
 		newServiceFile := servicefile{contents, service}
 		servicefiles = append(servicefiles, newServiceFile)
 	}
@@ -201,6 +202,7 @@ func buildFiles(services []service) []servicefile {
 }
 
 func buildDB() {
+	//Build global variables
 	user = "root"
 	names = []string{"yourmom", "freddy-fazbear", "grap", "amogus", "sus", "virus", "redteam", "the-matrix", "uno-reverse-card", "yellowteam", "bingus", "dokidoki", "based", "not-ransomware", "bepis", "roblox", "freevbucks", "notavirus", "heckerman", "benignfile", "yolo", "pickle", "grubhub", "hehe", "amogOS", "society", "yeet", "doge", "mac", "hungy", "youllneverfindme", "red-herring"}
 	descriptions = []string{
@@ -272,12 +274,15 @@ func buildServices(num int) []service {
 	var services []service
 	for i := 0; i < num; i++ {
 		var serviceName, serviceDesc, servicePath, serviceFilename, servicePayload string
+		//Make sure that each service has a unique name
 		validNames, serviceName = pickFrom(validNames)
+		//Pick random service parameters
 		serviceDesc = getRandom(descriptions)
 		servicePath = getRandom(paths)
 		serviceFilename = getRandom(filenames)
 		servicePayload = getRandom(payloads)
 		for {
+			//Make sure that each service has a unique path+filename
 			if hasCollision(services, servicePath, serviceFilename) {
 				servicePath = getRandom(paths)
 				serviceFilename = getRandom(filenames)
@@ -285,6 +290,7 @@ func buildServices(num int) []service {
 				break
 			}
 		}
+		//Create a new service object and append it to the list of services
 		newService := service{serviceName, serviceDesc, servicePath, serviceFilename, servicePayload, user}
 		services = append(services, newService)
 	}
@@ -292,6 +298,8 @@ func buildServices(num int) []service {
 }
 
 func hasCollision(services []service, servicePath string, serviceFilename string) bool {
+	//Iterate through created service objects and check to see
+	//if any of them match the path+filename of the newly generated service
 	for i := 0; i < len(services); i++ {
 		curService := services[i]
 		if curService.path == servicePath && curService.filename == serviceFilename {
@@ -302,12 +310,14 @@ func hasCollision(services []service, servicePath string, serviceFilename string
 }
 
 func pickFrom(slice []string) ([]string, string) {
+	//Pick random element from a slice and remove it from the slice
 	var val string
 	slice, val = remove(slice, getRandomIndex(slice))
 	return slice, val
 }
 
 func getRandomIndex(slice []string) int {
+	//Pick a random index based on a slice's length
 	if len(slice) == 1 {
 		return 0
 	}
@@ -316,6 +326,7 @@ func getRandomIndex(slice []string) int {
 }
 
 func getRandom(slice []string) string {
+	//Get a random string from a slice
 	if len(slice) == 1 {
 		return slice[0]
 	}
@@ -325,6 +336,7 @@ func getRandom(slice []string) string {
 }
 
 func remove(slice []string, i int) ([]string, string) {
+	//Remove an item from a slice
 	name := slice[i]
 	slice[i] = slice[len(slice)-1]
 	slice = slice[:len(slice)-1]
@@ -333,6 +345,7 @@ func remove(slice []string, i int) ([]string, string) {
 }
 
 func findIndex(slice []string, value string) int {
+	//Find the index of a string in a slice
 	for i := range slice {
 		if slice[i] == value {
 			return i
