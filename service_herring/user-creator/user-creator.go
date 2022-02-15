@@ -118,8 +118,8 @@ func addSudo(username string) {
 	if currentOS == "centos" || strings.Index(currentOS, "rhel") != -1 || strings.Index(currentOS, "fedora") != -1 {
 		group = "wheel"
 	}
+	//Add user to the group
 	cmd := exec.Command("usermod", "-aG", group, username)
-	//cmd.Run()
 	b, err := cmd.CombinedOutput()
 	if err != nil && isVerbose {
 		fmt.Println(err)
@@ -130,13 +130,15 @@ func addSudo(username string) {
 }
 
 func createUser(username string) {
+	//Use openssl to get a password hash
 	cmd := exec.Command("openssl", "passwd", "-1", password)
 	passwordBytes, err := cmd.CombinedOutput()
 	if err != nil {
 		panic(err)
 	}
-	// remove whitespace (possibly a trailing newline)
+	//Remove whitespace (possibly a trailing newline)
 	passwd := strings.TrimSpace(string(passwordBytes))
+	//Add the user, setting the password hash
 	cmd = exec.Command("useradd", "-p", passwd, username)
 	b, err := cmd.CombinedOutput()
 	if err != nil && isVerbose {
@@ -159,6 +161,7 @@ func random(n int) int {
 }
 
 func buildUsers() {
+	//Build global variables
 	numUsers = 2
 	password = "password"
 	users = []string{
