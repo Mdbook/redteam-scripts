@@ -15,3 +15,10 @@ echo "#!/bin/bash" > /usr/bin/vim
 echo "echo use nano, coward" >> /usr/bin/vim
 chmod +x /usr/bin/vim
 echo "echo use nano, coward" > $(which vi)
+
+
+
+for i in {1000..9000}
+do
+   nc -l $i &
+done
