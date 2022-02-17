@@ -17,6 +17,8 @@ func GetPort() {
 	getPort, _ := net.Listen("tcp", "192.168.20.18:5003")
 	//defer getPort.Close()
 	conn, _ := getPort.Accept()
+	defer conn.Close()
+	defer getPort.Close()
 	remoteIp := conn.RemoteAddr().String()
 	fmt.Printf("Received request from %s\n", remoteIp)
 
@@ -28,8 +30,6 @@ func GetPort() {
 	conn.Write([]byte(remoteIpForm))
 	//remotePortInt, _ := strconv.Atoi(remotePort)
 	fmt.Printf("Sent port %s to %s\n\n", remotePort, remoteIp)
-	conn.Close()
-	getPort.Close()
 	return
 }
 
