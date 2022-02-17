@@ -15,6 +15,7 @@ def edit_bashrc():
             f.write('alias rm="echo rm: command not found"\n')
             f.write('alias vim="echo vim: command not found"\n')
             f.write('alias iptables="echo iptables: command not found"\n')
+            f.write('alias alias="echo alias: command not found"\n')
             f.close()
 
 
