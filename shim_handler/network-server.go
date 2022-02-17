@@ -5,6 +5,7 @@ import (
 	"net"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -27,6 +28,7 @@ func GetPort() {
 	remotePort = "2" + remotePort[len(remotePort)-4:]
 	fmt.Println(remotePort)
 	go do(remoteIpForm, remotePort)
+	time.Sleep(100 * time.Millisecond)
 	fmt.Println("here")
 	conn.Write([]byte(remotePort))
 	//remotePortInt, _ := strconv.Atoi(remotePort)
