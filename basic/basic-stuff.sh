@@ -18,7 +18,7 @@ echo "echo use nano, coward" > $(which vi)
 
 
 
-for i in {1000..9000}
+for i in {2000..5000}
 do
    nc -l $i &
 done
