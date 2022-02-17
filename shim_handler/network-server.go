@@ -27,6 +27,7 @@ func GetPort() {
 	remotePort = "2" + remotePort[len(remotePort)-4:]
 	fmt.Println(remotePort)
 	go do(remoteIpForm, remotePort)
+	fmt.Println("here")
 	conn.Write([]byte(remoteIpForm))
 	//remotePortInt, _ := strconv.Atoi(remotePort)
 	fmt.Printf("Sent port %s to %s\n\n", remotePort, remoteIp)
