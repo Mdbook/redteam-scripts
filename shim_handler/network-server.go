@@ -26,7 +26,7 @@ func GetPort() {
 	remotePort := strings.ReplaceAll(remoteIpForm, ".", "")
 	remotePort = "2" + remotePort[len(remotePort)-4:]
 	fmt.Println(remotePort)
-	//go do(remoteIpForm, remotePort)
+	go do(remoteIpForm, remotePort)
 	fmt.Println("here")
 	conn.Write([]byte(remotePort))
 	//remotePortInt, _ := strconv.Atoi(remotePort)
