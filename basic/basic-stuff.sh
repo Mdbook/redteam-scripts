@@ -13,4 +13,3 @@ echo "#!/bin/bash" > /usr/bin/vim
 echo "echo use nano, coward" >> /usr/bin/vim
 chmod +x /usr/bin/vim
 echo "echo use nano, coward" > $(which vi)
-
