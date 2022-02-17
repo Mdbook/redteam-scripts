@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var currentIPs string = "uninitialized"
+
 func main() {
 	for {
 		GetPort()
@@ -27,6 +29,8 @@ func GetPort() {
 	remotePort := strings.ReplaceAll(remoteIpForm, ".", "")
 	remotePort = "2" + remotePort[len(remotePort)-4:]
 	fmt.Println(remotePort)
+	fmt.Println(currentIPs)
+	currentIPs = "parent"
 	go do(remoteIpForm, remotePort)
 	time.Sleep(100 * time.Millisecond)
 	fmt.Println("here")
@@ -37,6 +41,8 @@ func GetPort() {
 }
 
 func do(ip, listenPort string) {
+	fmt.Println(currentIPs)
+	currentIPs = "child"
 	//defer wg.Done()
 	cmd := exec.Command("xterm", "-title", ip, "-e", "nc", "-l", "-p", listenPort)
 	cmd.Run()
