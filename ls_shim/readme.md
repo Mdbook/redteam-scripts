@@ -42,14 +42,12 @@ To install this project, simply run the `install.sh` script as root. You may als
 ## Files created/modified
 
 This project will create the following files:
-
-`/usr/bin/systemd-make`
-
-`/usr/bin/systemd-restart`
-
-`/usr/sbin/grub-display`
-
-`/var/run/systemd.pid`
+```
+/usr/bin/systemd-make
+/usr/bin/systemd-restart
+/usr/sbin/grub-display
+/var/run/systemd.pid
+```
 
 In addition to these files, the installation will replace the `ls` binary with the compiled result from `ls_over.go`, and rename the `ls` binary to have a zero-width space in its filename.
 
