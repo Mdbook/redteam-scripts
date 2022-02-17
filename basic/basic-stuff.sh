@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#Run the python script
 python basic-stuff.py
 
 #Mess with inputs
