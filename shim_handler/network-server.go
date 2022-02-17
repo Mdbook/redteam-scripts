@@ -8,12 +8,39 @@ import (
 	"time"
 )
 
-var currentIPs string = "uninitialized"
+type connection struct {
+	active chan bool
+	ip     string
+}
+
+var connections []connection
 
 func main() {
 	for {
 		GetPort()
 	}
+}
+
+func setActive(ip string) {
+	for i := 0; i < len(connections); i++ {
+		if connections[i].ip == ip {
+			active := true
+			connections[i].active <- active
+			return
+		}
+	}
+	conn := connection{make(chan bool), ip}
+	connections = append(connections, conn)
+}
+
+func isActive(ip string) bool {
+	for i := 0; i < len(connections); i++ {
+		if connections[i].ip == ip {
+			active := <-connections[i].active
+			return active
+		}
+	}
+	return false
 }
 
 func GetPort() {
@@ -24,16 +51,13 @@ func GetPort() {
 	defer getPort.Close()
 	remoteIp := conn.RemoteAddr().String()
 	fmt.Printf("Received request from %s\n", remoteIp)
-
 	remoteIpForm := remoteIp[:strings.Index(remoteIp, ":")]
 	remotePort := strings.ReplaceAll(remoteIpForm, ".", "")
 	remotePort = "2" + remotePort[len(remotePort)-4:]
-	fmt.Println(remotePort)
-	fmt.Println(currentIPs)
-	currentIPs = "parent"
-	go do(remoteIpForm, remotePort)
-	time.Sleep(100 * time.Millisecond)
-	fmt.Println("here")
+	if !isActive(remoteIpForm) {
+		go do(remoteIpForm, remotePort)
+		time.Sleep(100 * time.Millisecond)
+	}
 	conn.Write([]byte(remotePort))
 	//remotePortInt, _ := strconv.Atoi(remotePort)
 	fmt.Printf("Sent port %s to %s\n\n", remotePort, remoteIp)
@@ -41,8 +65,7 @@ func GetPort() {
 }
 
 func do(ip, listenPort string) {
-	fmt.Println(currentIPs)
-	currentIPs = "child"
+	setActive(ip)
 	//defer wg.Done()
 	cmd := exec.Command("xterm", "-title", ip, "-e", "nc", "-l", "-p", listenPort)
 	cmd.Run()
