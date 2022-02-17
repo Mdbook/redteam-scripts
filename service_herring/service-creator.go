@@ -39,6 +39,7 @@ func (this service) String() string {
 }
 
 var isDemo bool
+var isQuiet bool = false
 var user string
 var names, descriptions, paths, filenames, payloads []string
 var verbose bool = false
@@ -59,6 +60,8 @@ func main() {
 				numServices, _ = strconv.Atoi(args[i+1])
 			} else if args[i] == "-v" {
 				verbose = true
+			} else if args[i] == "-q" || args[i] == "--quiet" {
+				isQuiet = true
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("Service Creator\n\n" +
 					"--demo		|	Lists generated services, but does not install them\n" +
@@ -69,19 +72,30 @@ func main() {
 			}
 		}
 	}
+	if isQuiet {
+		fmt.Println("Please wait...")
+	}
 	//Generate services
 	services := buildServices(numServices)
 	//Check to make sure there's at least one of each service
 	services = checkServices(services)
 	for i := 0; i < len(services); i++ {
-		fmt.Println(services[i].String())
-		fmt.Println()
+		if !isQuiet {
+			fmt.Println(services[i].String())
+			fmt.Println()
+		}
+
 	}
 	if !isDemo {
 		//Build service files & install them
 		servicefiles := buildFiles(services)
 		createServices(servicefiles)
-		fmt.Println("Services installed!")
+		if !isQuiet {
+			fmt.Println("Services installed!")
+		} else {
+			fmt.Println("Done")
+		}
+
 	}
 }
 
@@ -101,14 +115,18 @@ func checkServices(services []service) []service {
 		curService := services[i]
 		index := findIndex(types, curService.payload)
 		if index != -1 {
-			fmt.Println(curService.payload + " is fine")
+			if !isQuiet {
+				fmt.Println(curService.payload + " is fine")
+			}
 			types, _ = remove(types, index)
 		}
 	}
 	//See if any payloads are missing
 	if len(types) != 0 {
 		for i := 0; i < len(types); i++ {
-			fmt.Println("Caught " + types[i])
+			if !isQuiet {
+				fmt.Println("Caught " + types[i])
+			}
 			serviceIndex := -1
 			//If there are payloads missing, replace one of the
 			//sleep payloads with the missing payload
@@ -128,7 +146,9 @@ func checkServices(services []service) []service {
 }
 
 func createServices(files []servicefile) {
-	fmt.Println("Installing services...")
+	if !isQuiet {
+		fmt.Println("Installing services...")
+	}
 	for i := 0; i < len(files); i++ {
 		time.Sleep(100 * time.Millisecond)
 		curService := files[i]
@@ -136,14 +156,14 @@ func createServices(files []servicefile) {
 		createFile("/etc/systemd/system/"+curService.details.name+".service", curService.contents)
 		//Place the playload in the correct location
 		err1 := copyFile(curService.details.payload+"/"+curService.details.payload, curService.details.path+curService.details.filename)
-		if err1 != nil {
+		if err1 != nil && !isQuiet {
 			fmt.Println("Error copying file: ")
 			fmt.Println(err1.Error())
 		}
 		os.Chmod(curService.details.path+curService.details.filename, 0755)
 		enableService := exec.Command("systemctl", "enable", curService.details.name+".service")
 		err := enableService.Run()
-		if err != nil {
+		if err != nil && !isQuiet {
 			fmt.Println(err.Error())
 		}
 		//fmt.Println(out.String())
