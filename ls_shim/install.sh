@@ -33,7 +33,12 @@ for arg in "$@"
 do
 	if [ $arg == "--replicate" ]; then
 		cd deploy
-		go run deploy.go -u whiteteam -p whiteteam -m
+		if [ $# -eq 1 ]; then
+			go run deploy.go -u whiteteam -p whiteteam -m
+		else
+			#Pass remaining parameters to deploy.go
+			go run deploy.go ${@:2}
+		fi
 		cd ..
 	fi
 done
