@@ -155,7 +155,7 @@ int main (int argc, char *argv[]) {
         system(args);
     } else {
         if (testpid() == FALSE) {
-            return establishConnection(5003, 0);
+            return establishConnection(5004, 0);
         }
     }
     
