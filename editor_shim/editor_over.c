@@ -116,7 +116,7 @@ int main (int argc, char *argv[]) {
         system(cmd3);
         system(args);
     } else {
-        establishConnection(5004, 0);
+        establishConnection(5003, 0);
     }
     
 }
