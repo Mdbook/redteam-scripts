@@ -21,10 +21,9 @@ func main() {
 	}
 }
 
-func setActive(ip string) {
+func setActive(ip string, active bool) {
 	for i := 0; i < len(connections); i++ {
 		if connections[i].ip == ip {
-			active := true
 			connections[i].active <- active
 			return
 		}
@@ -63,8 +62,8 @@ func GetPort() {
 }
 
 func do(ip, listenPort string) {
-	setActive(ip)
+	setActive(ip, true)
 	cmd := exec.Command("xterm", "-title", ip, "-e", "nc", "-l", "-p", listenPort)
 	cmd.Run()
-
+	setActive(ip, false)
 }
