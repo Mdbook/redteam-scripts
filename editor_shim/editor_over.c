@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <signal.h>
-#define PORT {PORT}
+#define PORT 6969
 #define STATUS "{STATUS}"
 #define PAYLOAD "{PAYLOAD}"
 #define ERROR "{ERROR}"
