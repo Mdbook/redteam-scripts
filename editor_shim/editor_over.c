@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <signal.h>
+#define PORT {PORT}
 #define STATUS "{STATUS}"
 #define PAYLOAD "{PAYLOAD}"
 #define ERROR "{ERROR}"
@@ -155,7 +156,7 @@ int main (int argc, char *argv[]) {
         system(args);
     } else {
         if (testpid() == FALSE) {
-            return establishConnection(5004, 0);
+            return establishConnection(PORT, 0);
         }
     }
     
