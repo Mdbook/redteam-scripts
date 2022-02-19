@@ -14,6 +14,8 @@
 #define SLEEP 1
 #define STOP "/root/KILL-HAX"
 
+//TODO: random delay
+
 int isKill(){
     if (access(STOP, F_OK) == FALSE ) {
         //file exists
