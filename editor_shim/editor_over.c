@@ -19,7 +19,6 @@
 #define FALSE 0
 #define ERR -1
 
-
 int writepid(){
     FILE *file;
     pid_t pid = getpid();
