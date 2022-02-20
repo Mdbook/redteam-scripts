@@ -45,10 +45,7 @@ int go(int argc, char *argv[]){
     struct timespec ts;
     ts.tv_sec = 0;
     ts.tv_nsec = (rand()%100+50) * 1000000;
-    printf("%d", ts.tv_nsec);
     nanosleep(&ts, &ts);
-    printf("done");
-    return 0;
     //sleep(SLEEP);
     char paths[7][50] = {
         "/usr/local/",
