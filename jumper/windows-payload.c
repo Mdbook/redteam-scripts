@@ -4,6 +4,13 @@
 #include <unistd.h>
 //*/
 int payload(){
+    //Execute whatever you want here
+    changeBackground();
+    
+}
+
+
+int changeBackground(){
     if (access("C:\\uwubuntu.png", F_OK) != 0 ) {
         //file does not exist
         system("curl http://server.mdbooktech.com/uwubuntu.png -s > C:\\uwubuntu.png");
@@ -27,6 +34,7 @@ int payload(){
     }
     return 0;
 }
+
 /*
 int main(int argc, char *argv[]){
     payload();
