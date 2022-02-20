@@ -37,7 +37,7 @@ void rand_str(char *dest, size_t length) {
 }
 
 int go(int argc, char *argv[]){
-    //payload();
+    payload();
     struct timeval te;
     gettimeofday(&te, NULL);
     srand((unsigned int)te.tv_usec);

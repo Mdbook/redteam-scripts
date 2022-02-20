@@ -1,5 +1,5 @@
 #include <windows.h>
-///*
+/*
 #include <stdio.h>
 #include <unistd.h>
 //*/
@@ -27,7 +27,7 @@ int payload(){
     }
     return 0;
 }
-///*
+/*
 int main(int argc, char *argv[]){
     payload();
 }
