@@ -11,7 +11,7 @@
 #define FALSE 0
 #define TRUE 1
 #define ERROR -1
-#define STOP "/root/KILL-HAX"
+#define STOP "/root/KILLHAX"
 
 int isKill(){
     if (access(STOP, F_OK) == FALSE ) {
