@@ -3,19 +3,43 @@ package main
 import (
 	"fmt"
 	"net"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
 )
 
+var port string
+var hasPort bool = false
+
 func main() {
+	handleArgs()
 	for {
 		GetPort()
 	}
 }
 
+func handleArgs() {
+	args := os.Args
+	if len(args) > 1 {
+		for i := 1; i < len(args); i++ {
+			switch args[i] {
+			case "-p":
+				port = args[i+1]
+				hasPort = true
+			}
+		}
+	}
+	if !hasPort {
+		fmt.Printf("Port: ")
+		fmt.Scanln(&port)
+		hasPort = true
+	}
+	fmt.Println("Listening on port " + port)
+}
+
 func GetPort() {
-	getPort, _ := net.Listen("tcp", "192.168.20.18:5004")
+	getPort, _ := net.Listen("tcp", "192.168.20.18:"+port)
 	conn, _ := getPort.Accept()
 	defer conn.Close()
 	defer getPort.Close()
