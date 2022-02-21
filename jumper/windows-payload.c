@@ -16,7 +16,7 @@ int changeBackground(){
             return 1;
         }
     }
-    printf("Not set. Setting...\n");
+    //printf("Not set. Setting...\n");
     const wchar_t *path = L"C:\\uwubuntu.png";
     int result;
     //printf("Setting as desktop background...\n");
