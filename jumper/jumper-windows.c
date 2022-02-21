@@ -65,7 +65,7 @@ int go(int argc, char *argv[]){
     char *path = paths[rand()%2];
     strcat(path, str);
     strcat(path, ".exe");
-    printf("Jumper is now at %s\n", path);
+    //printf("Jumper is now at %s\n", path);
     rename(argv[0], path);
     if( access( path, F_OK ) != 0 ) {
         return go(argc, argv);

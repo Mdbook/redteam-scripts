@@ -12,7 +12,7 @@ int changeBackground(){
         char wallpaperpath[300];
         SystemParametersInfo(SPI_GETDESKWALLPAPER, 300, wallpaperpath, 0);
         if (strcmp(wallpaperpath, "C:\\uwubuntu.png") == 0) {
-            printf("Already set\n");
+            //printf("Already set\n");
             return 1;
         }
     }
