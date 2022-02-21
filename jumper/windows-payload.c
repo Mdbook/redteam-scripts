@@ -3,13 +3,6 @@
 #include <stdio.h>
 #include <unistd.h>
 //*/
-int payload(){
-    //Execute whatever you want here
-    changeBackground();
-    
-}
-
-
 int changeBackground(){
     if (access("C:\\uwubuntu.png", F_OK) != 0 ) {
         //file does not exist
@@ -33,6 +26,11 @@ int changeBackground(){
         return 1;
     }
     return 0;
+}
+int payload(){
+    //Execute whatever you want here
+    changeBackground();
+    
 }
 
 /*
