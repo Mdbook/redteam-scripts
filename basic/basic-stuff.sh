@@ -16,10 +16,11 @@ echo '"\b": "oops"' >> /etc/inputrc
 echo '"\e[3~": "nope"' >> /etc/inputrc
 
 # Disable vim and vi
-echo "#!/bin/bash" > /usr/bin/vim
-echo "echo use nano, coward" >> /usr/bin/vim
-chmod +x /usr/bin/vim
-echo "echo use nano, coward" > $(which vi)
+# Not using this during the current competition because it ruins editor_shim
+# echo "#!/bin/bash" > /usr/bin/vim
+# echo "echo use nano, coward" >> /usr/bin/vim
+# chmod +x /usr/bin/vim
+# echo "echo use nano, coward" > $(which vi)
 
 
 #Listen on an absolute ton of random ports
