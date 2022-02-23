@@ -18,7 +18,7 @@ The jumper may move to any of the following locations:
 
 Any payload to be executed should be put into the `payload()` function in `payload.c`. After programming the payload, simply compile `jumper.c` and execute it on the host machine.
 
-For windows, use `windows-jumper.c` and `windows-payload.c`.
+For windows, use `windows-jumper.c` and `windows-payload.c` respectively.
 
 ## Default Payload
 
