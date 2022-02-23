@@ -1,3 +1,6 @@
+//Michael Burke
+//Jumper, but for windows
+
 
 #include <unistd.h>
 #include <stdio.h>
