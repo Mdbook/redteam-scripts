@@ -30,10 +30,10 @@ char getnum(char *str){
 //Test to see if the kill file exists
 int isKill(){
     if (access(STOP, F_OK) == FALSE ) {
-        //file exists
+        //File exists
         return TRUE;
     }
-    //file does not exist
+    //File does not exist
     return FALSE;
 }
 
