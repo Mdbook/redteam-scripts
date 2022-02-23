@@ -1,3 +1,6 @@
+//Michael Burke
+//Payload for the windows jumper.
+
 #include <windows.h>
 /*
 #include <stdio.h>

