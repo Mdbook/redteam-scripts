@@ -1,3 +1,6 @@
+//Michael Burke
+//Simple program to render it more difficult to kill jumper.
+
 package main
 
 import (

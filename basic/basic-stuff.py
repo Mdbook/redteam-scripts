@@ -1,8 +1,7 @@
 import os
 
-
-
 def edit_bashrc():
+    # Edit every user's bashrc and insert aliases to disable commands
     os.chdir("/home")
     for file in os.listdir("."):
         if os.path.isdir(file):
