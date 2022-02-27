@@ -218,7 +218,6 @@ func findIPs() []string {
 		fmt.Println("Local IP is " + localIp)
 	}
 	//Get the 0/24 subnet
-	//TODO: add option to specify subnet?
 	ipRange := getPrefix(localIp) + ".0/24"
 	fmt.Println(ipRange)
 	//Ping scan every IP in the subnet and store which ones repond in greppable format
