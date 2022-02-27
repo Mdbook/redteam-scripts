@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io/ioutil"
@@ -283,42 +284,76 @@ func getOS(isFail ...bool) string {
 	return ret_os
 }
 
+func readFromFile(path string) []string {
+	var paths []string
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		paths = append(paths, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return paths
+}
+
 func handleArgs(args []string) bool {
 	//Variables for whether usernames & passwords are lists or not
-	var pIsList, uIsList, uIsSingle, pIsSingle bool
+	var pIsList, uIsList, uIsSingle, pIsSingle, uIsFile, pIsFile bool
 	if len(args) > 1 {
 		for i := 1; i < len(args); i++ {
 			//TODO: Add checking for if args[i+1] exists
 			if args[i] == "--demo" {
 				isDemo = true
 			} else if args[i] == "-u" {
-				if uIsList {
-					fmt.Println("Error: cannot supply both -u and --user-list")
+				if uIsList || uIsFile {
+					fmt.Println("Error: multiple user inputs detected")
 					return false
 				}
 				uIsSingle = true
 				usernames = append(usernames, args[i+1])
 			} else if args[i] == "-p" {
-				if pIsList {
-					fmt.Println("Error: cannot supply both -p and --password-list")
+				if pIsList || pIsFile {
+					fmt.Println("Error: multiple password inputs detected")
 					return false
 				}
 				pIsSingle = true
 				passwords = append(passwords, args[i+1])
 			} else if args[i] == "--user-list" {
-				if uIsSingle {
-					fmt.Println("Error: cannot supply both -u and --user-list")
+				if uIsSingle || uIsFile {
+					fmt.Println("Error: multiple user inputs detected")
 					return false
 				}
 				uIsList = true
 				usernames = strings.Split(args[i+1], ",")
 			} else if args[i] == "--password-list" {
-				if pIsSingle {
-					fmt.Println("Error: cannot supply both -p and --password-list")
+				if pIsSingle || pIsFile {
+					fmt.Println("Error: multiple password inputs detected")
 					return false
 				}
 				pIsList = true
 				passwords = strings.Split(args[i+1], ",")
+			} else if args[i] == "--user-file" {
+				if uIsSingle || uIsList {
+					fmt.Println("Error: multiple password inputs detected")
+					return false
+				}
+				uIsFile = true
+				usernames = readFromFile(args[i+1])
+			} else if args[i] == "--password-file" {
+				if pIsSingle || pIsList {
+					fmt.Println("Error: multiple password inputs detected")
+					return false
+				}
+				pIsFile = true
+				passwords = readFromFile(args[i+1])
 			} else if args[i] == "-i" || args[i] == "--ignore" {
 				if isTarget {
 					fmt.Println("Error: --ignore is not compatible with --target")
@@ -361,22 +396,22 @@ func handleArgs(args []string) bool {
 					"--password-list [PASSWORDS]	|	Specify a list of passwords, separated by commas\n" +
 					"--user-list [USERS]		|	Specify a list of users, separated by commas\n" +
 					"--password-file [FILE]		|	Specify a list of passwords, separated by commas\n" +
-					"--user-list [FILE]		|	Specify a list of users, separated by commas",
+					"--user-file [FILE]		|	Specify a list of users, separated by commas",
 				)
 				return false
 			}
 		}
 	}
-	if isDemo || ((pIsList || pIsSingle) && (uIsList || uIsSingle)) {
+	if isDemo || ((pIsList || pIsSingle || pIsFile) && (uIsList || uIsSingle || pIsFile)) {
 		//If this is a demo OR if at least one password & username
 		//were provided, arguments are valid
 		return true
 	}
-	if !(uIsList || uIsSingle) {
+	if !(uIsList || uIsSingle || pIsFile) {
 		fmt.Println("Error: must supply at least one username")
 		return false
 	}
-	if !(pIsList || pIsSingle) {
+	if !(pIsList || pIsSingle || pIsFile) {
 		fmt.Println("Error: must supply at least one password")
 		return false
 	}
