@@ -14,15 +14,18 @@ sed -i 's/{SERVERPORT}/5004/g' vi-server.go
 sed -i 's/{SERVERPORT}/5005/g' vim-server.go
 sed -i 's/{SERVERPORT}/5006/g' nano-server.go
 
+sed -i 's/{ASSIGNEDPORT}/2/g' ls-server.go
+sed -i 's/{ASSIGNEDPORT}/3/g' vi-server.go
+sed -i 's/{ASSIGNEDPORT}/4/g' vim-server.go
+sed -i 's/{ASSIGNEDPORT}/5/g' nano-server.go
+
 if [ $1 ]; then
     if [ $1 == "--nostart" ]; then
         exit
     fi
 fi
-xterm -title "LS | MASTER" -e "go run ls-server.go" | &
-xterm -title "VI | MASTER" -e "go run vi-server.go" | &
-xterm -title "VIM | MASTER" -e "go run vim-server.go" | &
-xterm -title "NANO | MASTER" -e "go run nano-server.go" | &
+
+go run run-helper.go
 # TODO: fix this
 echo "Processes started."
 
