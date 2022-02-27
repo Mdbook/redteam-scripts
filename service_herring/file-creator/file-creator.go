@@ -172,7 +172,7 @@ func writeToFile(path string, content string) {
 
 func randString(n int) string {
 	//Generate random string of n length
-	//TODO: add rand.Seed here?
+	rand.Seed(time.Now().UnixNano())
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
