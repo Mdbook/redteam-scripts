@@ -37,5 +37,3 @@ To compile the binaries, run `build.sh`. Afterwards, execute the created `[name]
 The shims contact the server on ports `5004`, `5005`, and `5006` for `vi`, `vim`, and `nano` respectively in order to receive their ip-based reverse shell port.
 
 This project requres an instance of `c-server` (located under the `shim_handler` folder) to be running. Please refer to the documentation of `c-server` for more information.
-
-TODO: make c-server assign different custom ports for each editor shim
