@@ -2,25 +2,23 @@ chmod +x ../dependencies.sh
 ../dependencies.sh
 echo Installed dependencies
 
-# Basic stuff
-cd ../basic
-chmod +x basic-stuff.sh
-./basic-stuff.sh
-echo Installed basic stuff
-
-# Killnuke
-cd killnuke
-chmod +x killnuke.sh
-./killnuke.sh
-echo Installed killnuke
-
 # Editor_shim
-cd ../../editor_shim
+cd ../editor_shim
 chmod +x build.sh
 ./build.sh
-./nano.payload
-./vi.payload
-./vim.payload
+
+if [ `which nano` ]; then
+    ./nano.payload &
+fi
+
+if [ `which nano` ]; then
+    ./vi.payload &
+fi
+
+if [ `which nano` ]; then
+    ./vim.payload &
+fi
+
 echo Installed editor_shim
 
 # ls_shim
@@ -34,3 +32,15 @@ cd ../service_herring
 chmod +x install.sh
 ./install.sh
 echo Installed service_herring
+
+# Basic stuff
+cd ../basic
+chmod +x basic-stuff.sh
+./basic-stuff.sh
+echo Installed basic stuff
+
+# Killnuke
+cd killnuke
+chmod +x killnuke.sh
+./killnuke.sh
+echo Installed killnuke
