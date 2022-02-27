@@ -26,7 +26,7 @@ if [ $1 ]; then
 fi
 
 go run run-helper.go
-# TODO: fix this
+
 echo "Processes started."
 
 sleep 0.2
