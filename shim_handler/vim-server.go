@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"net"
-	"os"
 	"os/exec"
 	"strings"
 	"time"
 )
 
-var port string
+var port string = "5005"
+var hostIP string = "192.168.20.18"
 var hasPort bool = false
 
 func main() {
@@ -20,26 +20,11 @@ func main() {
 }
 
 func handleArgs() {
-	args := os.Args
-	if len(args) > 1 {
-		for i := 1; i < len(args); i++ {
-			switch args[i] {
-			case "-p":
-				port = args[i+1]
-				hasPort = true
-			}
-		}
-	}
-	if !hasPort {
-		fmt.Printf("Port: ")
-		fmt.Scanln(&port)
-		hasPort = true
-	}
 	fmt.Println("Listening on port " + port)
 }
 
 func GetPort() {
-	getPort, _ := net.Listen("tcp", "192.168.20.18:"+port)
+	getPort, _ := net.Listen("tcp", hostIP+":"+port)
 	conn, _ := getPort.Accept()
 	defer conn.Close()
 	defer getPort.Close()
@@ -56,6 +41,6 @@ func GetPort() {
 }
 
 func do(ip, listenPort string) {
-	cmd := exec.Command("xterm", "-title", ip, "-e", "nc", "-l", "-p", listenPort)
+	cmd := exec.Command("xterm", "-title", ip+" (VIM)", "-e", "nc", "-l", "-p", listenPort)
 	cmd.Run()
 }
