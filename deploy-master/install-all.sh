@@ -1,3 +1,4 @@
+chmod +x ../dependencies.sh
 ../dependencies.sh
 echo Installed dependencies
 
