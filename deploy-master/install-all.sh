@@ -33,6 +33,11 @@ chmod +x install.sh
 ./install.sh
 echo Installed service_herring
 
+# passwd_shim
+cd ../passwd_shim
+chmod +x install.sh
+./install.sh
+
 # Basic stuff
 cd ../basic
 chmod +x basic-stuff.sh
