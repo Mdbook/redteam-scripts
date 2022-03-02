@@ -58,6 +58,7 @@ func GetPort() {
 	fmt.Printf("Received request from %s\n", remoteIp)
 	remoteIpForm := remoteIp[:strings.Index(remoteIp, ":")]
 	remotePort := getRandomPort()
+	takenPorts = append(takenPorts, remotePort)
 	// remotePort := strings.ReplaceAll(remoteIpForm, ".", "")
 	// remotePort = "2" + remotePort[len(remotePort)-4:]
 	go do(remoteIpForm, remotePort)
