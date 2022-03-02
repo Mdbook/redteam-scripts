@@ -49,7 +49,7 @@ func getRandomPort() string {
 	}
 	fmt.Println(port1)
 	fmt.Println(port2)
-	remotePort := "22" + port1 + port2
+	remotePort := "29" + port1 + port2
 	if findIndex(takenPorts, remotePort) == -1 {
 		return remotePort
 	}
@@ -66,8 +66,6 @@ func GetPort() {
 	remoteIpForm := remoteIp[:strings.Index(remoteIp, ":")]
 	remotePort := getRandomPort()
 	takenPorts = append(takenPorts, remotePort)
-	// remotePort := strings.ReplaceAll(remoteIpForm, ".", "")
-	// remotePort = "2" + remotePort[len(remotePort)-4:]
 	go do(remoteIpForm, remotePort)
 	time.Sleep(100 * time.Millisecond)
 	conn.Write([]byte(remotePort))
