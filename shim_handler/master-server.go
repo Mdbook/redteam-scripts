@@ -9,7 +9,7 @@ import (
 )
 
 var port string = "{SERVERPORT}"
-var hostIP string = "192.168.20.18"
+var hostIP string = "10.1.1.6"
 var hasPort bool = false
 
 func main() {

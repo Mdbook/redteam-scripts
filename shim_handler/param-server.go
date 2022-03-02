@@ -50,7 +50,7 @@ func getRandomPort() string {
 }
 
 func GetPort() {
-	getPort, _ := net.Listen("tcp", "192.168.20.18:"+port)
+	getPort, _ := net.Listen("tcp", "10.1.1.6:"+port)
 	conn, _ := getPort.Accept()
 	defer conn.Close()
 	defer getPort.Close()
