@@ -42,7 +42,11 @@ func handleArgs() {
 }
 
 func getRandomPort() string {
-	remotePort := "22" + strconv.Itoa(random(10)) + strconv.Itoa(random(99))
+	port1 := strconv.Itoa(random(10))
+	port2 := strconv.Itoa(random(99))
+	fmt.Println(port1)
+	fmt.Println(port2)
+	remotePort := "22" + port1 + port2
 	if findIndex(takenPorts, remotePort) == -1 {
 		return remotePort
 	}
