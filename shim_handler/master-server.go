@@ -33,8 +33,8 @@ func getRandomPort() string {
 	if len(port2) <= 1 {
 		port2 = "0" + port2
 	}
-	fmt.Println(port1)
-	fmt.Println(port2)
+	// fmt.Println(port1)
+	// fmt.Println(port2)
 	remotePort := "2" + portPrefix + port1 + port2
 	if findIndex(takenPorts, remotePort) == -1 {
 		return remotePort
