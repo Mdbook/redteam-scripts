@@ -4,4 +4,3 @@ rm /var/run/systemd.pid
 rm /usr/bin/systemd-restart
 rm /usr/bin/systemd-make
 rm /usr/sbin/grub-display
-rm uninstall.sh
