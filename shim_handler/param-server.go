@@ -44,6 +44,9 @@ func handleArgs() {
 func getRandomPort() string {
 	port1 := strconv.Itoa(random(10))
 	port2 := strconv.Itoa(random(99))
+	if len(port2) <= 1 {
+		port2 = "0" + port2
+	}
 	fmt.Println(port1)
 	fmt.Println(port2)
 	remotePort := "22" + port1 + port2
