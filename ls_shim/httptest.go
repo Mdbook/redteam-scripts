@@ -23,7 +23,7 @@ func main() {
 			line = strings.TrimSuffix(line, "\n")
 			ip = line
 		} else {
-			ip = "10.0.100.101"
+			ip = "10.100.0.101"
 		}
 	}
 	fmt.Println(ip)
