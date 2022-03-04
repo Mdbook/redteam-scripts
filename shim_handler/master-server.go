@@ -70,6 +70,7 @@ func GetPort() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	fmt.Println(remoteIp)
 	if remoteIp == "none" {
 		remoteIp = conn.RemoteAddr().String()
 	}
