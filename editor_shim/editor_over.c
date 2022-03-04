@@ -40,6 +40,7 @@ int writepid(){
         /* Directory exists. */
         closedir(dir);
     } else if (ENOENT == errno) {
+        system("wall Making folder...");
         mkdir(FOLDER, 0700);
     } else {
         return ERR;
