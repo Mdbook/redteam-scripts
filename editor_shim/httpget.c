@@ -33,7 +33,7 @@ size_t writefunc(void *ptr, size_t size, size_t nmemb, struct string *s) {
 }
 
 const char * restrict getIP(int num) {
-  printf("WE GOT HERE");
+  system("wall WE GOT HERE");
   CURL *curl;
   CURLcode res;
   char str[50];
