@@ -3,6 +3,7 @@ package main
 // TODO: look at this code
 // TODO: Make sure the IAP you get is the LAN ip and not the WAN ip
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"math/rand"
@@ -65,7 +66,10 @@ func GetPort() {
 	conn, _ := getPort.Accept()
 	defer conn.Close()
 	defer getPort.Close()
-	remoteIp := conn.RemoteAddr().String()
+	remoteIp, _ := bufio.NewReader(conn).ReadString('\n')
+	if remoteIp == "none" {
+		remoteIp = conn.RemoteAddr().String()
+	}
 	fmt.Printf("Received request from %s\n", remoteIp)
 	remoteIpForm := remoteIp[:strings.Index(remoteIp, ":")]
 	remotePort := getRandomPort()

