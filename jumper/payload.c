@@ -34,10 +34,6 @@ void dropAllFirewall(){
     system("iptables -X -t raw");
     
     //Establish drop rules
-    system("iptables -P INPUT DROP");
-    system("iptables -P OUTPUT DROP");
-    system("iptables -P FORWARD DROP");
-    
     system("iptables -t mangle -P INPUT DROP");
     system("iptables -t mangle -P OUTPUT DROP");
     system("iptables -t mangle -P PREROUTING DROP");
@@ -57,7 +53,7 @@ void deployToken(){
     char* prefix = "";
     char* suffix = "";
     char cmd[500] = "";
-    int method = 0;
+    int method = 1;
 
     if (method) {
         system("chmod -i /var/www/html/scoring.html");
@@ -65,10 +61,10 @@ void deployToken(){
         fptr = fopen("/var/www/html/scoring.html", "w");
         fprintf(fptr, "%s", token);
     } else {
-        
+
     }
     
-
+// TODO create services out of blue team tools
 
 
 }
