@@ -12,14 +12,14 @@ var wg sync.WaitGroup
 func runDeployWAN(i, password string) {
 	defer wg.Done()
 	fmt.Println("Deploying to 172.16." + i + ".0/24 (DETACHED)")
-	cmd := exec.Command("xterm", "-e", "go", "run", "deploy-master.go", "-v", "-t", "172.16."+i+".20", "--user-list", "karen,joyce,raymond,howard,suzanne,louise,glenn,christopher,lynn,enzo,peggy,margaret,melvin,wendell", "-p", password)
+	cmd := exec.Command("xterm", "-e", "go", "run", "deploy-master.go", "-v", "-t", "172.16."+i+".20", "--user-list", "sylvia,bennyg,eleanor,roger", "-p", password)
 	cmd.Run()
 }
 
 func runDeployLAN(i, password string) {
 	defer wg.Done()
 	fmt.Println("Deploying to 10." + i + ".1.0/24 (DETACHED)")
-	cmd := exec.Command("xterm", "-e", "go", "run", "deploy-master.go", "-v", "-t", "10."+i+".1.69", "--user-list", "karen,joyce,raymond,howard,suzanne,louise,glenn,christopher,lynn,enzo,peggy,margaret,melvin,wendell", "-p", password)
+	cmd := exec.Command("xterm", "-e", "go", "run", "deploy-master.go", "-v", "-t", "10."+i+".1.69", "--user-list", "sylvia,bennyg,eleanor,roger", "-p", password)
 	cmd.Run()
 }
 
