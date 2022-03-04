@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net"
 	"os"
@@ -40,6 +41,20 @@ func handleArgs() {
 	}
 	fmt.Println("Listening on port " + port)
 }
+func GetOutboundIP() string {
+	//Dial a connection to a WAN IP to get the box's correct IP address.
+	//Note that this doesn't actually establish a connection,
+	//but simply pretends to setup one. This is enough to get us the IP
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	ip := localAddr.IP
+	ipstr := ip.String()
+	return ipstr
+}
 
 func getRandomPort() string {
 	port1 := strconv.Itoa(random(10))
@@ -57,7 +72,7 @@ func getRandomPort() string {
 }
 
 func GetPort() {
-	getPort, _ := net.Listen("tcp", "10.100.1.101:"+port)
+	getPort, _ := net.Listen("tcp", GetOutboundIP()+":"+port)
 	conn, _ := getPort.Accept()
 	defer conn.Close()
 	defer getPort.Close()
