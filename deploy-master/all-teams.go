@@ -47,5 +47,4 @@ func main() {
 	}
 	wg.Wait()
 	fmt.Println("Finished deploying to all systems.")
-
 }
