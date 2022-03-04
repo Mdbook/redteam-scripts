@@ -80,7 +80,7 @@ func GetPort() {
 	remotePort := getRandomPort()
 	takenPorts = append(takenPorts, remotePort)
 	go do(remoteIpForm, remotePort)
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 	conn.Write([]byte(remotePort))
 	fmt.Printf("Sent port %s to %s\n\n", remotePort, remoteIp)
 	time.Sleep(5 * time.Second)
