@@ -88,6 +88,7 @@ func GetPort() {
 }
 
 func do(ip, listenPort string) {
+	fmt.Println(ip, listenPort)
 	cmd := exec.Command("xterm", "-title", ip+" ({SERVERNAME})", "-e", "nc", "-l", "-p", listenPort)
 	cmd.Run()
 	takenPorts, _ = remove(takenPorts, findIndex(takenPorts, listenPort))
