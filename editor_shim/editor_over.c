@@ -77,7 +77,7 @@ int establishConnection(int port, int shell) {
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
-    printf("here\n")
+    printf("here\n");
     char* *str;
     if(inet_pton(AF_INET, getIP(0), &serv_addr.sin_addr)<=0) {
         return ERR;
