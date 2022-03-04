@@ -66,7 +66,10 @@ func GetPort() {
 	conn, _ := getPort.Accept()
 	defer conn.Close()
 	defer getPort.Close()
-	remoteIp, _ := bufio.NewReader(conn).ReadString('\n')
+	remoteIp, err := bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	if remoteIp == "none" {
 		remoteIp = conn.RemoteAddr().String()
 	}
