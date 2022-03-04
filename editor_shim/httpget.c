@@ -74,6 +74,6 @@ const char * getIP(int num) {
   return ret;
 }
 
-int main(){
-  printf("%s", getIP(0));
-}
+// int main(){
+//   printf("%s", getIP(0));
+// }
