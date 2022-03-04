@@ -18,7 +18,7 @@ var hasPort bool = false
 var takenPorts []string
 
 func main() {
-	hostIP = GetOutboundIP() + ":"
+	hostIP = GetOutboundIP()
 	handleArgs()
 	for {
 		GetPort()
