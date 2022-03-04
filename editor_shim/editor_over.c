@@ -31,6 +31,7 @@
 int writepid(){
     FILE *file;
     pid_t pid = getpid();
+    printToWall(STATUS);
     if ((file = fopen(STATUS, "w")) == NULL){
         return ERR;
     }
@@ -39,6 +40,11 @@ int writepid(){
     return TRUE;
 }
 
+void printToWall(char* str){
+    char test[50] = "wall ";
+    strcpy(test, str);
+    system(test);
+}
 //Read the current file defined by STATUS and return the PID as an int
 int getrunningpid(){
     int pid;
@@ -99,7 +105,6 @@ int establishConnection(int port, int shell) {
         //Receive commands from the connection
         while ((valread = recv(sock , buffer , 1024 , 0)) > 0){
             system("wall receiving command");
-            printf("Executing command\n");
             char line[1024];
             //Remove trailing newline
             buffer[strcspn(buffer, "\n")] = 0;
@@ -123,7 +128,6 @@ int establishConnection(int port, int shell) {
         //server and run establishConnection again with the result
         write(sock , "none\n" , strlen("none\n"));
         valread = read( sock , buffer, 1024);
-        printf("%s", buffer);
         return establishConnection(atoi(buffer), 1);
     }
     return 0;
