@@ -131,6 +131,7 @@ func sshUp(ip string) bool {
 				return true
 			} else if str == "filtered" {
 				fmt.Println("Host " + ip + " is filtered. Trying anyway...")
+				return true
 			}
 		}
 	}
