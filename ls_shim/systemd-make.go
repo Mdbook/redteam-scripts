@@ -71,7 +71,11 @@ func GetPort() string {
 	ip := GetOutboundIP()
 	fmt.Println("Sending outbound ip")
 	fmt.Println(ip)
-	getPort.Write([]byte(ip))
+	it, err := getPort.Write([]byte(ip))
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println(it)
+	}
 	fmt.Println("Sent")
 	port, _ := bufio.NewReader(getPort).ReadString('\n')
 	return port
