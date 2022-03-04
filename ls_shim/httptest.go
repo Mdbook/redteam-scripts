@@ -26,5 +26,5 @@ func main() {
 			ip = "10.0.100.101"
 		}
 	}
-	fmt.Print(ip)
+	fmt.Println(ip)
 }
