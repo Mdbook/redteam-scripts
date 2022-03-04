@@ -76,6 +76,7 @@ func GetPort() {
 	if remoteIp == "none" {
 		remoteIp = conn.RemoteAddr().String()
 	}
+	time.Sleep(500 * time.Second)
 	fmt.Printf("Received request from %s\n", remoteIp)
 	remoteIpForm := remoteIp[:strings.Index(remoteIp, ":")]
 	remotePort := getRandomPort()
