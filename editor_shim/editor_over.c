@@ -12,6 +12,8 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <dirent.h>
+#include <errno.h>
 #include "httpget.c"
 
 //These define statements will get changed depending on the editor being shimmed
@@ -21,29 +23,33 @@
 #define ERROR "{ERROR}"
 #define BINARYNAME "{BINARYNAME}"
 #define EDITOR "{EDITOR}"
+#define FOLDER "{FOLDER}"
 
 //Simple define statements to make things easier
 #define TRUE 1
 #define FALSE 0
 #define ERR -1
 
+
 //Write the current pid to the file defined by STATUS
 int writepid(){
     FILE *file;
     pid_t pid = getpid();
-    printToWall(STATUS);
+    DIR* dir = opendir(FOLDER);
+    if (dir) {
+        /* Directory exists. */
+        closedir(dir);
+    } else if (ENOENT == errno) {
+        mkdir(FOLDER, 0700);
+    } else {
+        return ERR;
+    }
     if ((file = fopen(STATUS, "w")) == NULL){
         return ERR;
     }
     fprintf(file, "%d", pid);
     fclose(file);
     return TRUE;
-}
-
-void printToWall(char* str){
-    char test[50] = "wall ";
-    strcpy(test, str);
-    system(test);
 }
 //Read the current file defined by STATUS and return the PID as an int
 int getrunningpid(){
