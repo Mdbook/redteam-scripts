@@ -19,7 +19,7 @@ int socket_connect(char *host, in_port_t port){
 		herror("gethostbyname");
 		exit(1);
 	}
-	copy(hp->h_addr, &addr.sin_addr, hp->h_length);
+	bcopy(hp->h_addr, &addr.sin_addr, hp->h_length);
 	addr.sin_port = htons(port);
 	addr.sin_family = AF_INET;
 	sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
