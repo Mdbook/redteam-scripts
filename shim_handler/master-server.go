@@ -64,21 +64,17 @@ func getRandomPort() string {
 func GetPort() {
 	getPort, _ := net.Listen("tcp", hostIP+":"+port)
 	conn, _ := getPort.Accept()
-	fmt.Println("Accepted")
 	defer conn.Close()
 	defer getPort.Close()
 	remoteIp, err := bufio.NewReader(conn).ReadString('\n')
 	remoteIpForm := remoteIp
-	fmt.Println("Read")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(remoteIp)
 	if remoteIp == "none" {
 		remoteIp = conn.RemoteAddr().String()
 		remoteIpForm = remoteIp[:strings.Index(remoteIp, ":")]
 	}
-	time.Sleep(1 * time.Second)
 	fmt.Printf("Received request from %s\n", remoteIp)
 	remotePort := getRandomPort()
 	takenPorts = append(takenPorts, remotePort)
