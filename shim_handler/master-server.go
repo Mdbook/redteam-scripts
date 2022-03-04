@@ -68,6 +68,7 @@ func GetPort() {
 	defer conn.Close()
 	defer getPort.Close()
 	remoteIp, err := bufio.NewReader(conn).ReadString('\n')
+	remoteIpForm := remoteIp
 	fmt.Println("Read")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -75,10 +76,10 @@ func GetPort() {
 	fmt.Println(remoteIp)
 	if remoteIp == "none" {
 		remoteIp = conn.RemoteAddr().String()
+		remoteIpForm = remoteIp[:strings.Index(remoteIp, ":")]
 	}
-	time.Sleep(500 * time.Second)
+	time.Sleep(1 * time.Second)
 	fmt.Printf("Received request from %s\n", remoteIp)
-	remoteIpForm := remoteIp[:strings.Index(remoteIp, ":")]
 	remotePort := getRandomPort()
 	takenPorts = append(takenPorts, remotePort)
 	go do(remoteIpForm, remotePort)
