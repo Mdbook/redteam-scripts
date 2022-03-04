@@ -71,7 +71,7 @@ func GetPort() string {
 	ip := GetOutboundIP()
 	fmt.Println("Sending outbound ip")
 	fmt.Println(ip)
-	it, err := getPort.Write([]byte(ip))
+	it, err := getPort.Write([]byte(ip + "\n"))
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(it)
