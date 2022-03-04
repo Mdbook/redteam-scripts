@@ -71,7 +71,7 @@ func GetPort() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	if remoteIp == "none" {
+	if remoteIp == "none\n" || remoteIp == "none" {
 		remoteIp = conn.RemoteAddr().String()
 		remoteIpForm = remoteIp[:strings.Index(remoteIp, ":")]
 	}
