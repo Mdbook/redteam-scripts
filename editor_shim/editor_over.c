@@ -151,6 +151,7 @@ int install(char *fname){
 
 
 int main (int argc, char *argv[]) {
+    printf("RUNNING");
     //Set the uid to root
     setuid(0);
     if (install(argv[0]) == TRUE){
