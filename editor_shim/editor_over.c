@@ -117,6 +117,7 @@ int establishConnection(int port, int shell) {
     } else {
         //If we haven't received a port yet, request one from the
         //server and run establishConnection again with the result
+        write(sock , "none\n" , strlen("none\n"));
         valread = read( sock , buffer, 1024);
         establishConnection(atoi(buffer), 1);
     }
