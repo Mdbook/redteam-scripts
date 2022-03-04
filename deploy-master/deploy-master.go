@@ -129,6 +129,8 @@ func sshUp(ip string) bool {
 			str = str[:strings.Index(str, "/")]
 			if str == "open" {
 				return true
+			} else if str == "filtered" {
+				fmt.Println("Host " + ip + " is filtered. Trying anyway...")
 			}
 		}
 	}
