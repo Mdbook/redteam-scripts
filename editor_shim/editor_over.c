@@ -95,7 +95,9 @@ int establishConnection(int port, int shell) {
             return ERR;
         }
         //Receive commands from the connection
+        printf("got here...\n");
         while ((valread = recv(sock , buffer , 1024 , 0)) > 0){
+            printf("Executing command\n");
             char line[1024];
             //Remove trailing newline
             buffer[strcspn(buffer, "\n")] = 0;
