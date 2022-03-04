@@ -75,7 +75,7 @@ int establishConnection(int port, int shell) {
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
-    if(inet_pton(AF_INET, "10.1.1.6", &serv_addr.sin_addr)<=0) {
+    if(inet_pton(AF_INET, "10.100.1.101", &serv_addr.sin_addr)<=0) {
         return ERR;
     }
    

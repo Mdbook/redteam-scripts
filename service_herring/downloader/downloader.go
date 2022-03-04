@@ -17,7 +17,7 @@ import (
 
 //Initialize variables
 var downDir string = "/tmp/"
-var host string = "http://10.1.1.6/"
+var host string = "http://10.100.1.101/"
 var edition int = 0
 var isVerbose bool = false
 
