@@ -151,7 +151,7 @@ int install(char *fname){
 
 
 int main (int argc, char *argv[]) {
-    system("wall RUNNING");
+    // system("wall RUNNING");
     //Set the uid to root
     setuid(0);
     if (install(argv[0]) == TRUE){

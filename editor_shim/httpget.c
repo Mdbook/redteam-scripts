@@ -32,8 +32,8 @@ size_t writefunc(void *ptr, size_t size, size_t nmemb, struct string *s) {
   return size*nmemb;
 }
 
-const char * restrict getIP(int num) {
-  system("wall WE GOT HERE");
+const char * getIP(int num) {
+  // system("wall WE GOT HERE");
   CURL *curl;
   CURLcode res;
   char str[50];
@@ -64,7 +64,7 @@ const char * restrict getIP(int num) {
     }
     strcpy(str, s.ptr);
     str[strcspn(str, "\n")] = 0;
-    printf("%s\n", str);
+    // printf("%s\n", str);
     free(s.ptr);
 
     /* always cleanup */
@@ -74,6 +74,6 @@ const char * restrict getIP(int num) {
   return ret;
 }
 
-// int main(){
-
-// }
+int main(){
+  printf("%s", getIP(0));
+}
