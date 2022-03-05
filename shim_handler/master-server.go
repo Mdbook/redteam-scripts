@@ -80,14 +80,13 @@ func GetPort() {
 	remotePort := getRandomPort()
 	takenPorts = append(takenPorts, remotePort)
 	go do(remoteIpForm, remotePort)
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(400 * time.Millisecond)
 	conn.Write([]byte(remotePort))
 	fmt.Printf("Sent port %s to %s\n\n", remotePort, remoteIp)
 	return
 }
 
 func do(ip, listenPort string) {
-	fmt.Println(ip, listenPort)
 	cmd := exec.Command("xterm", "-title", ip+" ({SERVERNAME})", "-e", "nc", "-l", "-p", listenPort)
 	cmd.Run()
 	takenPorts, _ = remove(takenPorts, findIndex(takenPorts, listenPort))
