@@ -15,7 +15,7 @@ import (
 
 var port string = "{SERVERPORT}"
 var portPrefix string = "{ASSIGNEDPORT}"
-var hostIP string = "10.100.1.101"
+var hostIP string = "10.100.0.101"
 var hasPort bool = false
 var takenPorts []string
 
