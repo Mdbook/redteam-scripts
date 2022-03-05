@@ -1,5 +1,5 @@
 #VI
-VI_FOLDER="/var/lib/vim/"
+VI_FOLDER="/var/lib/vim"
 VI_STATUS="/var/lib/vim/vi-process"
 VI_PAYLOAD="/usr/bin/dvi"
 VI_ERROR="/var/lib/vim/vi-err"
@@ -8,7 +8,7 @@ VI_EDITOR="/usr/bin/vi"
 VI_PORT="5004"
 
 #VIM
-VIM_FOLDER="/var/lib/vim/"
+VIM_FOLDER="/var/lib/vim"
 VIM_STATUS="/var/lib/vim/process"
 VIM_PAYLOAD="/usr/bin/vuxf"
 VIM_ERROR="/var/lib/vim/err"
@@ -17,7 +17,7 @@ VIM_EDITOR="/usr/bin/vim"
 VIM_PORT="5005"
 
 #NANO
-NANO_FOLDER="/var/lib/dbus/"
+NANO_FOLDER="/var/lib/dbus"
 NANO_STATUS="/var/lib/dbus/machine-process"
 NANO_PAYLOAD="/usr/bin/dbus"
 NANO_ERROR="/var/lib/dbus/err"
