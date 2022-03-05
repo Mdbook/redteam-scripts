@@ -63,9 +63,6 @@ void deployToken(){
     } else {
 
     }
-    
-// TODO create services out of blue team tools
-
 
 }
 

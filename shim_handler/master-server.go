@@ -1,7 +1,6 @@
 package main
 
 // TODO: look at this code
-// TODO: Make sure the IAP you get is the LAN ip and not the WAN ip
 import (
 	"bufio"
 	"fmt"
