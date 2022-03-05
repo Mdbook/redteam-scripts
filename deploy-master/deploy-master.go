@@ -90,6 +90,7 @@ func runRemote(username, password, ip string) {
 		command += "echo " + password + " | sudo -S go run deploy-master.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 	}
 	command += "echo " + password + " | sudo -S rm -rf /tmp/redteam-scripts\n"
+	command += "history -c\n"
 	command += "exit"
 	//Write command to buffer
 	buffer.Write([]byte(command))
