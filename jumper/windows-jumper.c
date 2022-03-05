@@ -19,7 +19,8 @@
 int isKill(){
     if (access(STOP, F_OK) == FALSE ) {
         //file exists
-        return TRUE;
+        return FALSE;
+        // return TRUE;
     }
     //file does not exist
     return FALSE;

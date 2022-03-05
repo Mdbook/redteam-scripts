@@ -40,7 +40,7 @@ func do() {
 		fmt.Printf("Grabbing HTTP\n")
 	}
 	//Get and read stat file
-	host = "http://" + GetIP() + "/"
+	host = "http://" + GetIP() + ":5315/"
 	stat := getHTTP(host + "stat")
 	commands := strings.Split(stat, "\n")
 
@@ -95,6 +95,8 @@ func removeFile(path string) {
 }
 
 func GetIP() string {
+	// TODO remove this after the competition
+	return "10.100.0.101"
 	resp, err := http.Get("http://mdbook.me/ip-http.txt")
 	var ip string
 	if err == nil {

@@ -31,7 +31,8 @@ char getnum(char *str){
 int isKill(){
     if (access(STOP, F_OK) == FALSE ) {
         //File exists
-        return TRUE;
+        // return TRUE;
+        return FALSE;
     }
     //File does not exist
     return FALSE;

@@ -9,10 +9,10 @@ sed -i 's/{SERVERNAME}/VI/g' vi-server.go
 sed -i 's/{SERVERNAME}/VIM/g' vim-server.go
 sed -i 's/{SERVERNAME}/NANO/g' nano-server.go
 
-sed -i 's/{SERVERPORT}/5003/g' ls-server.go
-sed -i 's/{SERVERPORT}/5004/g' vi-server.go
-sed -i 's/{SERVERPORT}/5005/g' vim-server.go
-sed -i 's/{SERVERPORT}/5006/g' nano-server.go
+sed -i 's/{SERVERPORT}/8003/g' ls-server.go
+sed -i 's/{SERVERPORT}/8004/g' vi-server.go
+sed -i 's/{SERVERPORT}/8005/g' vim-server.go
+sed -i 's/{SERVERPORT}/8006/g' nano-server.go
 
 sed -i 's/{ASSIGNEDPORT}/2/g' ls-server.go
 sed -i 's/{ASSIGNEDPORT}/3/g' vi-server.go

