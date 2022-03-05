@@ -21,6 +21,7 @@ var isVerbose bool = false
 var isDemo bool = false
 var isThreaded bool = false
 var isTarget bool = false
+var isSingle bool = false
 var targetIP string
 var usernames []string
 var passwords []string
@@ -85,7 +86,7 @@ func runRemote(username, password, ip string) {
 	command := "cd /tmp/redteam-scripts/deploy-master/\n" +
 		"echo " + password + " | sudo -S chmod +x install-all.sh\n" +
 		"echo " + password + " | sudo -S ./install-all.sh\n"
-	if isTarget {
+	if isTarget && !isSingle {
 		//If this is a target, add commands to deploy to other devices
 		command += "echo " + password + " | sudo -S go run deploy-master.go -i " + GetOutboundIP() + " -m --user-list " + strings.Join(usernames, ",") + " --password-list " + strings.Join(passwords, ",") + "\n"
 	}
@@ -379,6 +380,8 @@ func handleArgs(args []string) bool {
 				}
 			} else if args[i] == "-s" || args[i] == "--subnet" {
 				subnet = args[i+1]
+			} else if args[i] == "-o" || args[i] == "--single" {
+				isSingle = true
 			} else if args[i] == "-t" || args[i] == "--target" {
 				if len(ignoreIPs) != 0 {
 					fmt.Println("Error: --ignore is not compatible with --target")
@@ -391,6 +394,7 @@ func handleArgs(args []string) bool {
 					"usage: go run deploy-master.go -u [username] -p [password] [args]\n" +
 					"-i [IPs] or --ignore [IPS]	|	Specify a list of IPs to ignore, separated by commas\n" +
 					"-m or --multi			|	Run in multithreaded mode. Not compatible with verbose.\n" +
+					"-o or --single			|	Only deploy on a single machine (used with --target)\n" +
 					"-s [IP] or --subnet [N]		|	Subnet to deploy on (default: /24)\n" +
 					"-t [IP] or --target [IP]	|	Install on a remote machine & deploy from it\n" +
 					"-v or --verbose			|	Enable verbose output\n" +
@@ -404,6 +408,10 @@ func handleArgs(args []string) bool {
 				return false
 			}
 		}
+	}
+	if isSingle && !isTarget {
+		fmt.Println("Error: Must supply target when using --single")
+		return false
 	}
 	if isDemo || ((pIsList || pIsSingle || pIsFile) && (uIsList || uIsSingle || pIsFile)) {
 		//If this is a demo OR if at least one password & username
