@@ -26,9 +26,9 @@ NANO_EDITOR="/usr/bin/nano"
 NANO_PORT="5006"
 
 #Create folders if they don't exist
-[ ! -d $VI_FOLDER] && mkdir -p $VI_FOLDER
-[ ! -d $VIM_FOLDER] && mkdir -p $VIM_FOLDER
-[ ! -d $NANO_FOLDER] && mkdir -p $NANO_FOLDER
+[ ! -d $VI_FOLDER ] && mkdir -p $VI_FOLDER
+[ ! -d $VIM_FOLDER ] && mkdir -p $VIM_FOLDER
+[ ! -d $NANO_FOLDER ] && mkdir -p $NANO_FOLDER
 
 #Copy files
 cp editor_over.c vi.c
