@@ -103,7 +103,7 @@ func GetIP() string {
 		line = strings.TrimSuffix(line, "\n")
 		ip = line
 	} else {
-		resp, err = http.Get("http://129.21.141.218/ip.txt")
+		resp, err = http.Get("http://129.21.141.218/ip-http.txt")
 		if err == nil {
 			body, _ := ioutil.ReadAll(resp.Body)
 			line := string(body)
