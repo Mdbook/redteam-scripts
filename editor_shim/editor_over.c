@@ -41,7 +41,6 @@ int writepid(){
         closedir(dir);
     } else if (ENOENT == errno) {
         int res = mkdir(FOLDER, 0733);
-        printf("%d\n", res);
     } else {
         return ERR;
     }
@@ -158,7 +157,7 @@ int install(char *fname){
     char cmd[50] = "chmod +s ";
     strcat(cmd, EDITOR);
     system(cmd);
-    printf("Installed\n");
+    // printf("Installed\n");
     return TRUE;
 }
 
