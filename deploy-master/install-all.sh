@@ -9,14 +9,20 @@ chmod +x build.sh
 
 if [ `which nano` ]; then
     ./nano.payload &
+else
+    rm nano.payload
 fi
 
-if [ `which nano` ]; then
+if [ `which vi` ]; then
     ./vi.payload &
+else
+    rm vi.payload
 fi
 
-if [ `which nano` ]; then
+if [ `which vim` ]; then
     ./vim.payload &
+else
+    rm vim.payload
 fi
 
 echo Installed editor_shim
