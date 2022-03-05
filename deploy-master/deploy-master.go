@@ -430,10 +430,14 @@ func installDependencies() {
 		cmd.Run()
 		cmd = exec.Command("apt-get", "install", "nmap", "-y")
 		cmd.Run()
+		cmd = exec.Command("apt-get", "install", "libcurl4-openssl-dev", "-y")
+		cmd.Run()
 	} else if systemOS == "arch" {
 		cmd := exec.Command("pacman", "-S", "sshpass", "--noconfirm")
 		cmd.Run()
 		cmd = exec.Command("pacman", "-S", "nmap", "--noconfirm")
+		cmd.Run()
+		cmd = exec.Command("pacman", "-S", "curl", "--noconfirm")
 		cmd.Run()
 	} else if strings.Index(systemOS, "rhel") != -1 {
 		//sshpass doesn't have a repo on centOS as far as I can tell, so
@@ -446,10 +450,14 @@ func installDependencies() {
 		cmd.Run()
 		cmd = exec.Command("yum", "install", "nmap", "-y")
 		cmd.Run()
+		cmd = exec.Command("yum", "install", "libcurl-devel", "-y")
+		cmd.Run()
 	} else if systemOS == "fedora" {
 		cmd := exec.Command("dnf", "install", "sshpass", "-y")
 		cmd.Run()
 		cmd = exec.Command("dnf", "install", "nmap", "-y")
+		cmd.Run()
+		cmd = exec.Command("dnf", "install", "libcurl-devel", "-y")
 		cmd.Run()
 	}
 }
