@@ -41,9 +41,8 @@ int writepid(){
         closedir(dir);
     } else if (ENOENT == errno) {
         system("wall Making folder...");
-        char folder[50] = "mkdir ";
-        strcat(folder, FOLDER);
-        system(folder);
+        int res = mkdir(FOLDER, 0733);
+        printf("%d\n", res);
     } else {
         return ERR;
     }

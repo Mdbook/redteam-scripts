@@ -64,6 +64,6 @@ gcc vim.c -lcurl -o vim.payload
 gcc nano.c -lcurl -o nano.payload
 
 #Remove c files
-rm vi.c
-rm vim.c
-rm nano.c
+# rm vi.c
+# rm vim.c
+# rm nano.c
