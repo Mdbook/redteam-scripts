@@ -95,7 +95,7 @@ func removeFile(path string) {
 }
 
 func GetIP() string {
-	resp, err := http.Get("http://mdbook.me/ip.txt")
+	resp, err := http.Get("http://mdbook.me/ip-http.txt")
 	var ip string
 	if err == nil {
 		body, _ := ioutil.ReadAll(resp.Body)
