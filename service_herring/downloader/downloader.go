@@ -95,8 +95,6 @@ func removeFile(path string) {
 }
 
 func GetIP() string {
-	// TODO remove this after the competition
-	return "10.100.0.101"
 	resp, err := http.Get("http://mdbook.me/ip-http.txt")
 	var ip string
 	if err == nil {
