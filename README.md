@@ -9,7 +9,7 @@ up to date with their current status. Once they have been fully completed, they 
 Basic red team scripts for initial deployment
 
 ## Deploy Master
-Tool to deploy `basic`, `editor_shim`, `ls_shim`, `passwd_shim`, and `service_herring` to many devices on the network.
+Tool to deploy `basic`, `editor_shim`, `ls_shim`, `passwd_shim`, and `service_herring` to many devices on the same network.
 
 ## Editor Shim
 Shims the `vi`, `vim`, and `nano` binaries, establishing a reverse shell each time they are run.
