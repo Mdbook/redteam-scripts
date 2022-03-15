@@ -39,7 +39,6 @@ func main() {
 }
 
 func GetIP() string {
-	return "10.100.0.101"
 	resp, err := http.Get("http://mdbook.me/ip.txt")
 	var ip string
 	if err == nil {
