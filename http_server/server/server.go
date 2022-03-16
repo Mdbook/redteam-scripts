@@ -25,6 +25,7 @@ func main() {
 	go readStdin()
 	// return
 	// TODO: add handler for multiple ports
+	fmt.Println("Listening on port " + "5003")
 	for {
 		GetConnection()
 		// wg.Wait()
@@ -53,7 +54,6 @@ func handleArgs() {
 
 func GetConnection() {
 	getPort, _ := net.Listen("tcp", HOST_IP+":5003")
-	fmt.Println("Listening on port " + "5003")
 	conn, _ := getPort.Accept()
 	defer conn.Close()
 	defer getPort.Close()
@@ -113,16 +113,20 @@ func readStdin() {
 			case "active":
 				id, _ := strconv.Atoi(args[2])
 				if globalMap.GetActiveChannel() == id {
-					fmt.Println("Channel is already active!")
+					fmt.Printf("Channel is already active!\n\n")
+					break
 				} else if globalMap.GetCurrentId() <= id || id < 0 {
-					fmt.Println("Error: index out of range")
+					fmt.Printf("Error: index out of range\n\n")
+					break
 				}
 				if globalMap.GetActiveChannel() != -1 {
 					*channel <- "!!!FIN!!!"
 				}
 				globalMap.SetActive(id)
+				fmt.Printf("Set client %d as active\n", id)
+				fmt.Println()
 			default:
-
+				displayHelp("set")
 			}
 		case "get":
 			switch args[1] {
@@ -136,23 +140,31 @@ func readStdin() {
 				// fmt.Println(globalMap.GetCurrentId())
 				// fmt.Println(clientId)
 				if globalMap.GetCurrentId() <= clientId || clientId < 0 {
-					fmt.Println("Error: invalid client ID")
+					if len(args) < 3 {
+						fmt.Println("Error: no client active")
+					} else {
+						fmt.Println("Error: invalid client ID")
+					}
 				} else {
 					fmt.Printf("Info for client %d:\n", clientId)
 					curClient := globalMap.GetClient(clientId)
-					fmt.Printf("IP: %s\nPort: %s\nUsing client: %s\n", curClient.ip, curClient.port, curClient.client)
+					fmt.Printf("IP: %s\nPort: %s\nUsing client: %s", curClient.ip, curClient.port, curClient.client)
 				}
+				fmt.Println()
 			case "clients":
 				fmt.Println("Current clients: ")
 				for _, client := range globalMap.GetClients() {
 					fmt.Printf("Client %d\n", client.id)
 				}
+				fmt.Println()
 			case "active":
 				switch args[2] {
 				case "client":
 					fmt.Printf("Current active client: %d\n", globalMap.GetActiveChannel())
 				}
+				fmt.Println()
 			default:
+				displayHelp("get")
 			}
 		case "help":
 			displayHelp(cmd)
