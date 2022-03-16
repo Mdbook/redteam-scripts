@@ -25,7 +25,7 @@ func main() {
 	go readStdin()
 	// return
 	// TODO: add handler for multiple ports
-	fmt.Println("Listening on port " + "5003")
+	fmt.Println("Server starting...")
 	for {
 		connectionHelper()
 	}
@@ -67,14 +67,19 @@ func GetConnection(port string) {
 		getPort, _ := net.Listen("tcp", HOST_IP+":"+port)
 
 		conn, _ := getPort.Accept()
-
-		remoteClient, err := bufio.NewReader(conn).ReadString('\n')
+		var clientInfo ClientInfo
+		remoteInfo, err := bufio.NewReader(conn).ReadString('\n')
+		if strings.Index(remoteInfo, "INFO:") != -1 {
+			fmt.Println(remoteInfo)
+			clientInfo = parseParams(remoteInfo)
+		}
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 		remotePort := getRandomPort()
 		takenPorts = append(takenPorts, remotePort)
-		go handleClient(remotePort, remoteClient)
+
+		go handleClient(clientInfo, remotePort)
 		time.Sleep(100 * time.Millisecond)
 		conn.Write([]byte(remotePort))
 		conn.Close()
@@ -161,7 +166,7 @@ func readStdin() {
 				} else {
 					fmt.Printf("Info for client %d:\n", clientId)
 					curClient := globalMap.GetClient(clientId)
-					fmt.Printf("IP: %s\nPort: %s\nUsing client: %s", curClient.ip, curClient.port, curClient.client)
+					fmt.Printf("LAN IP: %s\nWAN IP: %s\nPort: %s\nUsing client: %s\nEncoded connection: %t\n", curClient.lanIP, curClient.wanIP, curClient.port, curClient.clientType, curClient.isEncoded)
 				}
 				fmt.Println()
 			case "clients":

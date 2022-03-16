@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"sync"
 )
@@ -78,12 +79,21 @@ func (a *globalMaster) SetActive(id int) {
 	a.mux.Unlock()
 }
 
-func (a *globalMaster) CreateClient(remoteIp, port, remoteClient string, conn net.Conn) Client {
+func (a *globalMaster) CreateClient(clientInfo ClientInfo, port string, conn net.Conn) Client {
+	fmt.Println(clientInfo)
 	a.mux.Lock()
 	cliId := a.currentId
 	a.channels = append(a.channels, make(chan bool))
 	a.currentId++
-	client := Client{id: cliId, ip: remoteIp, port: port, client: remoteClient, conn: conn}
+	client := Client{
+		id:         cliId,
+		lanIP:      clientInfo.lanIP,
+		wanIP:      conn.RemoteAddr().String(),
+		port:       port,
+		clientType: clientInfo.clientType,
+		isEncoded:  clientInfo.isEncoded,
+		conn:       conn,
+	}
 	a.clients = append(a.clients, client)
 	a.mux.Unlock()
 	return client

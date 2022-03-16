@@ -1,27 +1,33 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 )
 
 type Client struct {
-	id     int
-	ip     string
-	port   string
-	client string
-	conn   net.Conn
+	id         int
+	wanIP      string
+	lanIP      string
+	port       string
+	clientType string
+	isEncoded  bool
+	conn       net.Conn
 }
 
-func handleClient(port, remoteClient string) {
+func handleClient(clientInfo ClientInfo, port string) {
 	getPort, _ := net.Listen("tcp", GetOutboundIP()+":"+port)
 	conn, _ := getPort.Accept()
 	// defer conn.Close()
 	// defer getPort.Close()
-	remoteIp := conn.RemoteAddr().String()
+	// remoteInfo, _ := bufio.NewReader(conn).ReadString('\n')
 	// fmt.Printf("Received request from %s\n", remoteIp)
-	client := globalMap.CreateClient(remoteIp, port, remoteClient, conn)
-	fmt.Printf("New client (%s) connected with id: %d \n", remoteIp, client.id)
+	fmt.Println(clientInfo.clientType)
+	fmt.Println(clientInfo.isEncoded)
+	fmt.Println(clientInfo.lanIP)
+	client := globalMap.CreateClient(clientInfo, port, conn)
+	fmt.Printf("New client (%s) connected with id: %d \n", clientInfo, client.id)
 	go runReadClient(client)
 	go runWriteClient(client)
 }
@@ -30,8 +36,13 @@ func runReadClient(client Client) {
 	conn := client.conn
 	// conn.Write([]byte(fmt.Sprintf("%s\n", "dir")))
 	for {
-		buf := make([]byte, 65535)
-		_, err := conn.Read(buf)
+		if client.clientType == "Encoded Reverse Shell" {
+
+		}
+		// buf := make([]byte, 65535)
+		// _, err := conn.Read(buf)
+		// TODO: base64 encode
+		buf, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
 			// TODO error handling
 			fmt.Println(err)
@@ -40,7 +51,7 @@ func runReadClient(client Client) {
 		if globalMap.GetActiveChannel() == client.id {
 			fmt.Print(string(buf))
 			if globalMap.IsSingle() {
-				fmt.Println()
+				// fmt.Println()
 			}
 		}
 	}
@@ -62,38 +73,6 @@ func runWriteClient(client Client) {
 		} else {
 			isActive = <-*channel
 		}
-	}
-
-}
-
-func readConnection(conn net.Conn, active *bool, channel chan string) {
-	defer wg.Done()
-	for {
-		buf := make([]byte, 65535)
-		_, err := conn.Read(buf)
-		if err != nil {
-			channel <- "!!!FIN!!!"
-			*active = false
-			fmt.Println(err)
-			break
-		}
-		fmt.Print(string(buf))
-	}
-}
-
-func writeConnection(conn net.Conn, active *bool, channel chan string) {
-	defer wg.Done()
-	for {
-		if *active {
-			text := <-channel
-			if text == "!!!FIN!!!" {
-				return
-			}
-			conn.Write([]byte(fmt.Sprintf("%s\n", trim(text))))
-		} else {
-			return
-		}
-
 	}
 
 }

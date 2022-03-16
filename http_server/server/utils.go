@@ -1,10 +1,19 @@
 package main
 
 import (
+	"encoding/base64"
+	"fmt"
 	"log"
 	"net"
 	"strconv"
+	"strings"
 )
+
+type ClientInfo struct {
+	lanIP      string
+	clientType string
+	isEncoded  bool
+}
 
 func GetOutboundIP() string {
 	//Dial a connection to a WAN IP to get the box's correct IP address.
@@ -42,7 +51,6 @@ func remove(slice []string, i int) ([]string, string) {
 	slice[i] = slice[len(slice)-1]
 	slice = slice[:len(slice)-1]
 	return slice, name
-
 }
 
 func findIndex(slice []string, value string) int {
@@ -53,4 +61,42 @@ func findIndex(slice []string, value string) int {
 		}
 	}
 	return -1
+}
+
+func parseParams(info string) ClientInfo {
+	info = info[strings.Index(info, "INFO:{")+6 : strings.Index(info, "}")]
+	params := strings.Split(info, ",")
+	clientInfo := ClientInfo{}
+	fmt.Println(clientInfo.clientType)
+	for _, paramString := range params {
+		param := strings.Split(paramString, ":")
+		switch param[0] {
+		case "clientType":
+			clientInfo.clientType = param[1]
+		case "lanIP":
+			clientInfo.lanIP = param[1]
+		case "isEncoded":
+			clientInfo.isEncoded, _ = strconv.ParseBool(param[1])
+		}
+	}
+	return clientInfo
+}
+
+/**
+Base 64 encode a message to be sent to the server
+*/
+func b64_encode(text string) string {
+	encoded := base64.StdEncoding.EncodeToString([]byte(text))
+	return encoded
+}
+
+/**
+base 64 decode a message from the server
+*/
+func b64_decode(text string) string {
+	decoded, err := base64.StdEncoding.DecodeString(text)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return string(decoded)
 }

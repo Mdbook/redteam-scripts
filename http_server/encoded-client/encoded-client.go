@@ -63,6 +63,9 @@ func EstablishConnection(port string) {
 	}
 	//Set input/output to the established connection's in/out
 	cmd.Stdin = con
+	test := bufio.NewWriter(con)
+	out, _ := cmd.Output()
+	test.Write(out)
 	cmd.Stdout = con
 	cmd.Stderr = con
 	cmd.Run()
