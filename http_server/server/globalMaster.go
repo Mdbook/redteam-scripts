@@ -91,6 +91,8 @@ func (a *globalMaster) CreateClient(clientInfo ClientInfo, port string, conn net
 		wanIP:      conn.RemoteAddr().String(),
 		port:       port,
 		clientType: clientInfo.clientType,
+		os:         clientInfo.os,
+		osFlavor:   clientInfo.osFlavor,
 		isEncoded:  clientInfo.isEncoded,
 		conn:       conn,
 	}

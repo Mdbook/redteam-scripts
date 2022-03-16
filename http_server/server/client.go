@@ -12,6 +12,8 @@ type Client struct {
 	lanIP      string
 	port       string
 	clientType string
+	os         string
+	osFlavor   string
 	isEncoded  bool
 	conn       net.Conn
 }
@@ -21,13 +23,10 @@ func handleClient(clientInfo ClientInfo, port string) {
 	conn, _ := getPort.Accept()
 	// defer conn.Close()
 	// defer getPort.Close()
-	// remoteInfo, _ := bufio.NewReader(conn).ReadString('\n')
-	// fmt.Printf("Received request from %s\n", remoteIp)
-	fmt.Println(clientInfo.clientType)
-	fmt.Println(clientInfo.isEncoded)
-	fmt.Println(clientInfo.lanIP)
 	client := globalMap.CreateClient(clientInfo, port, conn)
-	fmt.Printf("New client (%s) connected with id: %d \n", clientInfo, client.id)
+	debugln(client)
+	debugln(clientInfo)
+	fmt.Printf("New client (%s) connected with id: %d \n", clientInfo.lanIP, client.id)
 	go runReadClient(client)
 	go runWriteClient(client)
 }
@@ -37,10 +36,10 @@ func runReadClient(client Client) {
 	// conn.Write([]byte(fmt.Sprintf("%s\n", "dir")))
 	for {
 		if client.clientType == "Encoded Reverse Shell" {
-
+			// TODO: handle encoded reverse shell
+			// buf := make([]byte, 65535)
+			// _, err := conn.Read(buf)
 		}
-		// buf := make([]byte, 65535)
-		// _, err := conn.Read(buf)
 		// TODO: base64 encode
 		buf, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
@@ -50,9 +49,9 @@ func runReadClient(client Client) {
 		}
 		if globalMap.GetActiveChannel() == client.id {
 			fmt.Print(string(buf))
-			if globalMap.IsSingle() {
-				// fmt.Println()
-			}
+			// if globalMap.IsSingle() {
+			// fmt.Println()
+			// }
 		}
 	}
 }
