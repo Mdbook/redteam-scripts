@@ -1,0 +1,199 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"math/rand"
+	"net"
+	"os"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+)
+
+// var port string
+var hasPort bool = false
+var takenPorts []string
+var wg sync.WaitGroup
+var globalMap globalMaster
+var stdin chan string
+var HOST_IP string
+
+func main() {
+	handleArgs()
+	go readStdin()
+	// return
+	// TODO: add handler for multiple ports
+	for {
+		GetConnection()
+		// wg.Wait()
+	}
+}
+
+func handleArgs() {
+	HOST_IP = GetOutboundIP()
+	globalMap = *CreateMaster()
+	// args := os.Args
+	// if len(args) > 1 {
+	// 	for i := 1; i < len(args); i++ {
+	// 		switch args[i] {
+	// 		case "-p":
+	// 			port = args[i+1]
+	// 			hasPort = true
+	// 		}
+	// 	}
+	// }
+	// if !hasPort {
+	// 	fmt.Printf("Port: ")
+	// 	fmt.Scanln(&port)
+	// 	hasPort = true
+	// }
+}
+
+func GetConnection() {
+	getPort, _ := net.Listen("tcp", HOST_IP+":5003")
+	fmt.Println("Listening on port " + "5003")
+	conn, _ := getPort.Accept()
+	defer conn.Close()
+	defer getPort.Close()
+
+	remoteClient, err := bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	remotePort := getRandomPort()
+	takenPorts = append(takenPorts, remotePort)
+	go handleClient(remotePort, remoteClient)
+	time.Sleep(100 * time.Millisecond)
+	conn.Write([]byte(remotePort))
+}
+
+func random(n int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(n)
+}
+
+func trim(str string) string {
+	return strings.TrimSuffix(strings.TrimSuffix(str, "\n"), "\r")
+}
+
+func enterTerminal(channel *chan string, reader *bufio.Reader) {
+	fmt.Printf("Entered terminal for client %d. Type 'leave' to leave.\n", globalMap.GetActiveChannel())
+	for {
+		cmd, _ := reader.ReadString('\n')
+		if trim(cmd) == "leave" {
+			fmt.Println("---Leaving terminal---")
+			return
+		}
+		*channel <- cmd
+	}
+
+}
+
+func readStdin() {
+	channel := globalMap.GetStdin()
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		cmd, _ := reader.ReadString('\n')
+		cmd = trim(cmd)
+		args := strings.Split(cmd, " ")
+		switch args[0] {
+		case "exit":
+			os.Exit(0)
+		case "send":
+			globalMap.SetSingle(true)
+			*channel <- cmd[5:]
+		case "enter":
+			globalMap.SetSingle(false)
+			fmt.Println("---Entering terminal---")
+			enterTerminal(channel, reader)
+		case "set":
+			switch args[1] {
+			case "active":
+				id, _ := strconv.Atoi(args[2])
+				if globalMap.GetActiveChannel() == id {
+					fmt.Println("Channel is already active!")
+				} else if globalMap.GetCurrentId() <= id || id < 0 {
+					fmt.Println("Error: index out of range")
+				}
+				if globalMap.GetActiveChannel() != -1 {
+					*channel <- "!!!FIN!!!"
+				}
+				globalMap.SetActive(id)
+			default:
+
+			}
+		case "get":
+			switch args[1] {
+			case "client":
+				var clientId int
+				if len(args) < 3 {
+					clientId = globalMap.GetActiveChannel()
+				} else {
+					clientId, _ = strconv.Atoi(args[2])
+				}
+				// fmt.Println(globalMap.GetCurrentId())
+				// fmt.Println(clientId)
+				if globalMap.GetCurrentId() <= clientId || clientId < 0 {
+					fmt.Println("Error: invalid client ID")
+				} else {
+					fmt.Printf("Info for client %d:\n", clientId)
+					curClient := globalMap.GetClient(clientId)
+					fmt.Printf("IP: %s\nPort: %s\nUsing client: %s\n", curClient.ip, curClient.port, curClient.client)
+				}
+			case "clients":
+				fmt.Println("Current clients: ")
+				for _, client := range globalMap.GetClients() {
+					fmt.Printf("Client %d\n", client.id)
+				}
+			case "active":
+				switch args[2] {
+				case "client":
+					fmt.Printf("Current active client: %d\n", globalMap.GetActiveChannel())
+				}
+			default:
+			}
+		case "help":
+			displayHelp(cmd)
+		default:
+			fmt.Println("Error: unknown command")
+		}
+
+		// if cmd[0] == '>' {
+		// 	isKill, id := handleCommand(cmd[1:])
+		// 	if isKill {
+
+		// 	}
+		// } else {
+		//
+		// }
+	}
+}
+
+func handleCommand(cmd string) (bool, int) {
+	return false, 0
+}
+
+func do(client Client) {
+	channel := globalMap.GetChannel(client.id)
+	isActive := <-*channel
+	for {
+		if isActive && globalMap.GetActiveChannel() == client.id {
+			stdin := globalMap.GetStdin()
+			stdReadLine := <-*stdin
+			if stdReadLine == "!!!FIN!!!" {
+				isActive = false
+			} else {
+				fmt.Printf("Received on client %d: %s\n", client.id, stdReadLine)
+			}
+		} else {
+			isActive = <-*channel
+		}
+	}
+
+}
+
+func displayHelp(cmd string) {
+
+}
