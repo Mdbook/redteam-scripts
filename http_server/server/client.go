@@ -28,7 +28,7 @@ func handleClient(port, remoteClient string) {
 
 func runReadClient(client Client) {
 	conn := client.conn
-	conn.Write([]byte(fmt.Sprintf("%s\n", "dir")))
+	// conn.Write([]byte(fmt.Sprintf("%s\n", "dir")))
 	for {
 		buf := make([]byte, 65535)
 		_, err := conn.Read(buf)
@@ -57,7 +57,7 @@ func runWriteClient(client Client) {
 			if stdReadLine == "!!!FIN!!!" {
 				isActive = false
 			} else {
-				conn.Write([]byte(fmt.Sprintf("%s\n", stdReadLine)))
+				conn.Write([]byte(fmt.Sprintf("%s\n", trim(stdReadLine))))
 			}
 		} else {
 			isActive = <-*channel
@@ -89,7 +89,7 @@ func writeConnection(conn net.Conn, active *bool, channel chan string) {
 			if text == "!!!FIN!!!" {
 				return
 			}
-			conn.Write([]byte(fmt.Sprintf("%s\n", text)))
+			conn.Write([]byte(fmt.Sprintf("%s\n", trim(text))))
 		} else {
 			return
 		}
