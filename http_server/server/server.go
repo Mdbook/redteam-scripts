@@ -27,8 +27,7 @@ func main() {
 	// TODO: add handler for multiple ports
 	fmt.Println("Listening on port " + "5003")
 	for {
-		runListeners()
-		// wg.Wait()
+		connectionHelper()
 	}
 }
 
@@ -52,22 +51,22 @@ func handleArgs() {
 	// }
 }
 
-func runListeners() {
+func connectionHelper() {
 	wg.Add(4)
 	go GetConnection("8003")
 	go GetConnection("8004")
 	go GetConnection("8005")
 	go GetConnection("8006")
 	wg.Wait()
+
 }
 
 func GetConnection(port string) {
+	defer wg.Done()
 	for {
-		fmt.Println(port)
 		getPort, _ := net.Listen("tcp", HOST_IP+":"+port)
+
 		conn, _ := getPort.Accept()
-		defer conn.Close()
-		defer getPort.Close()
 
 		remoteClient, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
@@ -78,6 +77,8 @@ func GetConnection(port string) {
 		go handleClient(remotePort, remoteClient)
 		time.Sleep(100 * time.Millisecond)
 		conn.Write([]byte(remotePort))
+		conn.Close()
+		getPort.Close()
 	}
 }
 
