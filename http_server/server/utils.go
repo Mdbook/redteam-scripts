@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type ClientInfo struct {
@@ -99,19 +101,9 @@ func GetOutboundIP() string {
 	return ipstr
 }
 
-func getRandomPort() string {
-	port1 := strconv.Itoa(random(10))
-	port2 := strconv.Itoa(random(99))
-	if len(port2) <= 1 {
-		port2 = "0" + port2
-	}
-	// fmt.Println(port1)
-	// fmt.Println(port2)
-	remotePort := "2" + "5" + port1 + port2
-	if findIndex(takenPorts, remotePort) == -1 {
-		return remotePort
-	}
-	return getRandomPort()
+func random(n int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(n)
 }
 
 func remove(slice []string, i int) ([]string, string) {

@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math/rand"
 	"net"
 	"os"
 	"strconv"
@@ -87,11 +86,6 @@ func GetConnection(port string) {
 	}
 }
 
-func random(n int) int {
-	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(n)
-}
-
 func trim(str string) string {
 	return strings.TrimSuffix(strings.TrimSuffix(str, "\n"), "\r")
 }
@@ -166,7 +160,22 @@ func readStdin() {
 				} else {
 					fmt.Printf("Info for client %d:\n", clientId)
 					curClient := globalMap.GetClient(clientId)
-					fmt.Printf("LAN IP: %s\nWAN IP: %s\nPort: %s\nUsing client: %s\nEncoded connection: %t\n", curClient.lanIP, curClient.wanIP, curClient.port, curClient.clientType, curClient.isEncoded)
+					fmt.Printf(
+						"LAN IP: %s\n"+
+							"WAN IP: %s\n"+
+							"Port: %s\n"+
+							"Using client: %s\n"+
+							"OS: %s\n"+
+							"OS Type: %s\n"+
+							"Encoded connection: %t\n",
+						curClient.lanIP,
+						curClient.wanIP,
+						curClient.port,
+						curClient.clientType,
+						curClient.os,
+						curClient.osFlavor,
+						curClient.isEncoded,
+					)
 				}
 				fmt.Println()
 			case "clients":
@@ -226,4 +235,19 @@ func do(client Client) {
 
 func displayHelp(cmd string) {
 
+}
+
+func getRandomPort() string {
+	port1 := strconv.Itoa(random(10))
+	port2 := strconv.Itoa(random(99))
+	if len(port2) <= 1 {
+		port2 = "0" + port2
+	}
+	// fmt.Println(port1)
+	// fmt.Println(port2)
+	remotePort := "2" + "5" + port1 + port2
+	if findIndex(takenPorts, remotePort) == -1 {
+		return remotePort
+	}
+	return getRandomPort()
 }
