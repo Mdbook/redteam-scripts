@@ -13,6 +13,7 @@ import (
 
 // var port string
 var hasPort bool = false
+var killFlag bool = false
 var takenPorts []string
 var wg sync.WaitGroup
 var globalMap globalMaster
@@ -22,9 +23,11 @@ var HOST_IP string
 func main() {
 	handleArgs()
 	go readStdin()
+	go handleQuit()
 	// return
 	// TODO: add handler for multiple ports
 	fmt.Println("Server starting...")
+	caret()
 	for {
 		connectionHelper()
 	}
@@ -87,10 +90,20 @@ func GetConnection(port string) {
 
 func enterTerminal(channel *chan string, reader *bufio.Reader) {
 	fmt.Printf("Entered terminal for client %d. Type 'leave' to leave.\n", globalMap.GetActiveChannel())
+	activeClient := globalMap.GetActiveChannel()
+	if globalMap.GetClient(activeClient).isEncoded {
+		caret()
+	}
 	for {
 		cmd, _ := reader.ReadString('\n')
 		if trim(cmd) == "leave" {
 			fmt.Println("---Leaving terminal---")
+			caret()
+			return
+		} else if globalMap.IsDead(activeClient) {
+			fmt.Println("Error: client session no longer exists. Exiting...")
+			fmt.Println("---Leaving terminal---")
+			caret()
 			return
 		}
 		*channel <- cmd
@@ -102,8 +115,8 @@ func readStdin() {
 	channel := globalMap.GetStdin()
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		cmd, _ := reader.ReadString('\n')
-		cmd = trim(cmd)
+		rawCmd, _ := reader.ReadString('\n')
+		cmd := trim(rawCmd)
 		args := strings.Split(cmd, " ")
 		switch args[0] {
 		case "exit":
@@ -115,7 +128,7 @@ func readStdin() {
 				*channel <- cmd[5:]
 			} else {
 				fmt.Println("Error: no active client")
-				break
+				caret()
 			}
 		case "enter":
 			if IsActiveClient() {
@@ -124,17 +137,29 @@ func readStdin() {
 				enterTerminal(channel, reader)
 			} else {
 				fmt.Println("Error: no active client")
+				caret()
 				break
 			}
 		case "set":
 			switch args[1] {
 			case "active":
-				id, _ := strconv.Atoi(args[2])
+				if len(args) < 3 {
+					fmt.Println("Error: must supply an ID")
+					break
+				}
+				id, err := strconv.Atoi(args[2])
+				if err != nil {
+					fmt.Println("Error: Please provide a valid client ID")
+					break
+				}
 				if globalMap.GetActiveChannel() == id {
-					fmt.Printf("Channel is already active!\n\n")
+					fmt.Printf("Channel is already active!\n")
 					break
 				} else if globalMap.GetCurrentId() <= id || id < 0 {
-					fmt.Printf("Error: index out of range\n\n")
+					fmt.Printf("Error: client does not exist\n")
+					break
+				} else if globalMap.IsDead(id) {
+					fmt.Printf("Error: client is dead\n")
 					break
 				}
 				if IsActiveClient() {
@@ -142,10 +167,10 @@ func readStdin() {
 				}
 				globalMap.SetActive(id)
 				fmt.Printf("Set client %d as active\n", id)
-				fmt.Println()
 			default:
 				displayHelp("set")
 			}
+			caret()
 		case "get":
 			switch args[1] {
 			case "client":
@@ -153,7 +178,12 @@ func readStdin() {
 				if len(args) < 3 {
 					clientId = globalMap.GetActiveChannel()
 				} else {
-					clientId, _ = strconv.Atoi(args[2])
+					var err error
+					clientId, err = strconv.Atoi(args[2])
+					if err != nil {
+						fmt.Println("Error: Please provide a valid client ID")
+						break
+					}
 				}
 				// fmt.Println(globalMap.GetCurrentId())
 				// fmt.Println(clientId)
@@ -161,10 +191,14 @@ func readStdin() {
 					if len(args) < 3 {
 						fmt.Println("Error: no active client")
 					} else {
-						fmt.Println("Error: invalid client ID")
+						fmt.Println("Error: client does not exist")
 					}
 				} else {
-					fmt.Printf("Info for client %d:\n", clientId)
+					clientDead := ""
+					if globalMap.IsDead(clientId) {
+						clientDead = " (DEAD CLIENT)"
+					}
+					fmt.Printf("Info for client %d%s:\n", clientId, clientDead)
 					curClient := globalMap.GetClient(clientId)
 					fmt.Printf(
 						"LAN IP: %s\n"+
@@ -183,26 +217,58 @@ func readStdin() {
 						curClient.isEncoded,
 					)
 				}
-				fmt.Println()
 			case "clients":
 				fmt.Println("Current clients: ")
 				for _, client := range globalMap.GetClients() {
-					fmt.Printf("Client %d\n", client.id)
+					if !client.isDead {
+						fmt.Printf("Client %d\n", client.id)
+					}
 				}
-				fmt.Println()
 			case "active":
 				switch args[2] {
 				case "client":
 					fmt.Printf("Current active client: %d\n", globalMap.GetActiveChannel())
 				}
-				fmt.Println()
 			default:
 				displayHelp("get")
 			}
+			caret()
+		case "kill":
+			if len(args) >= 2 {
+				clientId, err := strconv.Atoi(args[1])
+				if err != nil {
+					fmt.Println("Error: Please provide a valid client ID")
+					break
+				}
+				if globalMap.GetCurrentId() <= clientId || clientId < 0 {
+					if len(args) < 3 {
+						fmt.Println("Error: no active client")
+					} else {
+						fmt.Println("Error: client does not exist")
+					}
+				} else {
+					client := globalMap.GetClient(clientId)
+					killFlag = true
+					clientDisconnect(client)
+					killFlag = false
+					break
+				}
+			} else {
+				displayHelp("kill")
+			}
+			caret()
 		case "help":
 			displayHelp(cmd)
+			caret()
+		case "":
+			if rawCmd != "" {
+				caret()
+			}
+		// case "\C":
+
 		default:
 			fmt.Println("Error: unknown command")
+			caret()
 		}
 
 		// if cmd[0] == '>' {
@@ -263,13 +329,11 @@ func displayHelp(cmd string) {
 	case "get":
 		fmt.Printf(
 			"Usage: get client [client id]\n" +
-				"If client id is not specified, returns current client\n" +
-				"\n",
+				"If client id is not specified, returns current client\n",
 		)
 	case "set":
 		fmt.Printf(
-			"Usage: set active [client id]\n" +
-				"\n",
+			"Usage: set active [client id]\n",
 		)
 	default:
 		fmt.Printf(
@@ -281,9 +345,8 @@ func displayHelp(cmd string) {
 				"enter			Enter a terminal session with the active client\n" +
 				"leave			Leave the active terminal session\n" +
 				"exit			Exit the application\n" +
-				"help			Display the help menu\n" +
-				"\n",
+				"help			Display the help menu\n",
 		)
+		// TODO add help for kill
 	}
-
 }

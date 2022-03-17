@@ -7,8 +7,6 @@ import (
 	"log"
 	"math/rand"
 	"net"
-	"os"
-	"os/signal"
 	"strconv"
 	"strings"
 	"time"
@@ -147,22 +145,4 @@ func b64_decode(text string) string {
 		fmt.Println(err)
 	}
 	return string(decoded)
-}
-
-func handleQuit() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		for sig := range c {
-			sig.Signal()
-			fmt.Println("^C\nType \"exit\" to exit")
-			caret()
-			// sig is a ^C, handle it
-		}
-	}()
-}
-
-func caret() {
-	// TODO add color
-	fmt.Print("> ")
 }

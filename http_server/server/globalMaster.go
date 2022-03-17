@@ -11,13 +11,12 @@ type globalMaster struct {
 	stdin         chan string
 	activeChannel int
 	currentId     int
-	channelKill   bool
 	isSingle      bool
 	mux           sync.Mutex
 }
 
 func CreateMaster() *globalMaster {
-	return &globalMaster{activeChannel: -1, currentId: 0, channelKill: true, isSingle: false, stdin: make(chan string)}
+	return &globalMaster{activeChannel: -1, currentId: 0, isSingle: false, stdin: make(chan string)}
 }
 
 func (a *globalMaster) IsSingle() bool {
@@ -70,15 +69,16 @@ func (a *globalMaster) GetStdin() *chan string {
 
 func (a *globalMaster) SetActive(id int) {
 	a.mux.Lock()
+	// if a.activeChannel != -1 {
+	// a.stdin <- ""
+	// a.channels[a.activeChannel] <- false
+	// }
 	a.channels[id] <- true
-	if a.activeChannel != -1 {
-		a.channels[a.activeChannel] <- false
-	}
 	a.activeChannel = id
 	a.mux.Unlock()
 }
 
-func (a *globalMaster) CreateClient(clientInfo ClientInfo, port string, conn net.Conn) Client {
+func (a *globalMaster) CreateClient(clientInfo ClientInfo, port string, conn net.Conn, listener net.Listener) Client {
 	a.mux.Lock()
 	cliId := a.currentId
 	a.channels = append(a.channels, make(chan bool))
@@ -92,7 +92,9 @@ func (a *globalMaster) CreateClient(clientInfo ClientInfo, port string, conn net
 		os:         clientInfo.os,
 		osFlavor:   clientInfo.osFlavor,
 		isEncoded:  clientInfo.isEncoded,
+		isDead:     false,
 		conn:       conn,
+		listener:   listener,
 	}
 	a.clients = append(a.clients, client)
 	a.mux.Unlock()
@@ -110,19 +112,23 @@ func (a *globalMaster) SetCurrentId(id int) {
 	a.currentId = id
 	a.mux.Unlock()
 }
-func (a *globalMaster) IsKill() bool {
+
+func (a *globalMaster) IsDead(id int) bool {
 	a.mux.Lock()
-	isKill := a.channelKill
+	dead := a.clients[id].isDead
 	a.mux.Unlock()
-	return isKill
+	return dead
 }
-func (a *globalMaster) SetAlive() {
+
+func (a *globalMaster) KillClient(id int) {
 	a.mux.Lock()
-	a.channelKill = false
-	a.mux.Unlock()
-}
-func (a *globalMaster) Kill() {
-	a.mux.Lock()
-	a.channelKill = true
+	a.clients[id].isDead = true
+	if a.activeChannel == id {
+		a.activeChannel = -1
+		a.stdin <- "!!!FIN!!!"
+		// a.channels[id] <- false
+	} else {
+		a.channels[id] <- true
+	}
 	a.mux.Unlock()
 }

