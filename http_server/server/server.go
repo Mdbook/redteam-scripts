@@ -107,14 +107,25 @@ func readStdin() {
 		args := strings.Split(cmd, " ")
 		switch args[0] {
 		case "exit":
+			fmt.Println("Goodbye!")
 			os.Exit(0)
 		case "send":
-			globalMap.SetSingle(true)
-			*channel <- cmd[5:]
+			if IsActiveClient() {
+				globalMap.SetSingle(true)
+				*channel <- cmd[5:]
+			} else {
+				fmt.Println("Error: no active client")
+				break
+			}
 		case "enter":
-			globalMap.SetSingle(false)
-			fmt.Println("---Entering terminal---")
-			enterTerminal(channel, reader)
+			if IsActiveClient() {
+				globalMap.SetSingle(false)
+				fmt.Println("---Entering terminal---")
+				enterTerminal(channel, reader)
+			} else {
+				fmt.Println("Error: no active client")
+				break
+			}
 		case "set":
 			switch args[1] {
 			case "active":
@@ -126,7 +137,7 @@ func readStdin() {
 					fmt.Printf("Error: index out of range\n\n")
 					break
 				}
-				if globalMap.GetActiveChannel() != -1 {
+				if IsActiveClient() {
 					*channel <- "!!!FIN!!!"
 				}
 				globalMap.SetActive(id)
@@ -148,7 +159,7 @@ func readStdin() {
 				// fmt.Println(clientId)
 				if globalMap.GetCurrentId() <= clientId || clientId < 0 {
 					if len(args) < 3 {
-						fmt.Println("Error: no client active")
+						fmt.Println("Error: no active client")
 					} else {
 						fmt.Println("Error: invalid client ID")
 					}
@@ -228,6 +239,10 @@ func do(client Client) {
 
 }
 
+func IsActiveClient() bool {
+	return globalMap.GetActiveChannel() != -1
+}
+
 func getRandomPort() string {
 	port1 := strconv.Itoa(random(10))
 	port2 := strconv.Itoa(random(99))
@@ -245,10 +260,15 @@ func getRandomPort() string {
 
 func displayHelp(cmd string) {
 	switch cmd {
+	case "get":
+		fmt.Printf(
+			"Usage: get client [client id]\n" +
+				"If client id is not specified, returns current client\n" +
+				"\n",
+		)
 	case "set":
 		fmt.Printf(
-			"set: Set the current active client\n" +
-				"Usage: set active [client id]\n" +
+			"Usage: set active [client id]\n" +
 				"\n",
 		)
 	default:
