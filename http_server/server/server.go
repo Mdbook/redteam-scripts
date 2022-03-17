@@ -86,10 +86,6 @@ func GetConnection(port string) {
 	}
 }
 
-func trim(str string) string {
-	return strings.TrimSuffix(strings.TrimSuffix(str, "\n"), "\r")
-}
-
 func enterTerminal(channel *chan string, reader *bufio.Reader) {
 	fmt.Printf("Entered terminal for client %d. Type 'leave' to leave.\n", globalMap.GetActiveChannel())
 	for {

