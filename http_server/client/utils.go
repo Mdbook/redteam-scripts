@@ -51,6 +51,10 @@ func debugln(s interface{}) {
 	fmt.Println(s)
 }
 
+func trim(str string) string {
+	return strings.TrimSuffix(strings.TrimSuffix(str, "\n"), "\r")
+}
+
 func getOS(isFail ...bool) string {
 	var ret_os string
 	checkID := false
