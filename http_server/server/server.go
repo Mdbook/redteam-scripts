@@ -348,5 +348,6 @@ func displayHelp(cmd string) {
 				"help			Display the help menu\n",
 		)
 		// TODO add help for kill
+		// TODO add name function
 	}
 }
