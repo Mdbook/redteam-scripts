@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net"
 )
@@ -24,9 +23,7 @@ func handleClient(clientInfo ClientInfo, port string) {
 	// defer conn.Close()
 	// defer getPort.Close()
 	client := globalMap.CreateClient(clientInfo, port, conn)
-	debugln(client)
-	debugln(clientInfo)
-	fmt.Printf("New client (%s) connected with id: %d \n", clientInfo.lanIP, client.id)
+	fmt.Printf("New client (%s) connected with id: %d \n\n", clientInfo.lanIP, client.id)
 	go runReadClient(client)
 	go runWriteClient(client)
 }
@@ -37,11 +34,11 @@ func runReadClient(client Client) {
 	for {
 		if client.clientType == "Encoded Reverse Shell" {
 			// TODO: handle encoded reverse shell
-			// buf := make([]byte, 65535)
-			// _, err := conn.Read(buf)
 		}
 		// TODO: base64 encode
-		buf, err := bufio.NewReader(conn).ReadString('\n')
+		// buf, err := bufio.NewReader(conn).ReadString('\n')
+		buf := make([]byte, 65535)
+		_, err := conn.Read(buf)
 		if err != nil {
 			// TODO error handling
 			fmt.Println(err)

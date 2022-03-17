@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net"
 	"sync"
 )
@@ -80,7 +79,6 @@ func (a *globalMaster) SetActive(id int) {
 }
 
 func (a *globalMaster) CreateClient(clientInfo ClientInfo, port string, conn net.Conn) Client {
-	fmt.Println(clientInfo)
 	a.mux.Lock()
 	cliId := a.currentId
 	a.channels = append(a.channels, make(chan bool))
