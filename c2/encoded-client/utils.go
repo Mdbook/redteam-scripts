@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -108,6 +109,14 @@ func GetOutboundIP() string {
 func random(n int) int {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(n)
+}
+
+func getHostname() string {
+	var hostname string
+	cmd := exec.Command("hostname")
+	out, _ := cmd.Output()
+	hostname = trim(string(out))
+	return hostname
 }
 
 func remove(slice []string, i int) ([]string, string) {

