@@ -14,16 +14,34 @@ import (
 	"time"
 )
 
-type ClientInfo struct {
-	lanIP      string
-	clientType string
-	os         string
-	osFlavor   string
-	isEncoded  bool
+type Colors struct {
+	red     string
+	green   string
+	blue    string
+	black   string
+	yellow  string
+	magenta string
+	cyan    string
+	white   string
+	reset   string
 }
 
+func initColors() Colors {
+	return Colors{
+		reset:   "\033[0m",
+		black:   "\033[30m",
+		red:     "\033[31m",
+		green:   "\033[32m",
+		yellow:  "\033[33m",
+		blue:    "\033[34m",
+		magenta: "\033[35m",
+		cyan:    "\033[36m",
+		white:   "\033[37m",
+	}
+}
 func parseParams(info string) ClientInfo {
 	info = info[strings.Index(info, "INFO:{")+6 : strings.Index(info, "}")]
+	info = b64_decode(info)
 	params := strings.Split(info, ",")
 	clientInfo := ClientInfo{}
 	fmt.Println(clientInfo.clientType)
@@ -40,6 +58,8 @@ func parseParams(info string) ClientInfo {
 			clientInfo.os = param[1]
 		case "osFlavor":
 			clientInfo.osFlavor = param[1]
+		case "hostname":
+			clientInfo.hostname = param[1]
 		}
 	}
 	return clientInfo
@@ -155,14 +175,21 @@ func handleQuit() {
 	go func() {
 		for sig := range c {
 			sig.Signal()
-			fmt.Println("^C\nType \"exit\" to exit")
+			fmt.Println("\nType \"exit\" to exit")
 			caret()
 			// sig is a ^C, handle it
 		}
 	}()
 }
 
+func errorln(str string) {
+	fmt.Println(colors.red + str + colors.reset)
+}
+
+func infoln(str string) {
+	fmt.Println(colors.yellow + str + colors.reset)
+}
+
 func caret() {
-	// TODO add color
-	fmt.Print("> ")
+	fmt.Print(colors.green + "> " + colors.reset)
 }
