@@ -91,6 +91,7 @@ func (a *globalMaster) CreateClient(clientInfo ClientInfo, port string, conn net
 		clientType: clientInfo.clientType,
 		os:         clientInfo.os,
 		osFlavor:   clientInfo.osFlavor,
+		hostname:   clientInfo.hostname,
 		isEncoded:  clientInfo.isEncoded,
 		isDead:     false,
 		conn:       conn,
