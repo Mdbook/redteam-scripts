@@ -40,8 +40,12 @@ func initColors() Colors {
 	}
 }
 func parseParams(info string) ClientInfo {
-	info = info[strings.Index(info, "INFO:{")+6 : strings.Index(info, "}")]
-	info = b64_decode(info)
+	if strings.Contains(info, "ENCODED-INFO") {
+		info = info[strings.Index(info, "ENCODED-INFO:{")+14 : strings.Index(info, "}")]
+		info = b64_decode(info)
+	} else {
+		info = info[strings.Index(info, "INFO:{")+6 : strings.Index(info, "}")]
+	}
 	params := strings.Split(info, ",")
 	clientInfo := ClientInfo{}
 	fmt.Println(clientInfo.clientType)
