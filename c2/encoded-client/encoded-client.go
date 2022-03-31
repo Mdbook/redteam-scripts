@@ -141,7 +141,8 @@ func EstablishConnection(port string) {
 			for _, brk := range breakList {
 				switch brk {
 				case "arp":
-
+				case "spawn-unencoded":
+					go unencodedClient()
 				}
 			}
 		} else {
