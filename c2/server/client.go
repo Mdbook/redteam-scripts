@@ -59,7 +59,7 @@ func runReadClient(client Client) {
 				}
 				// We need the kill flag here because sometimes
 				// runReadClient executes before the KillClient()
-				// functtion can complete. So, we use killFlag
+				// function can complete. So, we use killFlag
 				// to make sure that isn't currently happening.
 				if !globalMap.IsDead(client.id) && !killFlag {
 					clientDisconnect(client)
@@ -76,7 +76,7 @@ func runReadClient(client Client) {
 			if err != nil {
 				fmt.Printf("Client %d disconnected. Removing from list...\n", client.id)
 				caret()
-				if !globalMap.IsDead(client.id) {
+				if !globalMap.IsDead(client.id) && !killFlag {
 					clientDisconnect(client)
 				}
 				return
