@@ -182,6 +182,22 @@ func handleQuit() {
 	}()
 }
 
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
+func errorf(s string, params ...interface{}) {
+	fmt.Print(colors.red)
+	fmt.Printf(s, params...)
+	fmt.Print(colors.reset)
+}
+
 func errorln(str string) {
 	fmt.Println(colors.red + str + colors.reset)
 }
@@ -191,5 +207,9 @@ func infoln(str string) {
 }
 
 func caret() {
-	fmt.Print(colors.green + "> " + colors.reset)
+	if globalMap.IsEntered() {
+		fmt.Print(colors.red + "# " + colors.reset)
+	} else {
+		fmt.Print(colors.green + "> " + colors.reset)
+	}
 }

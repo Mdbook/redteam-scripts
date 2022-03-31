@@ -109,11 +109,13 @@ func enterTerminal(channel *chan string, reader *bufio.Reader) {
 		cmd, _ := reader.ReadString('\n')
 		if trim(cmd) == "leave" {
 			fmt.Println("---Leaving terminal---")
+			globalMap.Leave()
 			caret()
 			return
 		} else if globalMap.IsDead(activeClient) {
 			errorln("Error: client session no longer exists. Exiting...")
 			fmt.Println("---Leaving terminal---")
+			globalMap.Leave()
 			caret()
 			return
 		}
@@ -152,6 +154,7 @@ func readStdin() {
 			if IsActiveClient() {
 				globalMap.SetSingle(false)
 				fmt.Println("---Entering terminal---")
+				globalMap.Enter()
 				enterTerminal(channel, reader)
 			} else {
 				errorln("Error: no active client")
@@ -270,7 +273,7 @@ func readStdin() {
 				} else {
 					client := globalMap.GetClient(clientId)
 					killFlag = true
-					fmt.Printf("Client %d disconnected\n", clientId)
+					fmt.Printf("Disconnecting client %d\n", clientId)
 					clientDisconnect(client)
 					killFlag = false
 					// caret()
@@ -278,6 +281,31 @@ func readStdin() {
 				}
 			} else {
 				displayHelp("kill")
+			}
+			caret()
+		case "break":
+			if len(cmd) > 6 {
+				if !IsActiveClient() {
+					errorln("Error: No active client")
+				}
+				breakList := strings.Split(cmd[6:], " ")
+				validBreaks := []string{
+					"icmp",
+					"ssh",
+					"http",
+					"nginx",
+					"apache2",
+				}
+				var breakSend []string
+				for i, brk := range breakList {
+					if contains(validBreaks, brk) {
+						breakSend = append(breakSend, brk)
+					} else {
+						errorf("Error at index %d: Unknown break", i)
+					}
+				}
+			} else {
+				errorln("Please input a break")
 			}
 			caret()
 		case "help":

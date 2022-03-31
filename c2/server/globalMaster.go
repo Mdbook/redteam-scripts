@@ -12,11 +12,32 @@ type globalMaster struct {
 	activeChannel int
 	currentId     int
 	isSingle      bool
+	isEntered     bool
 	mux           sync.Mutex
 }
 
 func CreateMaster() *globalMaster {
-	return &globalMaster{activeChannel: -1, currentId: 0, isSingle: false, stdin: make(chan string)}
+	return &globalMaster{activeChannel: -1, currentId: 0, isSingle: false, isEntered: false, stdin: make(chan string)}
+}
+
+func (a *globalMaster) IsEntered() bool {
+	return a.isEntered
+}
+
+func (a *globalMaster) Enter() {
+	if a.isEntered {
+		errorln("Error: Cannot set isEntered; it is already set to true")
+		return
+	}
+	a.isEntered = true
+}
+
+func (a *globalMaster) Leave() {
+	if !a.isEntered {
+		errorln("Error: Cannot set isEntered; it is already set to false")
+		return
+	}
+	a.isEntered = false
 }
 
 func (a *globalMaster) IsSingle() bool {
