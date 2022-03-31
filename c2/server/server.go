@@ -219,7 +219,7 @@ func readStdin() {
 					if globalMap.IsDead(clientId) {
 						clientDead = " (DEAD CLIENT)"
 					}
-					fmt.Printf("Info for client %d%s:\n", clientId, clientDead)
+					fmt.Printf("---Info for client %d%s---\n", clientId, clientDead)
 					curClient := globalMap.GetClient(clientId)
 					fmt.Printf(
 						"Hostname: %s\n"+
