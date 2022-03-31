@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -145,4 +146,25 @@ func b64_decode(text string) string {
 		fmt.Println(err)
 	}
 	return string(decoded)
+}
+func GetIP() string {
+	resp, err := http.Get("http://mdbook.me/ip.txt")
+	var ip string
+	if err == nil {
+		body, _ := ioutil.ReadAll(resp.Body)
+		line := string(body)
+		line = strings.TrimSuffix(line, "\n")
+		ip = line
+	} else {
+		resp, err = http.Get("http://129.21.141.218/ip.txt")
+		if err == nil {
+			body, _ := ioutil.ReadAll(resp.Body)
+			line := string(body)
+			line = strings.TrimSuffix(line, "\n")
+			ip = line
+		} else {
+			ip = "10.100.0.101"
+		}
+	}
+	return ip
 }

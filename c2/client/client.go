@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var HOST_IP string = GetOutboundIP() //"192.168.3.6"
+var HOST_IP string = GetIP() //"192.168.3.6"
 
 func main() {
 	connectPort := GetPort()

