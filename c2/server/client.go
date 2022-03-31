@@ -105,7 +105,7 @@ func runWriteClient(client Client) {
 			} else if stdReadLine == "!!!DEAD!!!" {
 				return
 			} else {
-				conn.Write([]byte(fmt.Sprintf("%s\n", trim(stdReadLine))))
+				SendMessage(trim(stdReadLine), conn)
 			}
 		} else {
 			if globalMap.IsDead(client.id) {
@@ -115,4 +115,14 @@ func runWriteClient(client Client) {
 		}
 	}
 
+}
+
+func SendMessage(str string, conn net.Conn) {
+	activeClient := globalMap.GetActiveChannel()
+	client := globalMap.GetClient(activeClient)
+	if client.isEncoded {
+		conn.Write([]byte(b64_encode(str) + "\n"))
+	} else {
+		conn.Write([]byte(str + "\n"))
+	}
 }
