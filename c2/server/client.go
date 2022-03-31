@@ -68,7 +68,8 @@ func runReadClient(client Client) {
 				return
 			}
 			buf = b64_decode(buf)
-			fmt.Print(buf + colors.green + "> " + colors.reset)
+			fmt.Print(buf)
+			caret()
 		} else {
 			buf := make([]byte, 65535)
 			_, err := conn.Read(buf)
