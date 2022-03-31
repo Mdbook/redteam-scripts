@@ -126,7 +126,7 @@ func EstablishConnection(port string) {
 						}
 
 					case "icmp":
-						Execute(FormatCommand("echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
+						Execute(FormatCommand("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
 					default:
 						respond("Error: Break not supported by client", conn)
 					}
