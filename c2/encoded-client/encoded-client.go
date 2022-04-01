@@ -157,7 +157,7 @@ func EstablishConnection(port string) {
 						case "out":
 							newPingFile :=
 								"#!/usr/bin/sh\\n" +
-									"echo PING $1 ($1) 56(84) bytes of data.\\n" +
+									"echo \"PING $1 \\'($1) 56(84) bytes of data.\"\\n" +
 									"sleep 5\\n" +
 									"echo\\necho \"--- $1 ping statistics ---\"\\n" +
 									"echo \"1 packets transmitted, 0 received, 100% packet loss, time 0ms\"\\n" +
