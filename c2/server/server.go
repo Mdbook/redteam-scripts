@@ -336,8 +336,14 @@ func readStdin() {
 					valids := []string{
 						"arp",
 						"child",
+						"safemode:off",
+						"safemode:on",
 					}
 					cmdSend := CreateCommandList(cmdList, "CMD", valids)
+					if strings.Contains(cmdSend, "safemode") {
+						cmdSend = strings.ToUpper(cmdSend)
+					}
+					debugln(cmdSend)
 					SendMessage(cmdSend, client.conn)
 				} else {
 					errorln("Error: Can only use command with encoded clients")
@@ -467,8 +473,9 @@ func displayHelp(cmd string) {
 		fmt.Printf(
 			"Usage: cmd [function]\n" +
 				"Possible functions:\n" +
-				"arp	Sends garbage arp replies to every device on the network\n" +
-				"child	Spawns an unencoded child process that connects to the server\n",
+				"arp			Sends garbage arp replies to every device on the network\n" +
+				"child			Spawns an unencoded child process that connects to the server\n" +
+				"safemode:[on/off]	Enable/disable safe command formatting (enable if things break)\n",
 		)
 	default:
 		fmt.Printf(
