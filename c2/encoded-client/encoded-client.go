@@ -212,6 +212,7 @@ func CheckService(service string) bool {
 }
 
 func FormatCommand(command string) string {
+	return command
 	return strings.Replace(command, "\"", "\\\"", -1)
 }
 

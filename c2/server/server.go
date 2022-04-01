@@ -311,7 +311,6 @@ func readStdin() {
 						"ssh.break-service",
 					}
 					breakSend := CreateCommandList(breakList, "BREAK", valids)
-					debugln(breakSend)
 					SendMessage(breakSend, client.conn)
 				} else {
 					errorln("Error: Can only use break with encoded clients")
