@@ -139,6 +139,11 @@ func readStdin() {
 			infoln("Goodbye!")
 			os.Exit(0)
 		case "send":
+			if len(cmd) <= 5 {
+				errorln("Error: not enough arguments")
+				caret()
+				break
+			}
 			if IsActiveClient() {
 				activeClient := globalMap.GetActiveChannel()
 				client := globalMap.GetClient(activeClient)
@@ -165,6 +170,11 @@ func readStdin() {
 				break
 			}
 		case "set":
+			if len(args) == 1 {
+				errorln("Error: not enough arguments")
+				caret()
+				break
+			}
 			switch args[1] {
 			case "active":
 				if len(args) < 3 {
@@ -196,6 +206,11 @@ func readStdin() {
 			}
 			caret()
 		case "get":
+			if len(args) == 1 {
+				errorln("Error: not enough arguments")
+				caret()
+				break
+			}
 			switch args[1] {
 			case "client":
 				var clientId int
@@ -441,17 +456,31 @@ func getRandomPort() string {
 func displayHelp(cmd string) {
 	switch cmd {
 	case "get":
-		fmt.Printf(
-			"Usage: get client [client id]\n" +
-				"If client id is not specified, returns current client\n",
+		fmt.Println(
+			"get- Get info about a client.\n" +
+				"Usage:\n" +
+				"get clients\n" +
+				"get client [client id]\n" +
+				"If client id is not specified, returns current client",
 		)
 	case "set":
-		fmt.Printf(
-			"Usage: set active [client id]\n",
+		fmt.Println(
+			"set- set the current active client.\n" +
+				"Usage: set active [client id]",
 		)
 	case "kill":
 		fmt.Println(
-			"Usage: kill [client id]",
+			"kill- Kills the specified client's connection.\n" +
+				"Usage: kill [client id]",
+		)
+	case "send":
+		fmt.Println(
+			"send- Send a command to the active client.\n" +
+				"Usage: send [bash command]",
+		)
+	case "enter":
+		fmt.Println(
+			"enter- Enter a terminal session with the active client.",
 		)
 	case "break":
 		fmt.Printf(
