@@ -299,14 +299,19 @@ func readStdin() {
 					breakList := strings.Split(cmd[6:], " ")
 					valids := []string{
 						"icmp",
+						"icmp.out",
 						"ftp",
+						"ftp.alter-config",
+						"ftp.move-config",
+						"ftp.break-service",
+						"http",
 						"ssh",
 						"ssh.alter-config",
 						"ssh.move-config",
 						"ssh.break-service",
-						"http",
 					}
 					breakSend := CreateCommandList(breakList, "BREAK", valids)
+					debugln(breakSend)
 					SendMessage(breakSend, client.conn)
 				} else {
 					errorln("Error: Can only use break with encoded clients")
