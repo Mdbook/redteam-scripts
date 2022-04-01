@@ -366,7 +366,6 @@ func readStdin() {
 					if strings.Contains(cmdSend, "safemode") {
 						cmdSend = strings.ToUpper(cmdSend)
 					}
-					debugln(cmdSend)
 					SendMessage(cmdSend, client.conn)
 				} else {
 					errorln("Error: Can only use command with encoded clients")
