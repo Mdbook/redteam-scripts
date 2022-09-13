@@ -14,7 +14,9 @@ var HOST_IP string //"192.168.3.6"
 var SAFE_MODE bool
 
 func main() {
-	HOST_IP = GetIP()
+	// HOST_IP = GetIP()
+	HOST_IP = GetOutboundIP()
+	// fmt.Println(HOST_IP)
 	SAFE_MODE = false
 	connectPort := GetPort()
 	if connectPort == "-1" {

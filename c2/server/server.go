@@ -37,6 +37,7 @@ func main() {
 
 func handleArgs() {
 	HOST_IP = GetOutboundIP()
+	Println(HOST_IP)
 	globalMap = *CreateMaster()
 	// args := os.Args
 	// if len(args) > 1 {
