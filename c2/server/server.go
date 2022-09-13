@@ -114,7 +114,7 @@ func enterTerminal(channel *chan string, reader *bufio.Reader) {
 			caret()
 			return
 		} else if trim(cmd) == "exit" {
-			infoln("The \"exit\" command is disabled, as it will break the client")
+			infoln("The \"exit\" command is disabled, as it will break the client. Please type \"leave\" to leave the integrated terminal.")
 			cmd = strings.Replace(cmd, "exit", "", -1)
 		} else if globalMap.IsDead(activeClient) {
 			errorln("Error: client session no longer exists. Exiting...")
